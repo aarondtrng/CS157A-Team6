@@ -1,0 +1,38 @@
+.cta {
+  background: var(--bg-soft);
+  padding-block: var(--section-pad);
+}
+
+.inner {
+  background: var(--blue);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: 48px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.subtext {
+  color: #d4e3f5;
+  font-size: 17px;
+  margin-bottom: 12px;
+}
+
+.inner h2 {
+  color: #ffffff;
+  font-size: 32px;
+  letter-spacing: -0.5px;
+}
+
+@media (max-width: 640px) {
+  .inner {
+    padding: 48px 24px;
+  }
+
+  .inner h2 {
+    font-size: 26px;
+  }
+}
