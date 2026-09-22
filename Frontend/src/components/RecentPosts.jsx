@@ -40,11 +40,17 @@ function RecentPosts() {
     <section id="recent-posts" className={styles.recentPosts}>
       <div className="container">
         <FadeIn>
-          <span className="eyebrow">Recent Activity</span>
-          <h2 className="section-title">Recently Reported Items</h2>
-          <p className={styles.subtitle}>
-            Browse the latest lost-and-found posts from around campus.
-          </p>
+          <div className={styles.header}>
+            <span className={styles.eyebrow}>Recent Activity</span>
+
+            <h2 className={styles.title}>
+              Recently Reported Items
+            </h2>
+
+            <p className={styles.subtitle}>
+              Browse the latest lost-and-found posts from around campus.
+            </p>
+          </div>
         </FadeIn>
 
         {loading ? (
