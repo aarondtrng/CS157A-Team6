@@ -4,6 +4,7 @@ import Stats from './components/Stats.jsx'
 import Features from './components/Features.jsx'
 import CallToAction from './components/CallToAction.jsx'
 import Footer from './components/Footer.jsx'
+import RecentPosts from './components/RecentPosts.jsx'
 
 function App() {
   return (
