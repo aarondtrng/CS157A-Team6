@@ -88,3 +88,37 @@
     grid-template-columns: 1fr;
   }
 }
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.eyebrow,
+.title,
+.subtitle {
+  position: static;
+  margin: 0;
+}
+
+.eyebrow {
+  color: var(--gold);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.title {
+  color: var(--navy);
+  font-size: 2rem;
+}
+
+.subtitle {
+  color: var(--text-muted);
+  max-width: 700px;
+}
