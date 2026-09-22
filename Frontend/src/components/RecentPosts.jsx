@@ -31,7 +31,7 @@ function RecentPosts() {
     // Later, this can be replaced with a backend request.
     const timer = setTimeout(() => {
       setLoading(false)
-    }, 900)
+    }, 1500)
 
     return () => clearTimeout(timer)
   }, [])
