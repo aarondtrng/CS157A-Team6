@@ -14,6 +14,7 @@ function App() {
         <Hero />
         <Stats />
         <Features />
+        <RecentPosts />
         <CallToAction />
       </main>
       <Footer />
