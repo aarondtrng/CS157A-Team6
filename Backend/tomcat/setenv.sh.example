@@ -1,0 +1,18 @@
+#!/bin/sh
+# Template for Tomcat's bin/setenv.sh. catalina.sh runs that file automatically on every start,
+# so the SpartanFinds database settings reach the app (config/DatabaseConfig) without being typed
+# into each terminal.
+#
+# Setup (each teammate, once):
+#   cp Backend/tomcat/setenv.sh.example "$CATALINA_HOME/bin/setenv.sh"
+#   chmod 600 "$CATALINA_HOME/bin/setenv.sh"      # holds a password: readable only by you
+#   then replace the placeholder values below and restart Tomcat.
+#
+# Never commit a filled-in copy. The real setenv.sh lives in your Tomcat install, outside the repo.
+#
+# Values are exported as environment variables rather than passed as -D options in CATALINA_OPTS,
+# because -D options (including the password) show up in the process list (ps).
+
+export SPARTANFINDS_DB_URL="jdbc:mysql://localhost:3306/your_database_name"
+export SPARTANFINDS_DB_USER="your_app_user"
+export SPARTANFINDS_DB_PASSWORD="your_app_user_password"

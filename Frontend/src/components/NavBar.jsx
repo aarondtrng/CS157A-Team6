@@ -1,7 +1,12 @@
 import sjsuLogo from '../assets/sjsuLogo.svg'
+import { CATALOG_URL } from '../config.js'
 import styles from './NavBar.module.css'
 
-const navLinks = ['Home', 'Browse Items', 'Campus Map']
+const navLinks = [
+  { label: 'Home', href: '#' },
+  { label: 'Browse Items', href: CATALOG_URL },
+  { label: 'Campus Map', href: '#' },
+]
 
 function NavBar() {
   return (
@@ -14,9 +19,9 @@ function NavBar() {
 
         <nav aria-label="Main navigation">
           <ul className={styles.links}>
-            {navLinks.map((label) => (
+            {navLinks.map(({ label, href }) => (
               <li key={label}>
-                <a href="#" className={styles.link}>
+                <a href={href} className={styles.link}>
                   {label}
                 </a>
               </li>

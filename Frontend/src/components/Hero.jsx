@@ -1,5 +1,6 @@
 import FadeIn from './FadeIn.jsx'
 import sjsuLogo from '../assets/sjsuLogo.svg'
+import { CATALOG_URL } from '../config.js'
 import styles from './Hero.module.css'
 
 function Hero() {
@@ -21,9 +22,9 @@ function Hero() {
             <button type="button" className="btn btn-gold">
               Report a Lost Item
             </button>
-            <button type="button" className={`btn btn-outline ${styles.outlineBtn}`}>
+            <a href={CATALOG_URL} className={`btn btn-outline ${styles.outlineBtn}`}>
               Browse Found Items
-            </button>
+            </a>
           </div>
         </FadeIn>
       </div>
