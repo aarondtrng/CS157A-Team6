@@ -1,0 +1,21 @@
+# Repo-wide ignores. Subprojects (e.g. Frontend/) keep their own .gitignore.
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Claude Code local settings
+.claude/settings.local.json
+CLAUDE.md
