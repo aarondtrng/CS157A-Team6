@@ -33,8 +33,9 @@ Backend/work/
 *.iws
 nbproject/
 
-# Tomcat: a filled-in setenv.sh holds the DB password; only Backend/tomcat/setenv.sh.example is committed
+# Tomcat: a filled-in setenv.sh / setenv.bat holds the DB password; only the *.example templates in Backend/tomcat/ are committed
 setenv.sh
+setenv.bat
 
 # Logs
 logs

@@ -1,0 +1,17 @@
+@echo off
+rem Windows template for Tomcat's bin\setenv.bat (the Linux/macOS equivalent is setenv.sh.example).
+rem catalina.bat runs that file automatically on every start, so the SpartanFinds database settings
+rem reach the app (config/DatabaseConfig) without being typed into each terminal.
+rem
+rem Setup (each teammate, once):
+rem   copy Backend\tomcat\setenv.bat.example %CATALINA_HOME%\bin\setenv.bat
+rem   then replace the placeholder values below and restart Tomcat.
+rem
+rem Never commit a filled-in copy. The real setenv.bat lives in your Tomcat install, outside the repo.
+rem
+rem Values are set as environment variables rather than passed as -D options in CATALINA_OPTS,
+rem because -D options (including the password) show up in the process list.
+
+set "SPARTANFINDS_DB_URL=jdbc:mysql://localhost:3306/your_database_name"
+set "SPARTANFINDS_DB_USER=your_app_user"
+set "SPARTANFINDS_DB_PASSWORD=your_app_user_password"

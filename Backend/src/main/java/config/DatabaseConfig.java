@@ -9,7 +9,7 @@ import java.sql.SQLException;
  *
  * Credentials are never stored in the repository. Each setting is read from an environment variable
  * or, if that is unset, a JVM system property of the same name (for example -DSPARTANFINDS_DB_URL=...
- * in Tomcat's bin/setenv script; see Backend/tomcat/setenv.sh.example):
+ * in Tomcat's bin/setenv script; see Backend/tomcat/setenv.sh.example or setenv.bat.example):
  *
  *   SPARTANFINDS_DB_URL       JDBC URL, e.g. jdbc:mysql://localhost:3306/your_database_name
  *   SPARTANFINDS_DB_USER      database user
