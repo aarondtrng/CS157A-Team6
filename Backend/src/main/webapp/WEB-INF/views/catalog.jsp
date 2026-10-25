@@ -16,7 +16,8 @@
   <header class="topbar">
     <div class="container topbar-inner">
       <a class="brand" href="${pageContext.request.contextPath}/items">SpartanFinds</a>
-      <%-- TODO: nav links and login/profile controls once those pages exist. --%>
+      <%-- TODO: nav links and profile link once those pages exist. --%>
+      <%@ include file="/WEB-INF/views/fragments/topbar-auth.jspf" %>
     </div>
   </header>
 

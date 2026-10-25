@@ -59,6 +59,32 @@ p {
   height: 64px;
 }
 
+.topbar-auth {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto;
+}
+
+.topbar-auth form {
+  margin: 0;
+}
+
+.topbar-user {
+  font-weight: 500;
+  color: var(--text-h);
+}
+
+.topbar-link {
+  color: var(--blue);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.btn-small {
+  padding: 6px 14px;
+}
+
 .brand {
   color: var(--blue);
   font-weight: 700;

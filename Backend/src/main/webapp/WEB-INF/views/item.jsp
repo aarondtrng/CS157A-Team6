@@ -17,6 +17,7 @@
   <header class="topbar">
     <div class="container topbar-inner">
       <a class="brand" href="${pageContext.request.contextPath}/items">SpartanFinds</a>
+      <%@ include file="/WEB-INF/views/fragments/topbar-auth.jspf" %>
     </div>
   </header>
 
