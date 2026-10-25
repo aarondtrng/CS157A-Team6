@@ -60,3 +60,16 @@
     padding: 20px;
   }
 }
+
+/* First and last name side by side; stacked on narrow screens. */
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 480px) {
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+}

@@ -15,3 +15,7 @@ rem because -D options (including the password) show up in the process list.
 set "SPARTANFINDS_DB_URL=jdbc:mysql://localhost:3306/your_database_name"
 set "SPARTANFINDS_DB_USER=your_app_user"
 set "SPARTANFINDS_DB_PASSWORD=your_app_user_password"
+
+rem Optional: folder for uploaded item photos. Default: "spartanfinds-uploads" in the home folder of the
+rem user running Tomcat. Keep it outside the repo and outside the WAR so redeploys never delete photos.
+rem set "SPARTANFINDS_UPLOAD_DIR=C:\path\to\spartanfinds-uploads"

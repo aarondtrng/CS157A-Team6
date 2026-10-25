@@ -5,6 +5,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import util.AuthUtil;
@@ -14,17 +15,14 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Sends guests to the login page before they can open a protected page.
+ * Sends guests to the login page before they can open a protected page. The original path is passed as
+ * the "next" parameter so login can return them afterwards (AuthUtil.safeNext validates it).
  *
- * NOT MAPPED to any URL right now: guests may view public posts (/items, /item), so nothing is
- * protected yet. When pages that need an account exist (posting, requests, messaging, reports), map this
- * filter to them with @WebFilter(...) or a web.xml entry. Also enforce the role in the servlet, not only here.
- *
- * Original behavior: sends guests to the login page before they can open a protected page. The original path is passed as
- * the "next" parameter so login can return them afterwards.
- *
- * The login page validates "next" itself: it must accept only paths inside this app.
+ * Mapped to the pages that need an account. Guests may still view /items and /item. When a new page
+ * needs an account (requests, messaging, reports), add its URL here. The servlet must also check the
+ * user and role itself, because this filter only covers the URLs listed.
  */
+@WebFilter({"/post/new"})
 public class LoginRequiredFilter implements Filter {
 
     @Override

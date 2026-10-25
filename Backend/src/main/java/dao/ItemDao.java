@@ -2,15 +2,18 @@ package dao;
 
 import config.DatabaseConfig;
 import dto.CatalogQuery;
+import dto.NewPost;
 import model.Category;
 import model.ItemDetail;
 import model.ItemLocation;
 import model.ItemSummary;
+import model.MapItem;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +42,9 @@ public class ItemDao {
             " WHERE i.status <> ?"
             + " AND NOT EXISTS (SELECT * FROM RedditItem r"
             + " WHERE r.item_id = i.item_id AND r.approval_status <> ?)";
+
+    /** The map shows at most this many of the newest located items, so the page stays bounded. */
+    static final int MAX_MAP_ITEMS = 500;
 
     private static final String SEARCH_FILTER = " AND (i.title LIKE ? OR i.description LIKE ?)";
     private static final String CATEGORY_FILTER = " AND i.category_id = ?";
@@ -206,6 +212,115 @@ public class ItemDao {
             return categories;
         } catch (SQLException | IllegalStateException e) {
             throw new DataAccessException("ItemDao.findAllCategories failed", e);
+        }
+    }
+
+    /**
+     * Saves a new post: one Item row, one Location row, and one ItemImage row per photo, all in a single
+     * transaction, so a failure part-way leaves nothing behind. The status and created_at columns use
+     * their table defaults (ACTIVE and the current time).
+     *
+     * @return the new item_id
+     * @throws DataAccessException if any insert fails (everything is rolled back)
+     */
+    public int createItem(NewPost post) {
+        String itemSql = "INSERT INTO Item (user_id, category_id, title, description, type)"
+                + " VALUES (?, ?, ?, ?, ?)";
+        String locationSql = "INSERT INTO Location (item_id, longitude, latitude, location_name)"
+                + " VALUES (?, ?, ?, ?)";
+        String imageSql = "INSERT INTO ItemImage (item_id, image_url, display_order) VALUES (?, ?, ?)";
+
+        try (Connection connection = DatabaseConfig.getConnection()) {
+            connection.setAutoCommit(false);
+            try {
+                int itemId;
+                try (PreparedStatement statement =
+                             connection.prepareStatement(itemSql, Statement.RETURN_GENERATED_KEYS)) {
+                    statement.setInt(1, post.userId());
+                    statement.setInt(2, post.categoryId());
+                    statement.setString(3, post.title());
+                    statement.setString(4, post.description());
+                    statement.setString(5, post.type());
+                    statement.executeUpdate();
+                    try (ResultSet keys = statement.getGeneratedKeys()) {
+                        if (!keys.next()) {
+                            throw new SQLException("Insert into Item returned no generated item_id");
+                        }
+                        itemId = keys.getInt(1);
+                    }
+                }
+
+                try (PreparedStatement statement = connection.prepareStatement(locationSql)) {
+                    statement.setInt(1, itemId);
+                    statement.setDouble(2, post.longitude());
+                    statement.setDouble(3, post.latitude());
+                    if (post.locationName() == null) {
+                        statement.setNull(4, java.sql.Types.VARCHAR);
+                    } else {
+                        statement.setString(4, post.locationName());
+                    }
+                    statement.executeUpdate();
+                }
+
+                try (PreparedStatement statement = connection.prepareStatement(imageSql)) {
+                    int displayOrder = 1;
+                    for (String imageUrl : post.imageUrls()) {
+                        statement.setInt(1, itemId);
+                        statement.setString(2, imageUrl);
+                        statement.setInt(3, displayOrder++);
+                        statement.executeUpdate();
+                    }
+                }
+
+                connection.commit();
+                return itemId;
+            } catch (SQLException | RuntimeException e) {
+                connection.rollback();
+                throw e;
+            }
+        } catch (SQLException | IllegalStateException e) {
+            throw new DataAccessException("ItemDao.createItem failed", e);
+        }
+    }
+
+    /**
+     * Returns the newest publicly visible items that have a location, for the campus map (at most
+     * MAX_MAP_ITEMS). Items without a location are left out. Coordinates are rounded by ItemLocation, so
+     * precise values never leave the DAO. The row cap is set on the statement because LIMIT is not on the
+     * approved SQL list.
+     */
+    public List<MapItem> findMapItems() {
+        String sql = "SELECT i.item_id, i.title, i.type, c.category_name,"
+                + " l.location_name, l.latitude, l.longitude"
+                + " FROM Item i"
+                + " JOIN Category c ON c.category_id = i.category_id"
+                + " JOIN Location l ON l.item_id = i.item_id"
+                + PUBLIC_ONLY
+                + " ORDER BY i.created_at DESC, i.item_id DESC";
+
+        try (Connection connection = DatabaseConfig.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, STATUS_REMOVED);
+            statement.setString(2, APPROVAL_APPROVED);
+            statement.setMaxRows(MAX_MAP_ITEMS);
+
+            List<MapItem> items = new ArrayList<>();
+            try (ResultSet rows = statement.executeQuery()) {
+                while (rows.next()) {
+                    items.add(new MapItem(
+                            rows.getInt("item_id"),
+                            rows.getString("title"),
+                            rows.getString("type"),
+                            rows.getString("category_name"),
+                            new ItemLocation(
+                                    rows.getString("location_name"),
+                                    rows.getDouble("latitude"),
+                                    rows.getDouble("longitude"))));
+                }
+            }
+            return items;
+        } catch (SQLException | IllegalStateException e) {
+            throw new DataAccessException("ItemDao.findMapItems failed", e);
         }
     }
 

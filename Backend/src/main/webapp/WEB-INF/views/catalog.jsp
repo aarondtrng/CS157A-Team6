@@ -15,7 +15,10 @@
 <body>
   <header class="topbar">
     <div class="container topbar-inner">
-      <a class="brand" href="<c:out value='${initParam.frontendUrl}'/>">SpartanFinds</a>
+      <a class="brand" href="<c:out value='${initParam.frontendUrl}'/>">
+        <img class="brand-logo" src="${pageContext.request.contextPath}/images/sjsuLogo.svg" alt="SJSU Spartan logo" />
+        SpartanFinds
+      </a>
       <%-- TODO: nav links and profile link once those pages exist. --%>
       <%@ include file="/WEB-INF/views/fragments/topbar-auth.jspf" %>
     </div>
@@ -24,6 +27,9 @@
   <main class="container">
     <h1>Browse Items</h1>
     <p class="subtitle">Search lost and found items reported around campus.</p>
+    <c:if test="${not empty sessionScope.userId}">
+      <p class="post-action"><a class="btn" href="${pageContext.request.contextPath}/post/new">Post an item</a></p>
+    </c:if>
 
     <form class="filters" method="get" action="${pageContext.request.contextPath}/items">
       <div class="field field-search">
@@ -87,7 +93,14 @@
                 <div class="card-image">
                   <c:choose>
                     <c:when test="${not empty item.thumbnailUrl}">
-                      <img src="<c:out value='${item.thumbnailUrl}'/>" alt="<c:out value='${item.title}'/>" loading="lazy" />
+                      <%-- Photos uploaded through the app are stored as "uploads/<name>" and need the context path. --%>
+                      <c:choose>
+                        <c:when test="${item.thumbnailUrl.startsWith('uploads/')}">
+                          <c:set var="thumbSrc" value="${pageContext.request.contextPath}/${item.thumbnailUrl}"/>
+                        </c:when>
+                        <c:otherwise><c:set var="thumbSrc" value="${item.thumbnailUrl}"/></c:otherwise>
+                      </c:choose>
+                      <img src="<c:out value='${thumbSrc}'/>" alt="<c:out value='${item.title}'/>" loading="lazy" />
                     </c:when>
                     <c:otherwise>
                       <span class="no-image">No image</span>

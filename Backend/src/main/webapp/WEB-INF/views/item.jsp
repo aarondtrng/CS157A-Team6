@@ -16,7 +16,10 @@
 <body>
   <header class="topbar">
     <div class="container topbar-inner">
-      <a class="brand" href="<c:out value='${initParam.frontendUrl}'/>">SpartanFinds</a>
+      <a class="brand" href="<c:out value='${initParam.frontendUrl}'/>">
+        <img class="brand-logo" src="${pageContext.request.contextPath}/images/sjsuLogo.svg" alt="SJSU Spartan logo" />
+        SpartanFinds
+      </a>
       <%@ include file="/WEB-INF/views/fragments/topbar-auth.jspf" %>
     </div>
   </header>
@@ -42,7 +45,11 @@
                   <c:forEach var="url" items="${post.imageUrls}" varStatus="loop">
                     <li>
                       <figure>
-                        <img src="<c:out value='${url}'/>"
+                        <c:choose>
+                          <c:when test="${url.startsWith('uploads/')}"><c:set var="photoSrc" value="${pageContext.request.contextPath}/${url}"/></c:when>
+                          <c:otherwise><c:set var="photoSrc" value="${url}"/></c:otherwise>
+                        </c:choose>
+                        <img src="<c:out value='${photoSrc}'/>"
                              alt="<c:out value='${post.title}'/>, photo ${loop.count} of ${post.imageUrls.size()}" />
                         <c:if test="${post.imageUrls.size() > 1}">
                           <figcaption>Photo ${loop.count} of ${post.imageUrls.size()}</figcaption>

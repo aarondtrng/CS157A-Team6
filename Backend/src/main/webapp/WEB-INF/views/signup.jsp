@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<%-- Rendering only: SignupServlet supplies next, and after a failed POST name, email, errors, or notImplemented. --%>
+<%-- Rendering only: SignupServlet supplies next, and after a failed POST firstName, lastName, email, errors, or notImplemented. --%>
 <!doctype html>
 <html lang="en">
 <head>
@@ -16,7 +16,10 @@
 <body>
   <header class="topbar">
     <div class="container topbar-inner">
-      <a class="brand" href="${pageContext.request.contextPath}/items">SpartanFinds</a>
+      <a class="brand" href="<c:out value='${initParam.frontendUrl}'/>">
+        <img class="brand-logo" src="${pageContext.request.contextPath}/images/sjsuLogo.svg" alt="SJSU Spartan logo" />
+        SpartanFinds
+      </a>
     </div>
   </header>
 
@@ -55,10 +58,17 @@
                  pattern=".+@sjsu\.edu" title="Must end in @sjsu.edu"
                  placeholder="first.last@sjsu.edu" value="<c:out value='${email}'/>" />
         </div>
-        <div class="field">
-          <label for="name">Name</label>
-          <input id="name" name="name" type="text" required maxlength="100" autocomplete="name"
-                 value="<c:out value='${name}'/>" />
+        <div class="field-row">
+          <div class="field">
+            <label for="firstName">First name</label>
+            <input id="firstName" name="firstName" type="text" required maxlength="49" autocomplete="given-name"
+                   value="<c:out value='${firstName}'/>" />
+          </div>
+          <div class="field">
+            <label for="lastName">Last name</label>
+            <input id="lastName" name="lastName" type="text" required maxlength="49" autocomplete="family-name"
+                   value="<c:out value='${lastName}'/>" />
+          </div>
         </div>
         <div class="field">
           <label for="password">Password</label>

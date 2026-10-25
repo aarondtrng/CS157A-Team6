@@ -16,7 +16,10 @@
 <body>
   <header class="topbar">
     <div class="container topbar-inner">
-      <a class="brand" href="${pageContext.request.contextPath}/items">SpartanFinds</a>
+      <a class="brand" href="<c:out value='${initParam.frontendUrl}'/>">
+        <img class="brand-logo" src="${pageContext.request.contextPath}/images/sjsuLogo.svg" alt="SJSU Spartan logo" />
+        SpartanFinds
+      </a>
     </div>
   </header>
 

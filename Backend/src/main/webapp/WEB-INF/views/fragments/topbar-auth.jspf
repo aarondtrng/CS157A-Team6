@@ -1,6 +1,10 @@
-<%-- Log in / sign up links for guests, name and log out for logged-in users. Included inside .topbar-inner;
-     the including page must declare the "c" taglib. --%>
+<%-- Campus map link, then log in / sign up links for guests or name and log out for logged-in users.
+     Included inside .topbar-inner; the including page must declare the "c" taglib. A page that is itself
+     the campus map sets <c:set var="hideMapLink" value="true"/> before the include to leave the link out. --%>
 <nav class="topbar-auth" aria-label="Account">
+  <c:if test="${not hideMapLink}">
+    <a class="topbar-link" href="${pageContext.request.contextPath}/map">Campus Map</a>
+  </c:if>
   <c:choose>
     <c:when test="${not empty sessionScope.userId}">
       <span class="topbar-user"><c:out value="${sessionScope.userName}"/></span>

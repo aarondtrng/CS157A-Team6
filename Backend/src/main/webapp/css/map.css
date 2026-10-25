@@ -1,0 +1,65 @@
+/* Campus map page. Colors and sizes come from the variables in catalog.css. */
+.map {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.map-large {
+  height: 520px;
+  margin: 16px 0 32px;
+}
+
+.map-list-heading {
+  margin: 0 0 12px;
+}
+
+.map-list {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 48px;
+  padding: 0;
+  list-style: none;
+}
+
+.map-list li {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  padding: 12px 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.map-item-link {
+  color: var(--blue);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.map-item-link:hover {
+  text-decoration: underline;
+}
+
+.map-item-meta {
+  color: var(--text);
+  font-size: 0.875rem;
+}
+
+.badge-inline {
+  padding: 2px 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 999px;
+}
+
+.badge-lost {
+  color: #8a2c0d;
+  background: #fde8df;
+}
+
+.badge-found {
+  color: #0b5d2a;
+  background: #def5e6;
+}

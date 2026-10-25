@@ -1,11 +1,10 @@
 import sjsuLogo from '../assets/sjsuLogo.svg'
-import { CATALOG_URL, LOGIN_URL, SIGNUP_URL } from '../config.js'
+import { CATALOG_URL, LOGIN_URL, MAP_URL, SIGNUP_URL } from '../config.js'
 import styles from './NavBar.module.css'
 
 const navLinks = [
-  { label: 'Home', href: '#' },
   { label: 'Browse Items', href: CATALOG_URL },
-  { label: 'Campus Map', href: '#' },
+  { label: 'Campus Map', href: MAP_URL },
 ]
 
 function NavBar() {

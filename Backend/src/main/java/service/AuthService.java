@@ -21,7 +21,8 @@ import java.util.Optional;
 public class AuthService {
     static final String SJSU_DOMAIN = "@sjsu.edu";
     static final int MAX_EMAIL_LENGTH = 255;
-    static final int MAX_NAME_LENGTH = 100;
+    // The User.name column holds "First Last" in 100 characters, so each part is capped at 49.
+    static final int MAX_NAME_PART_LENGTH = 49;
     // Output of js/auth.js: 256-bit PBKDF2 result as lower-case hex.
     static final String CLIENT_HASH_PATTERN = "[0-9a-f]{64}";
 
@@ -40,23 +41,25 @@ public class AuthService {
         return email == null ? "" : email.strip().toLowerCase(Locale.ROOT);
     }
 
-    /** Trims a display name; empty string when null. */
-    public String normalizeName(String name) {
-        return name == null ? "" : name.strip();
+    /** Trims a first or last name and collapses runs of spaces to one; empty string when null. */
+    public String normalizeNamePart(String name) {
+        return name == null ? "" : name.strip().replaceAll("\\s+", " ");
+    }
+
+    /** The name stored in User.name and shown on the site: "First Last". */
+    public String fullName(String firstName, String lastName) {
+        return firstName + " " + lastName;
     }
 
     /**
-     * Checks sign-up input. Expects values already passed through normalizeName / normalizeEmail.
+     * Checks sign-up input. Expects values already passed through normalizeNamePart / normalizeEmail.
      *
      * @return user-facing error messages; empty when the input is valid
      */
-    public List<String> validateSignup(String name, String email, String clientHash) {
+    public List<String> validateSignup(String firstName, String lastName, String email, String clientHash) {
         List<String> errors = new ArrayList<>();
-        if (name.isEmpty()) {
-            errors.add("Enter your name.");
-        } else if (name.length() > MAX_NAME_LENGTH) {
-            errors.add("Name must be at most " + MAX_NAME_LENGTH + " characters.");
-        }
+        checkNamePart(errors, firstName, "first");
+        checkNamePart(errors, lastName, "last");
         if (!isSjsuEmail(email)) {
             errors.add("Use your SJSU email address (ending in " + SJSU_DOMAIN + ").");
         }
@@ -72,8 +75,9 @@ public class AuthService {
      * @return the new user_id, or Optional.empty() when the email is already registered
      * @throws UnsupportedOperationException until the UserDao SQL is implemented
      */
-    public Optional<Integer> signUp(String name, String email, String clientHash) throws SQLException {
-        return userDao.insertStudent(name, email, PasswordHasher.hash(clientHash.toCharArray()));
+    public Optional<Integer> signUp(String firstName, String lastName, String email, String clientHash)
+            throws SQLException {
+        return userDao.insertStudent(fullName(firstName, lastName), email, PasswordHasher.hash(clientHash.toCharArray()));
     }
 
     /**
@@ -93,6 +97,14 @@ public class AuthService {
             return Optional.empty();
         }
         return PasswordHasher.verify(clientHash.toCharArray(), user.get().getPasswordHash()) ? user : Optional.empty();
+    }
+
+    private static void checkNamePart(List<String> errors, String value, String label) {
+        if (value.isEmpty()) {
+            errors.add("Enter your " + label + " name.");
+        } else if (value.length() > MAX_NAME_PART_LENGTH) {
+            errors.add("Your " + label + " name must be at most " + MAX_NAME_PART_LENGTH + " characters.");
+        }
     }
 
     boolean isClientHash(String value) {

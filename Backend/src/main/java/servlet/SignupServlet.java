@@ -47,13 +47,15 @@ public class SignupServlet extends HttpServlet {
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String next = AuthUtil.safeNext(request.getParameter("next"));
-        String name = authService.normalizeName(request.getParameter("name"));
+        String firstName = authService.normalizeNamePart(request.getParameter("firstName"));
+        String lastName = authService.normalizeNamePart(request.getParameter("lastName"));
         String email = authService.normalizeEmail(request.getParameter("email"));
         // Already hashed in the browser by js/auth.js; never the typed password.
         String clientHash = request.getParameter("password");
 
         request.setAttribute("next", next);
-        request.setAttribute("name", name);
+        request.setAttribute("firstName", firstName);
+        request.setAttribute("lastName", lastName);
         request.setAttribute("email", email);
 
         if (!CsrfUtil.isValid(request)) {
@@ -66,7 +68,7 @@ public class SignupServlet extends HttpServlet {
         }
         request.setAttribute("csrfToken", CsrfUtil.token(request));
 
-        List<String> errors = authService.validateSignup(name, email, clientHash);
+        List<String> errors = authService.validateSignup(firstName, lastName, email, clientHash);
         if (!errors.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             request.setAttribute("errors", errors);
@@ -75,9 +77,9 @@ public class SignupServlet extends HttpServlet {
         }
 
         try {
-            Optional<Integer> userId = authService.signUp(name, email, clientHash);
+            Optional<Integer> userId = authService.signUp(firstName, lastName, email, clientHash);
             if (userId.isPresent()) {
-                AuthUtil.logIn(request, new User(userId.get(), name, email, null, User.ROLE_STUDENT));
+                AuthUtil.logIn(request, new User(userId.get(), authService.fullName(firstName, lastName), email, null, User.ROLE_STUDENT));
                 // TODO: redirect to the profile edit page once it exists (design: sign up leads there).
                 response.sendRedirect(request.getContextPath() + next);
                 return;

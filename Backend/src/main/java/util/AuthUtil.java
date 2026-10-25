@@ -27,6 +27,20 @@ public final class AuthUtil {
         return session != null && session.getAttribute(SESSION_USER_ID) != null;
     }
 
+    /** The logged-in user's id, or null for a guest. */
+    public static Integer currentUserId(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        Object id = session == null ? null : session.getAttribute(SESSION_USER_ID);
+        return id instanceof Integer ? (Integer) id : null;
+    }
+
+    /** The logged-in user's role (see model.User), or null for a guest. */
+    public static String currentRole(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        Object role = session == null ? null : session.getAttribute(SESSION_USER_ROLE);
+        return role instanceof String ? (String) role : null;
+    }
+
     /** Marks the request's session as logged in as this user, under a fresh session id. */
     public static void logIn(HttpServletRequest request, User user) {
         HttpSession session = request.getSession(true);

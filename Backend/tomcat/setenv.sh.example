@@ -16,3 +16,7 @@
 export SPARTANFINDS_DB_URL="jdbc:mysql://localhost:3306/your_database_name"
 export SPARTANFINDS_DB_USER="your_app_user"
 export SPARTANFINDS_DB_PASSWORD="your_app_user_password"
+
+# Optional: folder for uploaded item photos. Default: "spartanfinds-uploads" in the home folder of the
+# user running Tomcat. Keep it outside the repo and outside the WAR so redeploys never delete photos.
+# export SPARTANFINDS_UPLOAD_DIR="/path/to/spartanfinds-uploads"
