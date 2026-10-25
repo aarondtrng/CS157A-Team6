@@ -42,6 +42,7 @@
       <form class="auth-form" method="post" action="${pageContext.request.contextPath}/login" data-hash-password>
         <input type="hidden" name="next" value="<c:out value='${next}'/>" />
         <input type="hidden" name="password" />
+        <input type="hidden" name="csrfToken" value="<c:out value='${csrfToken}'/>" />
         <div class="field">
           <label for="email">SJSU email</label>
           <input id="email" name="email" type="email" required maxlength="255" autocomplete="username"

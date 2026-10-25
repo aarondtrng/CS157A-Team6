@@ -22,7 +22,7 @@ public class UserDao {
 
     private static final String FIND_BY_EMAIL_SQL = "SELECT user_id, name, email, password_hash, role FROM User WHERE email = ?";
 
-    private static final String INSERT_STUDENT_SQL = "INSERT INTO User (name, email, password_hash, role) VALUES (?, ?, ?, 'student')";
+    private static final String INSERT_STUDENT_SQL = "INSERT INTO User (name, email, password_hash, role) VALUES (?, ?, ?, ?)";
 
     /**
      * Returns the account with this email.
@@ -63,6 +63,7 @@ public class UserDao {
             statement.setString(1, name);
             statement.setString(2, email);
             statement.setString(3, passwordHash);
+            statement.setString(4, User.ROLE_STUDENT);
             statement.executeUpdate();
             try (ResultSet keys = statement.getGeneratedKeys()) {
                 if (!keys.next()) {

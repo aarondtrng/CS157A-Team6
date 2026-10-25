@@ -34,6 +34,7 @@ public final class AuthUtil {
         session.setAttribute(SESSION_USER_ID, user.getUserId());
         session.setAttribute(SESSION_USER_NAME, user.getName());
         session.setAttribute(SESSION_USER_ROLE, user.getRole());
+        CsrfUtil.rotate(session);
     }
 
     /** Ends the session, if any. */

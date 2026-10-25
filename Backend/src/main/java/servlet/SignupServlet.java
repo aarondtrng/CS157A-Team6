@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import model.User;
 import service.AuthService;
 import util.AuthUtil;
+import util.CsrfUtil;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -37,6 +38,7 @@ public class SignupServlet extends HttpServlet {
             return;
         }
         request.setAttribute("next", next);
+        request.setAttribute("csrfToken", CsrfUtil.token(request));
         request.getRequestDispatcher(VIEW).forward(request, response);
     }
 
@@ -53,6 +55,16 @@ public class SignupServlet extends HttpServlet {
         request.setAttribute("next", next);
         request.setAttribute("name", name);
         request.setAttribute("email", email);
+
+        if (!CsrfUtil.isValid(request)) {
+            // Missing or wrong token: the form was stale (session expired) or came from another site.
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            request.setAttribute("errors", List.of("Your session expired. Please try again."));
+            request.setAttribute("csrfToken", CsrfUtil.token(request));
+            request.getRequestDispatcher(VIEW).forward(request, response);
+            return;
+        }
+        request.setAttribute("csrfToken", CsrfUtil.token(request));
 
         List<String> errors = authService.validateSignup(name, email, clientHash);
         if (!errors.isEmpty()) {

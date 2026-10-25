@@ -5,6 +5,7 @@
     <c:when test="${not empty sessionScope.userId}">
       <span class="topbar-user"><c:out value="${sessionScope.userName}"/></span>
       <form method="post" action="${pageContext.request.contextPath}/logout">
+        <input type="hidden" name="csrfToken" value="<c:out value='${sessionScope.csrfToken}'/>" />
         <button type="submit" class="btn btn-outline btn-small">Log out</button>
       </form>
     </c:when>

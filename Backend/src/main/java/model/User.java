@@ -5,8 +5,9 @@ package model;
  * verify a login; never put this object in a request or session attribute.
  */
 public class User {
-    public static final String ROLE_STUDENT = "student";
-    public static final String ROLE_ADMINISTRATOR = "administrator";
+    // Upper case, matching the User.role column default ('STUDENT') in db/schema.sql.
+    public static final String ROLE_STUDENT = "STUDENT";
+    public static final String ROLE_ADMINISTRATOR = "ADMINISTRATOR";
 
     private final int userId;
     private final String name;
@@ -38,7 +39,7 @@ public class User {
         return passwordHash;
     }
 
-    /** student or administrator (guests have no row). */
+    /** STUDENT or ADMINISTRATOR (guests have no row). */
     public String getRole() {
         return role;
     }
