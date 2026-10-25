@@ -2,3 +2,5 @@
 const backendUrl = import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:8080/spartanfinds'
 
 export const CATALOG_URL = `${backendUrl}/items`
+export const LOGIN_URL = `${backendUrl}/login`
+export const SIGNUP_URL = `${backendUrl}/signup`

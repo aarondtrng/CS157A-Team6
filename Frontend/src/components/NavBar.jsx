@@ -1,5 +1,5 @@
 import sjsuLogo from '../assets/sjsuLogo.svg'
-import { CATALOG_URL } from '../config.js'
+import { CATALOG_URL, LOGIN_URL, SIGNUP_URL } from '../config.js'
 import styles from './NavBar.module.css'
 
 const navLinks = [
@@ -30,12 +30,12 @@ function NavBar() {
         </nav>
 
         <div className={styles.actions}>
-          <button type="button" className={`btn btn-outline ${styles.navBtn}`}>
+          <a href={LOGIN_URL} className={`btn btn-outline ${styles.navBtn}`}>
             Login
-          </button>
-          <button type="button" className={`btn btn-gold ${styles.navBtn}`}>
+          </a>
+          <a href={SIGNUP_URL} className={`btn btn-gold ${styles.navBtn}`}>
             Sign Up
-          </button>
+          </a>
         </div>
       </div>
     </header>
