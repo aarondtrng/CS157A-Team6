@@ -4,4 +4,10 @@
          xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
          version="6.0">
   <display-name>SpartanFinds</display-name>
+
+  <!-- Where the landing page lives (the Vite dev server for now). The logo links here. -->
+  <context-param>
+    <param-name>frontendUrl</param-name>
+    <param-value>http://localhost:5173/</param-value>
+  </context-param>
 </web-app>

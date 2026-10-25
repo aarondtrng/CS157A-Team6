@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<%-- Rendering only: ItemPostServlet supplies post (or notImplemented). Guests never reach this page. --%>
+<%-- Rendering only: ItemPostServlet supplies post (or notImplemented) and loggedIn. Guests can view this page but see no actions. --%>
 <!doctype html>
 <html lang="en">
 <head>
@@ -16,7 +16,7 @@
 <body>
   <header class="topbar">
     <div class="container topbar-inner">
-      <a class="brand" href="${pageContext.request.contextPath}/items">SpartanFinds</a>
+      <a class="brand" href="<c:out value='${initParam.frontendUrl}'/>">SpartanFinds</a>
     </div>
   </header>
 
@@ -108,11 +108,19 @@
               </c:choose>
             </section>
 
-            <%-- TODO: wire to the report form once reporting exists. Disabled until then. --%>
-            <button type="button" class="btn btn-outline btn-block" disabled aria-disabled="true"
-                    title="Reporting is coming soon">
-              Report this post
-            </button>
+            <c:choose>
+              <c:when test="${loggedIn}">
+                <%-- TODO: wire to the report form once reporting exists. Disabled until then. --%>
+                <button type="button" class="btn btn-outline btn-block" disabled aria-disabled="true"
+                        title="Reporting is coming soon">
+                  Report this post
+                </button>
+              </c:when>
+              <c:otherwise>
+                <%-- TODO: link "Log in" once the login page exists. --%>
+                <p class="guest-note">Log in to message the poster, request this item, or report this post.</p>
+              </c:otherwise>
+            </c:choose>
           </aside>
         </article>
       </c:otherwise>

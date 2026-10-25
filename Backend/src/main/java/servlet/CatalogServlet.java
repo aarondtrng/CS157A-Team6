@@ -1,11 +1,10 @@
 package servlet;
 
+import dao.DataAccessException;
 import dao.ItemDao;
-import demo.MockItemDao;
 import dto.CatalogQuery;
 import dto.CatalogSort;
 import service.CatalogService;
-import util.LocalRequests;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -13,23 +12,20 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** Public item catalog. Search, filter, sort, and paging are GET query parameters; the page is rendered by JSP. */
 @WebServlet("/items")
 public class CatalogServlet extends HttpServlet {
+    private static final Logger LOG = Logger.getLogger(CatalogServlet.class.getName());
     private static final String VIEW = "/WEB-INF/views/catalog.jsp";
 
     private final CatalogService catalogService = new CatalogService(new ItemDao());
-    // DEMO ONLY: serves fake in-memory items when /items?demo=1 is requested from the local machine.
-    private final CatalogService demoCatalogService = new CatalogService(new MockItemDao());
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        boolean demo = "1".equals(request.getParameter("demo")) && LocalRequests.isLocal(request);
-        CatalogService catalogService = demo ? demoCatalogService : this.catalogService;
-        request.setAttribute("demoMode", demo);
-
         CatalogQuery query = catalogService.buildQuery(
                 request.getParameter("q"),
                 request.getParameter("category"),
@@ -42,6 +38,11 @@ public class CatalogServlet extends HttpServlet {
         try {
             request.setAttribute("categories", catalogService.getCategories());
             request.setAttribute("catalogPage", catalogService.getCatalogPage(query));
+        } catch (DataAccessException e) {
+            // Log the cause server-side; users get a generic error, never database details.
+            LOG.log(Level.SEVERE, "Catalog could not be loaded", e);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return;
         } catch (UnsupportedOperationException e) {
             // DAO SQL has not been written yet: say so instead of showing an empty or fake catalog.
             response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
