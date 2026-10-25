@@ -1,15 +1,60 @@
-# Repo-wide ignores. Subprojects (e.g. Frontend/) keep their own .gitignore.
+# Repo-wide ignores for the whole project (Backend/ and Frontend/ have no .gitignore of their own).
 
 # Environment / secrets
 .env
 .env.*
 !.env.example
 
+# Dependencies and build output
+node_modules
+dist
+dist-ssr
+*.local
+
+# Backend (Java / Maven / Tomcat)
+Backend/target/
+*.class
+*.war
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+dependency-reduced-pom.xml
+pom.xml.versionsBackup
+hs_err_pid*
+Backend/out/
+Backend/bin/
+Backend/work/
+
+# Backend IDE files (Eclipse / IntelliJ / NetBeans)
+.classpath
+.project
+.settings/
+*.iml
+*.ipr
+*.iws
+nbproject/
+
+# Tomcat: a filled-in setenv.sh holds the DB password; only Backend/tomcat/setenv.sh.example is committed
+setenv.sh
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
 .idea/
 *.swp
+*.sw?
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
 
 # OS files
 .DS_Store

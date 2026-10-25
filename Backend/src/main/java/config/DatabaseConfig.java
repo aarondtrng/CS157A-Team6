@@ -9,7 +9,7 @@ import java.sql.SQLException;
  *
  * Credentials are never stored in the repository. Each setting is read from an environment variable
  * or, if that is unset, a JVM system property of the same name (for example -DSPARTANFINDS_DB_URL=...
- * in Tomcat's bin/setenv script):
+ * in Tomcat's bin/setenv script; see Backend/tomcat/setenv.sh.example):
  *
  *   SPARTANFINDS_DB_URL       JDBC URL, e.g. jdbc:mysql://localhost:3306/your_database_name
  *   SPARTANFINDS_DB_USER      database user
@@ -22,6 +22,17 @@ public final class DatabaseConfig {
     static final String URL_KEY = "SPARTANFINDS_DB_URL";
     static final String USER_KEY = "SPARTANFINDS_DB_USER";
     static final String PASSWORD_KEY = "SPARTANFINDS_DB_PASSWORD";
+
+    // The driver jar is bundled in the WAR (WEB-INF/lib). DriverManager's automatic driver discovery
+    // can miss drivers loaded by a Tomcat webapp class loader ("No suitable driver found"), so load it
+    // explicitly once.
+    static {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new ExceptionInInitializerError("MySQL JDBC driver (mysql-connector-j) is missing from the WAR");
+        }
+    }
 
     private DatabaseConfig() {
     }

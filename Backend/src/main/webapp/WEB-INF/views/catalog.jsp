@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<%-- Rendering only: CatalogServlet supplies query, sortOptions, categories, catalogPage, notImplemented. --%>
+<%-- Rendering only: CatalogServlet supplies query, sortOptions, categories, catalogPage, notImplemented, demoMode. --%>
 <!doctype html>
 <html lang="en">
 <head>
@@ -21,10 +21,17 @@
   </header>
 
   <main class="container">
+    <c:if test="${demoMode}">
+      <div class="notice" role="status">
+        <strong>Demo data.</strong> These items are fake and are not stored in the database.
+        (Development-only view: <code>?demo=1</code>, local machine only.)
+      </div>
+    </c:if>
     <h1>Browse Items</h1>
     <p class="subtitle">Search lost and found items reported around campus.</p>
 
     <form class="filters" method="get" action="${pageContext.request.contextPath}/items">
+      <c:if test="${demoMode}"><input type="hidden" name="demo" value="1" /></c:if>
       <div class="field field-search">
         <label for="q">Search</label>
         <input id="q" name="q" type="search" maxlength="100" placeholder="Title or description"
@@ -114,6 +121,7 @@
               <c:param name="q" value="${query.searchText}"/>
               <c:param name="category" value="${query.categoryId}"/>
               <c:param name="sort" value="${query.sort.param}"/>
+              <c:if test="${demoMode}"><c:param name="demo" value="1"/></c:if>
               <c:param name="page" value="${catalogPage.page - 1}"/>
             </c:url>
             <a class="btn btn-outline" href="${prevUrl}">Previous</a>
@@ -124,6 +132,7 @@
               <c:param name="q" value="${query.searchText}"/>
               <c:param name="category" value="${query.categoryId}"/>
               <c:param name="sort" value="${query.sort.param}"/>
+              <c:if test="${demoMode}"><c:param name="demo" value="1"/></c:if>
               <c:param name="page" value="${catalogPage.page + 1}"/>
             </c:url>
             <a class="btn btn-outline" href="${nextUrl}">Next</a>

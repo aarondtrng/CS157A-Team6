@@ -1,9 +1,11 @@
 package servlet;
 
 import dao.ItemDao;
+import demo.MockItemDao;
 import dto.CatalogQuery;
 import dto.CatalogSort;
 import service.CatalogService;
+import util.LocalRequests;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -18,10 +20,16 @@ public class CatalogServlet extends HttpServlet {
     private static final String VIEW = "/WEB-INF/views/catalog.jsp";
 
     private final CatalogService catalogService = new CatalogService(new ItemDao());
+    // DEMO ONLY: serves fake in-memory items when /items?demo=1 is requested from the local machine.
+    private final CatalogService demoCatalogService = new CatalogService(new MockItemDao());
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        boolean demo = "1".equals(request.getParameter("demo")) && LocalRequests.isLocal(request);
+        CatalogService catalogService = demo ? demoCatalogService : this.catalogService;
+        request.setAttribute("demoMode", demo);
+
         CatalogQuery query = catalogService.buildQuery(
                 request.getParameter("q"),
                 request.getParameter("category"),
