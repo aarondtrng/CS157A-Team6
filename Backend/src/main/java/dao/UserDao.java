@@ -1,0 +1,84 @@
+package dao;
+
+import config.DatabaseConfig;
+import model.User;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.sql.Statement;
+import java.util.Optional;
+
+/**
+ * JDBC access for accounts (login and sign up).
+ *
+ * SKELETON: the JDBC code is written, but the SQL strings below are blank. Until a string is filled in,
+ * the method that uses it throws UnsupportedOperationException (the servlets show a "not implemented"
+ * notice, same as the catalog). Every value is bound with PreparedStatement "?" placeholders.
+ */
+public class UserDao {
+
+    private static final String FIND_BY_EMAIL_SQL = "SELECT user_id, name, email, password_hash, role FROM User WHERE email = ?";
+
+    private static final String INSERT_STUDENT_SQL = "INSERT INTO User (name, email, password_hash, role) VALUES (?, ?, ?, 'student')";
+
+    /**
+     * Returns the account with this email.
+     *
+     * @return Optional.empty() when no account uses the email
+     * @throws UnsupportedOperationException until FIND_BY_EMAIL_SQL is written
+     */
+    public Optional<User> findByEmail(String email) throws SQLException {
+        requireSql(FIND_BY_EMAIL_SQL, "findByEmail");
+        try (Connection connection = DatabaseConfig.getConnection();
+             PreparedStatement statement = connection.prepareStatement(FIND_BY_EMAIL_SQL)) {
+            statement.setString(1, email);
+            try (ResultSet rs = statement.executeQuery()) {
+                if (!rs.next()) {
+                    return Optional.empty();
+                }
+                return Optional.of(new User(
+                        rs.getInt("user_id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("password_hash"),
+                        rs.getString("role")));
+            }
+        }
+    }
+
+    /**
+     * Creates a student account.
+     *
+     * @return the new user_id, or Optional.empty() when the email is already taken
+     * @throws UnsupportedOperationException until INSERT_STUDENT_SQL is written
+     */
+    public Optional<Integer> insertStudent(String name, String email, String passwordHash) throws SQLException {
+        requireSql(INSERT_STUDENT_SQL, "insertStudent");
+        try (Connection connection = DatabaseConfig.getConnection();
+             PreparedStatement statement = connection.prepareStatement(
+                     INSERT_STUDENT_SQL, Statement.RETURN_GENERATED_KEYS)) {
+            statement.setString(1, name);
+            statement.setString(2, email);
+            statement.setString(3, passwordHash);
+            statement.executeUpdate();
+            try (ResultSet keys = statement.getGeneratedKeys()) {
+                if (!keys.next()) {
+                    throw new SQLException("Insert into User returned no generated user_id");
+                }
+                return Optional.of(keys.getInt(1));
+            }
+        } catch (SQLIntegrityConstraintViolationException e) {
+            // UNIQUE(email) rejected the row: the email is already registered.
+            return Optional.empty();
+        }
+    }
+
+    private static void requireSql(String sql, String method) {
+        if (sql.isBlank()) {
+            throw new UnsupportedOperationException("UserDao." + method + ": SQL not implemented yet");
+        }
+    }
+}

@@ -17,6 +17,7 @@
   <header class="topbar">
     <div class="container topbar-inner">
       <a class="brand" href="<c:out value='${initParam.frontendUrl}'/>">SpartanFinds</a>
+      <%@ include file="/WEB-INF/views/fragments/topbar-auth.jspf" %>
     </div>
   </header>
 

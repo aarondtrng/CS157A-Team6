@@ -1,0 +1,16 @@
+<%-- Log in / sign up links for guests, name and log out for logged-in users. Included inside .topbar-inner;
+     the including page must declare the "c" taglib. --%>
+<nav class="topbar-auth" aria-label="Account">
+  <c:choose>
+    <c:when test="${not empty sessionScope.userId}">
+      <span class="topbar-user"><c:out value="${sessionScope.userName}"/></span>
+      <form method="post" action="${pageContext.request.contextPath}/logout">
+        <button type="submit" class="btn btn-outline btn-small">Log out</button>
+      </form>
+    </c:when>
+    <c:otherwise>
+      <a class="topbar-link" href="${pageContext.request.contextPath}/login">Log in</a>
+      <a class="btn btn-small" href="${pageContext.request.contextPath}/signup">Sign up</a>
+    </c:otherwise>
+  </c:choose>
+</nav>
