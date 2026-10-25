@@ -75,9 +75,12 @@
           ${catalogPage.totalCount} item${catalogPage.totalCount == 1 ? '' : 's'} found
         </p>
 
-        <%-- TODO: link each card to its full post once the post detail page exists. --%>
+        <%-- Cards link to the post page; guests are redirected to login there. --%>
         <ul class="grid">
           <c:forEach var="item" items="${catalogPage.items}">
+            <c:url var="postUrl" value="/item">
+              <c:param name="id" value="${item.itemId}"/>
+            </c:url>
             <li>
               <article class="card">
                 <div class="card-image">
@@ -94,7 +97,7 @@
                   </span>
                 </div>
                 <div class="card-body">
-                  <h2><c:out value="${item.title}"/></h2>
+                  <h2><a class="card-link" href="${postUrl}"><c:out value="${item.title}"/></a></h2>
                   <p><c:out value="${item.briefDescription}"/></p>
                   <small>
                     <c:out value="${item.categoryName}"/> &middot; <c:out value="${item.createdDateText}"/>

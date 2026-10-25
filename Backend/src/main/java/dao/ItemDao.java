@@ -2,9 +2,11 @@ package dao;
 
 import dto.CatalogQuery;
 import model.Category;
+import model.ItemDetail;
 import model.ItemSummary;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * JDBC access for the item catalog.
@@ -31,6 +33,23 @@ public class ItemDao {
      */
     public List<ItemSummary> searchPublicItems(CatalogQuery query) {
         throw new UnsupportedOperationException("ItemDao.searchPublicItems: SQL not implemented yet");
+    }
+
+    /**
+     * Returns one publicly visible item with everything the full post page needs.
+     *
+     * TODO (SQL needed): read from Item joined to Category (category name) and User (poster user_id,
+     * name, profile_image), plus all ItemImage rows for the item ordered by display_order, plus the
+     * item's Location row if one exists (Item has at most one). Never read the poster's email,
+     * phone number, or password_hash for this page.
+     * - Same visibility rule as the catalog: removed items and RedditItem rows that an administrator
+     *   has not approved must behave as if they do not exist.
+     * - Build the location with new ItemLocation(...) so coordinates are rounded before leaving the DAO.
+     * Expected result: Optional.of(detail) when found and public; Optional.empty() when no such public
+     * item exists (the caller answers 404).
+     */
+    public Optional<ItemDetail> findPublicItemById(int itemId) {
+        throw new UnsupportedOperationException("ItemDao.findPublicItemById: SQL not implemented yet");
     }
 
     /**
