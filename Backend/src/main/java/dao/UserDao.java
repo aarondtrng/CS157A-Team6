@@ -2,6 +2,7 @@ package dao;
 
 import config.DatabaseConfig;
 import model.User;
+import model.UserProfile;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -76,6 +77,35 @@ public class UserDao {
             return Optional.empty();
         }
     }
+
+    private static final String FIND_PROFILE_BY_ID_SQL = 
+        "SELECT user_id, name, email, phone_number, profile_description, profile_image, role " +
+        "FROM User WHERE user_id = ?";
+
+    public Optional<UserProfile> findProfileById(int userId) throws SQLException {
+    requireSql(FIND_PROFILE_BY_ID_SQL, "findProfileById");
+
+    try (Connection connection = DatabaseConfig.getConnection();
+         PreparedStatement statement = connection.prepareStatement(FIND_PROFILE_BY_ID_SQL)) {
+
+        statement.setInt(1, userId);
+
+        try (ResultSet rs = statement.executeQuery()) {
+            if (!rs.next()) {
+                return Optional.empty();
+            }
+
+            return Optional.of(new UserProfile(
+                    rs.getInt("user_id"),
+                    rs.getString("name"),
+                    rs.getString("email"),
+                    rs.getString("phone_number"),
+                    rs.getString("profile_description"),
+                    rs.getString("profile_image"),
+                    rs.getString("role")));
+        }
+    }
+}
 
     private static void requireSql(String sql, String method) {
         if (sql.isBlank()) {
