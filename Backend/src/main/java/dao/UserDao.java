@@ -2,6 +2,7 @@ package dao;
 
 import config.DatabaseConfig;
 import model.User;
+import model.UserProfile;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -77,6 +78,62 @@ public class UserDao {
         }
     }
 
+    private static final String FIND_PROFILE_BY_ID_SQL = 
+        "SELECT user_id, name, email, phone_number, profile_description, profile_image, role " +
+        "FROM User WHERE user_id = ?";
+    
+    private static final String UPDATE_PROFILE_SQL =
+        "UPDATE User SET name = ?, phone_number = ?, " +
+        "profile_description = ?, profile_image = ? " +
+        "WHERE user_id = ?";
+
+    public Optional<UserProfile> findProfileById(int userId) throws SQLException {
+    requireSql(FIND_PROFILE_BY_ID_SQL, "findProfileById");
+
+    try (Connection connection = DatabaseConfig.getConnection();
+         PreparedStatement statement = connection.prepareStatement(FIND_PROFILE_BY_ID_SQL)) {
+
+        statement.setInt(1, userId);
+
+        try (ResultSet rs = statement.executeQuery()) {
+            if (!rs.next()) {
+                return Optional.empty();
+            }
+
+            return Optional.of(new UserProfile(
+                    rs.getInt("user_id"),
+                    rs.getString("name"),
+                    rs.getString("email"),
+                    rs.getString("phone_number"),
+                    rs.getString("profile_description"),
+                    rs.getString("profile_image"),
+                    rs.getString("role")));
+        }
+    }
+}
+
+public boolean updateProfile(
+        int userId,
+        String name,
+        String phoneNumber,
+        String profileDescription,
+        String profileImage) throws SQLException {
+
+    requireSql(UPDATE_PROFILE_SQL, "updateProfile");
+
+    try (Connection connection = DatabaseConfig.getConnection();
+         PreparedStatement statement =
+                 connection.prepareStatement(UPDATE_PROFILE_SQL)) {
+
+        statement.setString(1, name);
+        statement.setString(2, phoneNumber);
+        statement.setString(3, profileDescription);
+        statement.setString(4, profileImage);
+        statement.setInt(5, userId);
+
+        return statement.executeUpdate() == 1;
+    }
+}
     private static void requireSql(String sql, String method) {
         if (sql.isBlank()) {
             throw new UnsupportedOperationException("UserDao." + method + ": SQL not implemented yet");
