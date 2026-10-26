@@ -169,8 +169,8 @@ public class PostService {
         return null;
     }
 
-    /** Rounds to 3 decimals (about 100 m) so a precise spot is never stored. */
+    /** Rounds to 4 decimals (about 10 m), so the saved pin stays close to where the poster clicked. */
     static double coarsen(double value) {
-        return Math.round(value * 1000.0) / 1000.0;
+        return Math.round(value * 10000.0) / 10000.0;
     }
 }

@@ -2,10 +2,11 @@ package model;
 
 /**
  * Where an item was lost or found (not the poster's position). Coordinates are rounded on
- * construction (3 decimals, about 100 m), so precise values never reach a page.
+ * construction (4 decimals, about 10 m), so values more precise than that never reach a page. Older posts
+ * saved with 3 decimals (about 100 m) simply keep their coarser values.
  */
 public class ItemLocation {
-    private static final double ROUNDING = 1000.0;
+    private static final double ROUNDING = 10000.0;
 
     private final String locationName;
     private final double latitude;

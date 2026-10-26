@@ -44,4 +44,12 @@
   if (points.length > 1) {
     map.fitBounds(points, { padding: [40, 40], maxZoom: 17 });
   }
+
+  // Leaflet measures its box once when it starts. If the page layout then shifts (a scrollbar appears,
+  // fonts load), its idea of the size goes stale and the map looks off-center. Re-measure on any change.
+  if (window.ResizeObserver) {
+    new ResizeObserver(function () {
+      map.invalidateSize();
+    }).observe(mapElement);
+  }
 })();

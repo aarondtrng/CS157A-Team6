@@ -69,14 +69,6 @@
   text-align: center;
 }
 
-.gallery-empty {
-  display: grid;
-  place-items: center;
-  min-height: 200px;
-  background: var(--bg-soft);
-  border-radius: var(--radius-sm);
-}
-
 .post-heading {
   display: flex;
   flex-direction: column;

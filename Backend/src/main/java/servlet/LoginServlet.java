@@ -66,7 +66,7 @@ public class LoginServlet extends HttpServlet {
         try {
             Optional<User> user = authService.logIn(email, clientHash);
             if (user.isPresent()) {
-                AuthUtil.logIn(request, user.get());
+                AuthUtil.logIn(request, response, user.get());
                 response.sendRedirect(request.getContextPath() + next);
                 return;
             }

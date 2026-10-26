@@ -32,8 +32,9 @@
   </header>
 
   <main class="container">
+    <a class="back-link" href="${pageContext.request.contextPath}/items">&larr; Back to all items</a>
     <h1>Campus map</h1>
-    <p class="subtitle">Where items were lost or found. Pins show an approximate area, not an exact spot.</p>
+    <p class="subtitle">Where items were lost or found. Pins are placed to within about 10 meters of where the poster marked.</p>
 
     <div id="items-map" class="map map-large" role="application"
          aria-label="Campus map with pins for lost and found items. The same items are listed below the map."></div>

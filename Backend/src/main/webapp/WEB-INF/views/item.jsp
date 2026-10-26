@@ -39,6 +39,7 @@
       <c:otherwise>
         <article class="post">
           <div class="post-main">
+            <%-- A post with no photos shows no gallery area at all, only the text below. --%>
             <c:choose>
               <c:when test="${not empty post.imageUrls}">
                 <ul class="gallery" tabindex="0" aria-label="Item photos, scroll sideways for more">
@@ -59,9 +60,6 @@
                   </c:forEach>
                 </ul>
               </c:when>
-              <c:otherwise>
-                <div class="gallery-empty">No photos were added to this post.</div>
-              </c:otherwise>
             </c:choose>
 
             <div class="post-heading">

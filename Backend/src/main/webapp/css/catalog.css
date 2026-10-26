@@ -244,14 +244,6 @@ select:focus-visible,
   display: block;
 }
 
-.no-image {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  font-size: 14px;
-}
-
 .badge {
   position: absolute;
   top: 12px;
@@ -261,6 +253,12 @@ select:focus-visible,
   font-weight: 700;
   letter-spacing: 0.04em;
   border-radius: 999px;
+}
+
+/* On a card with no photo the badge sits in the text area instead of floating over an image. */
+.badge-static {
+  position: static;
+  align-self: flex-start;
 }
 
 .badge-found {

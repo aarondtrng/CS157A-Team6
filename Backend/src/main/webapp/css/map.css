@@ -1,4 +1,16 @@
 /* Campus map page. Colors and sizes come from the variables in catalog.css. */
+.back-link {
+  display: inline-block;
+  margin-bottom: 16px;
+  color: var(--blue);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
 .map {
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);

@@ -75,7 +75,14 @@
 
 .actions {
   display: flex;
+  align-items: center;
   gap: 10px;
+}
+
+.userName {
+  font-weight: 500;
+  color: var(--text-h);
+  white-space: nowrap;
 }
 
 .navBtn {

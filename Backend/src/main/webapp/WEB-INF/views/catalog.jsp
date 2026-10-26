@@ -90,27 +90,28 @@
             </c:url>
             <li>
               <article class="card">
-                <div class="card-image">
-                  <c:choose>
-                    <c:when test="${not empty item.thumbnailUrl}">
-                      <%-- Photos uploaded through the app are stored as "uploads/<name>" and need the context path. --%>
-                      <c:choose>
-                        <c:when test="${item.thumbnailUrl.startsWith('uploads/')}">
-                          <c:set var="thumbSrc" value="${pageContext.request.contextPath}/${item.thumbnailUrl}"/>
-                        </c:when>
-                        <c:otherwise><c:set var="thumbSrc" value="${item.thumbnailUrl}"/></c:otherwise>
-                      </c:choose>
-                      <img src="<c:out value='${thumbSrc}'/>" alt="<c:out value='${item.title}'/>" loading="lazy" />
-                    </c:when>
-                    <c:otherwise>
-                      <span class="no-image">No image</span>
-                    </c:otherwise>
-                  </c:choose>
-                  <span class="badge badge-${item.type == 'FOUND' ? 'found' : 'lost'}">
-                    <c:out value="${item.type}"/>
-                  </span>
-                </div>
+                <%-- An item with no photo gets no image area at all: just the badge, title, and text. --%>
+                <c:if test="${not empty item.thumbnailUrl}">
+                  <div class="card-image">
+                    <%-- Photos uploaded through the app are stored as "uploads/<name>" and need the context path. --%>
+                    <c:choose>
+                      <c:when test="${item.thumbnailUrl.startsWith('uploads/')}">
+                        <c:set var="thumbSrc" value="${pageContext.request.contextPath}/${item.thumbnailUrl}"/>
+                      </c:when>
+                      <c:otherwise><c:set var="thumbSrc" value="${item.thumbnailUrl}"/></c:otherwise>
+                    </c:choose>
+                    <img src="<c:out value='${thumbSrc}'/>" alt="<c:out value='${item.title}'/>" loading="lazy" />
+                    <span class="badge badge-${item.type == 'FOUND' ? 'found' : 'lost'}">
+                      <c:out value="${item.type}"/>
+                    </span>
+                  </div>
+                </c:if>
                 <div class="card-body">
+                  <c:if test="${empty item.thumbnailUrl}">
+                    <span class="badge badge-static badge-${item.type == 'FOUND' ? 'found' : 'lost'}">
+                      <c:out value="${item.type}"/>
+                    </span>
+                  </c:if>
                   <h2><a class="card-link" href="${postUrl}"><c:out value="${item.title}"/></a></h2>
                   <p><c:out value="${item.briefDescription}"/></p>
                   <small>

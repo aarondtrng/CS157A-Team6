@@ -93,11 +93,10 @@
 
       <fieldset class="field">
         <legend>Where was it lost or found?</legend>
-        <p class="hint" id="map-hint">Click the map to drop a pin. Only an approximate area is shown to others.</p>
+        <p class="hint" id="map-hint">Click the map to drop a pin. Others will see it to within about 10 meters.</p>
         <noscript><p class="field-error">Choosing a location needs JavaScript. Please turn it on to post.</p></noscript>
         <div id="location-map" class="map" role="application" aria-describedby="map-hint"
-             aria-label="Campus map. Click to choose the location."
-             data-lat="<c:out value='${form.latitude}'/>" data-lng="<c:out value='${form.longitude}'/>"></div>
+             aria-label="Campus map. Click to choose the location."></div>
         <input type="hidden" id="latitude" name="latitude" value="<c:out value='${form.latitude}'/>" />
         <input type="hidden" id="longitude" name="longitude" value="<c:out value='${form.longitude}'/>" />
         <p class="map-status"><span id="location-chosen">No spot chosen yet.</span>

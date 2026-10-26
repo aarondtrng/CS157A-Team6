@@ -1,5 +1,6 @@
 import sjsuLogo from '../assets/sjsuLogo.svg'
-import { CATALOG_URL, LOGIN_URL, MAP_URL, SIGNUP_URL } from '../config.js'
+import { CATALOG_URL, LOGIN_URL, LOGOUT_URL, MAP_URL, SIGNUP_URL } from '../config.js'
+import { getLoggedInFirstName } from '../session.js'
 import styles from './NavBar.module.css'
 
 const navLinks = [
@@ -8,6 +9,8 @@ const navLinks = [
 ]
 
 function NavBar() {
+  const firstName = getLoggedInFirstName()
+
   return (
     <header className={styles.navbar}>
       <div className={`container ${styles.inner}`}>
@@ -29,12 +32,23 @@ function NavBar() {
         </nav>
 
         <div className={styles.actions}>
-          <a href={LOGIN_URL} className={`btn btn-outline ${styles.navBtn}`}>
-            Login
-          </a>
-          <a href={SIGNUP_URL} className={`btn btn-gold ${styles.navBtn}`}>
-            Sign Up
-          </a>
+          {firstName ? (
+            <>
+              <span className={styles.userName}>Hi, {firstName}</span>
+              <a href={LOGOUT_URL} className={`btn btn-outline ${styles.navBtn}`}>
+                Log out
+              </a>
+            </>
+          ) : (
+            <>
+              <a href={LOGIN_URL} className={`btn btn-outline ${styles.navBtn}`}>
+                Login
+              </a>
+              <a href={SIGNUP_URL} className={`btn btn-gold ${styles.navBtn}`}>
+                Sign Up
+              </a>
+            </>
+          )}
         </div>
       </div>
     </header>

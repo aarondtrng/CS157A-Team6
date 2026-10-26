@@ -79,7 +79,7 @@ public class SignupServlet extends HttpServlet {
         try {
             Optional<Integer> userId = authService.signUp(firstName, lastName, email, clientHash);
             if (userId.isPresent()) {
-                AuthUtil.logIn(request, new User(userId.get(), authService.fullName(firstName, lastName), email, null, User.ROLE_STUDENT));
+                AuthUtil.logIn(request, response, new User(userId.get(), authService.fullName(firstName, lastName), email, null, User.ROLE_STUDENT));
                 // TODO: redirect to the profile edit page once it exists (design: sign up leads there).
                 response.sendRedirect(request.getContextPath() + next);
                 return;
