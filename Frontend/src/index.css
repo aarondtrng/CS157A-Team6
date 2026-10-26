@@ -116,6 +116,7 @@ a {
   padding: 14px 26px;
   border-radius: 999px;
   border: 2px solid transparent;
+  text-decoration: none; /* .btn is also used on links (<a>), which would otherwise be underlined */
   cursor: pointer;
   transition:
     background-color 0.15s ease,

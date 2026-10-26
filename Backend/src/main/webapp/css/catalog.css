@@ -115,6 +115,11 @@ main.container {
   margin-bottom: 24px;
 }
 
+/* The "Post an item" button sits between the subtitle (which already leaves 24px above) and the filters. */
+.post-action {
+  margin: 0 0 24px;
+}
+
 .filters {
   display: flex;
   flex-wrap: wrap;

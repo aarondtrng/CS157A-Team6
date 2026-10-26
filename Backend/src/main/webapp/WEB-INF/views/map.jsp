@@ -11,13 +11,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" />
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/catalog.css" />
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/map.css" />
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/catalog.css?v=${assetVersion}" />
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/map.css?v=${assetVersion}" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
           integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
-  <script src="${pageContext.request.contextPath}/js/items-map.js" defer></script>
+  <script src="${pageContext.request.contextPath}/js/items-map.js?v=${assetVersion}" defer></script>
 </head>
 <body>
   <header class="topbar">
@@ -34,7 +34,7 @@
   <main class="container">
     <a class="back-link" href="${pageContext.request.contextPath}/items">&larr; Back to all items</a>
     <h1>Campus map</h1>
-    <p class="subtitle">Where items were lost or found. Pins are placed to within about 10 meters of where the poster marked.</p>
+    <p class="subtitle">Where items were lost or found. Each pin marks the spot where the poster lost or found the item.</p>
 
     <div id="items-map" class="map map-large" role="application"
          aria-label="Campus map with pins for lost and found items. The same items are listed below the map."></div>

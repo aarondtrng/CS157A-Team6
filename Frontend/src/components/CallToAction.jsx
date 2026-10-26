@@ -1,4 +1,5 @@
 import FadeIn from './FadeIn.jsx'
+import { CATALOG_URL } from '../config.js'
 import styles from './CallToAction.module.css'
 
 function CallToAction() {
@@ -10,9 +11,9 @@ function CallToAction() {
           <p className={styles.subtext}>
             Create a post in minutes and reach students across campus.
           </p>
-          <button type="button" className="btn btn-gold">
+          <a href={CATALOG_URL} className="btn btn-gold">
             Get Started
-          </button>
+          </a>
         </FadeIn>
       </div>
     </section>

@@ -2,7 +2,7 @@ package model;
 
 /**
  * One marker on the campus map: an item that has a location, with just enough to show a popup and link
- * to the full post. The location's coordinates are already rounded (see ItemLocation).
+ * to the full post. The location is exactly as the poster marked it (see ItemLocation).
  */
 public class MapItem {
     private final int itemId;

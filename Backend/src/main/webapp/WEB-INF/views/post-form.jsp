@@ -10,13 +10,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" />
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/catalog.css" />
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/post.css" />
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/catalog.css?v=${assetVersion}" />
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/post.css?v=${assetVersion}" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
           integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
-  <script src="${pageContext.request.contextPath}/js/post-map.js" defer></script>
+  <script src="${pageContext.request.contextPath}/js/post-map.js?v=${assetVersion}" defer></script>
 </head>
 <body>
   <header class="topbar">
@@ -93,7 +93,7 @@
 
       <fieldset class="field">
         <legend>Where was it lost or found?</legend>
-        <p class="hint" id="map-hint">Click the map to drop a pin. Others will see it to within about 10 meters.</p>
+        <p class="hint" id="map-hint">Click the map to drop a pin on the exact spot. Others will see it there.</p>
         <noscript><p class="field-error">Choosing a location needs JavaScript. Please turn it on to post.</p></noscript>
         <div id="location-map" class="map" role="application" aria-describedby="map-hint"
              aria-label="Campus map. Click to choose the location."></div>

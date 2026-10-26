@@ -10,8 +10,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" />
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/catalog.css" />
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/auth.css" />
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/catalog.css?v=${assetVersion}" />
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/auth.css?v=${assetVersion}" />
 </head>
 <body>
   <header class="topbar">
@@ -88,6 +88,6 @@
       <p class="auth-switch">Already have an account? <a href="${loginUrl}">Log in</a></p>
     </section>
   </main>
-  <script src="${pageContext.request.contextPath}/js/auth.js"></script>
+  <script src="${pageContext.request.contextPath}/js/auth.js?v=${assetVersion}"></script>
 </body>
 </html>

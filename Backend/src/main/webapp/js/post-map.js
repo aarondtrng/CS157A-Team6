@@ -41,8 +41,8 @@
     } else {
       marker = L.marker(latlng).addTo(map);
     }
-    latInput.value = latlng.lat.toFixed(5);
-    lngInput.value = latlng.lng.toFixed(5);
+    latInput.value = latlng.lat.toFixed(7);
+    lngInput.value = latlng.lng.toFixed(7);
     chosenText.textContent = 'Spot chosen. Click the map again to move the pin.';
     clearButton.hidden = false;
   }

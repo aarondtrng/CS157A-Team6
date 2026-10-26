@@ -164,7 +164,7 @@ public class ItemDao {
                 statement.setInt(1, itemId);
                 try (ResultSet row = statement.executeQuery()) {
                     if (row.next()) {
-                        // ItemLocation rounds the coordinates, so precise values never leave the DAO.
+                        // The coordinates are stored and shown exactly as the poster marked them.
                         location = new ItemLocation(
                                 row.getString("location_name"),
                                 row.getDouble("latitude"),
@@ -285,8 +285,8 @@ public class ItemDao {
 
     /**
      * Returns the newest publicly visible items that have a location, for the campus map (at most
-     * MAX_MAP_ITEMS). Items without a location are left out. Coordinates are rounded by ItemLocation, so
-     * precise values never leave the DAO. The row cap is set on the statement because LIMIT is not on the
+     * MAX_MAP_ITEMS). Items without a location are left out. Coordinates are returned exactly as
+     * stored. The row cap is set on the statement because LIMIT is not on the
      * approved SQL list.
      */
     public List<MapItem> findMapItems() {

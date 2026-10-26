@@ -64,8 +64,8 @@ public class PostService {
             String locationName = form.getLocationName().isEmpty() ? null : form.getLocationName();
             NewPost post = new NewPost(userId, form.getType(), form.getTitle(), form.getDescription(),
                     Integer.parseInt(form.getCategoryId()), locationName,
-                    coarsen(Double.parseDouble(form.getLatitude())),
-                    coarsen(Double.parseDouble(form.getLongitude())), savedUrls);
+                    Double.parseDouble(form.getLatitude()),
+                    Double.parseDouble(form.getLongitude()), savedUrls);
             return PostResult.success(itemDao.createItem(post));
         } catch (IOException e) {
             savedUrls.forEach(ImageStore::deleteQuietly);
@@ -169,8 +169,4 @@ public class PostService {
         return null;
     }
 
-    /** Rounds to 4 decimals (about 10 m), so the saved pin stays close to where the poster clicked. */
-    static double coarsen(double value) {
-        return Math.round(value * 10000.0) / 10000.0;
-    }
 }

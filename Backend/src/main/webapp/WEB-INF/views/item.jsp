@@ -10,8 +10,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" />
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/catalog.css" />
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/item.css" />
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/catalog.css?v=${assetVersion}" />
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/item.css?v=${assetVersion}" />
 </head>
 <body>
   <header class="topbar">
@@ -99,12 +99,12 @@
             </section>
 
             <section class="side-card" aria-labelledby="location-heading">
-              <h2 id="location-heading">Approximate location</h2>
+              <h2 id="location-heading">Location</h2>
               <c:choose>
                 <c:when test="${not empty post.location}">
                   <p><c:out value="${post.location.locationName}"/></p>
                   <p class="coords">
-                    Near ${post.location.latitude}, ${post.location.longitude}
+                    ${post.location.latitude}, ${post.location.longitude}
                   </p>
                   <%-- TODO: show this on the campus map once the map page exists. --%>
                 </c:when>
