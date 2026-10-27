@@ -53,14 +53,18 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: radial-gradient(ellipse 46% 62% at 50% 50%, rgba(243, 239, 230, 0.55) 55%, rgba(243, 239, 230, 0) 100%);
+  background:
+    linear-gradient(to top, rgba(243, 239, 230, 0.55) 0, rgba(243, 239, 230, 0.55) 120px, rgba(243, 239, 230, 0) 220px),
+    radial-gradient(ellipse 46% 62% at 50% 50%, rgba(243, 239, 230, 0.55) 55%, rgba(243, 239, 230, 0) 100%);
   pointer-events: none;
 }
 
 /* On a narrow screen the text fills the hero, so the clearing behind it is wider. */
 @media (max-width: 899px) {
   .home-scrim {
-    background: radial-gradient(ellipse 80% 70% at 50% 50%, rgba(243, 239, 230, 0.7) 60%, rgba(243, 239, 230, 0) 100%);
+    background:
+      linear-gradient(to top, rgba(243, 239, 230, 0.7) 0, rgba(243, 239, 230, 0.7) 120px, rgba(243, 239, 230, 0) 220px),
+      radial-gradient(ellipse 80% 70% at 50% 50%, rgba(243, 239, 230, 0.7) 60%, rgba(243, 239, 230, 0) 100%);
   }
 }
 

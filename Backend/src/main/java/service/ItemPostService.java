@@ -55,4 +55,9 @@ public class ItemPostService {
                 .limit(limit)
                 .toList();
     }
+
+    /** A user's own publicly visible posts, newest first, for their profile page. */
+    public List<ItemSummary> getPostsByUser(int userId, int limit) {
+        return itemDao.findPublicItemsByUser(userId, limit);
+    }
 }

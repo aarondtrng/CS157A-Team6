@@ -139,7 +139,7 @@
                       <c:param name="sort" value="${query.sort.param}"/>
                       <c:param name="page" value="${catalogPage.page - 1}"/>
                     </c:url>
-                    <a href="${prevUrl}">Previous</a>
+                    <a href="${prevUrl}" aria-label="Previous page" title="Previous page">&larr;</a>
                   </c:if>
                   <span class="pager-current" aria-current="page">Page ${catalogPage.page} of ${catalogPage.totalPages}</span>
                   <c:if test="${catalogPage.hasNext}">
@@ -149,7 +149,7 @@
                       <c:param name="sort" value="${query.sort.param}"/>
                       <c:param name="page" value="${catalogPage.page + 1}"/>
                     </c:url>
-                    <a href="${nextUrl}">Next</a>
+                    <a href="${nextUrl}" aria-label="Next page" title="Next page">&rarr;</a>
                   </c:if>
                 </nav>
               </c:otherwise>

@@ -30,15 +30,13 @@
 }
 
 .post-photos {
-  flex: 999 1 560px;
   min-width: 0;
-  padding: 16px;
 }
 
 /* Poster, details, location and report live in one bordered panel, separated by thin dividers. */
 .post-side {
   max-width: 760px;
-  flex: 1 1 360px;
+  flex: 999 1 360px;
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -86,7 +84,7 @@
 .gallery img {
   display: block;
   width: 100%;
-  max-height: 520px;
+  max-height: 460px;
   object-fit: contain;
   background: #eee9df;
   border-radius: var(--radius);
@@ -175,8 +173,16 @@
   gap: 14px;
 }
 
-.poster .act-outline {
+.poster-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
   margin-left: auto;
+}
+
+.poster-actions .claim-note {
+  text-align: right;
 }
 
 .avatar {

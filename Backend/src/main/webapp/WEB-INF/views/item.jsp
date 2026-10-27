@@ -50,44 +50,6 @@
 
       <c:otherwise>
         <article class="post">
-          <%-- A post with no photos shows no gallery card at all. --%>
-          <c:if test="${not empty post.imageUrls}">
-            <section class="post-photos panel" aria-label="Photos">
-              <ul class="gallery" tabindex="0" aria-label="Item photos, scroll sideways for more">
-                <c:forEach var="url" items="${post.imageUrls}" varStatus="loop">
-                  <li>
-                    <figure>
-                      <c:choose>
-                        <c:when test="${url.startsWith('uploads/')}"><c:set var="photoSrc" value="${ctx}/${url}"/></c:when>
-                        <c:otherwise><c:set var="photoSrc" value="${url}"/></c:otherwise>
-                      </c:choose>
-                      <img src="<c:out value='${photoSrc}'/>"
-                           alt="<c:out value='${post.title}'/>, photo ${loop.count} of ${post.imageUrls.size()}" />
-                      <c:if test="${post.imageUrls.size() > 1}">
-                        <figcaption>Photo ${loop.count} of ${post.imageUrls.size()}</figcaption>
-                      </c:if>
-                    </figure>
-                  </li>
-                </c:forEach>
-              </ul>
-              <%-- With more than one photo, a row of small buttons jumps between them (js/item-gallery.js). --%>
-              <c:if test="${post.imageUrls.size() > 1}">
-                <div class="gallery-thumbs" role="group" aria-label="Choose a photo">
-                  <c:forEach var="url" items="${post.imageUrls}" varStatus="loop">
-                    <c:choose>
-                      <c:when test="${url.startsWith('uploads/')}"><c:set var="thumbSrc" value="${ctx}/${url}"/></c:when>
-                      <c:otherwise><c:set var="thumbSrc" value="${url}"/></c:otherwise>
-                    </c:choose>
-                    <button type="button" class="gallery-thumb" data-index="${loop.index}"
-                            aria-label="Photo ${loop.count} of ${post.imageUrls.size()}" aria-pressed="${loop.first}">
-                      <img src="<c:out value='${thumbSrc}'/>" alt="" loading="lazy" />
-                    </button>
-                  </c:forEach>
-                </div>
-              </c:if>
-            </section>
-          </c:if>
-
           <div class="post-side panel">
             <section class="side-card" aria-labelledby="poster-heading">
               <h2 id="poster-heading" class="visually-hidden">Posted by</h2>
@@ -104,9 +66,34 @@
                   <a class="poster-name" href="${ctx}/profile?id=${post.posterUserId}"><c:out value="${post.posterName}"/></a>
                   <span class="poster-role">Posted this item</span>
                 </div>
-                <%-- Shown but not clickable yet; messaging is not built. --%>
-                <button type="button" class="act act-outline" disabled aria-disabled="true"
-                        title="Message is coming soon"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"></path></svg>Message</button>
+                <%-- Request action (found posts, students) or log in prompt (guests), beside Message. The creator manages
+                     requests; everyone else can ask for the item unless it was already returned. --%>
+                <div class="poster-actions">
+                  <c:if test="${post.type == 'FOUND' and isStudent}">
+                    <c:choose>
+                      <c:when test="${isOwner}">
+                        <a class="btn btn-small" href="${ctx}/requests" title="Students who say this item is theirs appear on your requests page.">View requests</a>
+                      </c:when>
+                      <c:when test="${not empty myRequestStatus}">
+                        <a class="btn btn-outline btn-small" href="${ctx}/requests" title="You can follow it on your requests page.">Your request is <c:out value="${myRequestStatus}"/></a>
+                      </c:when>
+                      <c:when test="${post.status == 'ACTIVE'}">
+                        <a class="btn btn-small" href="${ctx}/request/new?itemId=${post.itemId}" title="Your proof of ownership is private and only shared with the finder.">Request item</a>
+                      </c:when>
+                      <c:otherwise>
+                        <span class="claim-note">No longer available</span>
+                      </c:otherwise>
+                    </c:choose>
+                  </c:if>
+                  <c:if test="${empty loggedIn or not loggedIn}">
+                    <%-- "next" is a path inside the app (no context path): the login page adds the context path itself. --%>
+                    <c:url var="loginUrl" value="/login"><c:param name="next" value="/item?id=${post.itemId}"/></c:url>
+                    <a class="btn btn-small" href="${loginUrl}" title="Log in with your SJSU email to request this item or report the post.">Log in to respond</a>
+                  </c:if>
+                  <%-- Shown but not clickable yet; messaging is not built. --%>
+                  <button type="button" class="act act-outline" disabled aria-disabled="true"
+                          title="Message is coming soon"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"></path></svg>Message</button>
+                </div>
               </div>
             </section>
 
@@ -124,35 +111,41 @@
               <p class="meta">Posted <c:out value="${post.createdDateText}"/></p>
               <p class="description"><c:out value="${post.description}"/></p>
 
-              <%-- Ownership requests: only on found posts, only for students. The creator manages requests;
-                   everyone else can ask for the item unless it was already returned. --%>
-              <c:if test="${post.type == 'FOUND' and isStudent}">
-                <div class="claim">
-                  <c:choose>
-                    <c:when test="${isOwner}">
-                      <a class="btn btn-lg" href="${ctx}/requests">View ownership requests</a>
-                      <p class="claim-note">Students who say this item is theirs appear on your requests page.</p>
-                    </c:when>
-                    <c:when test="${not empty myRequestStatus}">
-                      <a class="btn btn-outline btn-lg" href="${ctx}/requests">Your request is <c:out value="${myRequestStatus}"/></a>
-                      <p class="claim-note">You can follow it on your requests page.</p>
-                    </c:when>
-                    <c:when test="${post.status == 'ACTIVE'}">
-                      <a class="btn btn-lg" href="${ctx}/request/new?itemId=${post.itemId}">This is mine &mdash; request it</a>
-                      <p class="claim-note">Your proof of ownership is private and only shared with the finder.</p>
-                    </c:when>
-                    <c:otherwise>
-                      <p class="claim-note">This item is no longer available to request.</p>
-                    </c:otherwise>
-                  </c:choose>
-                </div>
-              </c:if>
-              <c:if test="${empty loggedIn or not loggedIn}">
-                <div class="claim">
-                  <%-- "next" is a path inside the app (no context path): the login page adds the context path itself. --%>
-                  <c:url var="loginUrl" value="/login"><c:param name="next" value="/item?id=${post.itemId}"/></c:url>
-                  <a class="btn btn-lg" href="${loginUrl}">Log in to respond</a>
-                  <p class="claim-note">Guests can browse posts and the map. Log in with your SJSU email to request this item or report the post.</p>
+              <%-- A post with no photos shows no gallery at all. --%>
+              <c:if test="${not empty post.imageUrls}">
+                <div class="post-photos" aria-label="Photos">
+                  <ul class="gallery" tabindex="0" aria-label="Item photos, scroll sideways for more">
+                    <c:forEach var="url" items="${post.imageUrls}" varStatus="loop">
+                      <li>
+                        <figure>
+                          <c:choose>
+                            <c:when test="${url.startsWith('uploads/')}"><c:set var="photoSrc" value="${ctx}/${url}"/></c:when>
+                            <c:otherwise><c:set var="photoSrc" value="${url}"/></c:otherwise>
+                          </c:choose>
+                          <img src="<c:out value='${photoSrc}'/>"
+                               alt="<c:out value='${post.title}'/>, photo ${loop.count} of ${post.imageUrls.size()}" />
+                          <c:if test="${post.imageUrls.size() > 1}">
+                            <figcaption>Photo ${loop.count} of ${post.imageUrls.size()}</figcaption>
+                          </c:if>
+                        </figure>
+                      </li>
+                    </c:forEach>
+                  </ul>
+                  <%-- With more than one photo, a row of small buttons jumps between them (js/item-gallery.js). --%>
+                  <c:if test="${post.imageUrls.size() > 1}">
+                    <div class="gallery-thumbs" role="group" aria-label="Choose a photo">
+                      <c:forEach var="url" items="${post.imageUrls}" varStatus="loop">
+                        <c:choose>
+                          <c:when test="${url.startsWith('uploads/')}"><c:set var="thumbSrc" value="${ctx}/${url}"/></c:when>
+                          <c:otherwise><c:set var="thumbSrc" value="${url}"/></c:otherwise>
+                        </c:choose>
+                        <button type="button" class="gallery-thumb" data-index="${loop.index}"
+                                aria-label="Photo ${loop.count} of ${post.imageUrls.size()}" aria-pressed="${loop.first}">
+                          <img src="<c:out value='${thumbSrc}'/>" alt="" loading="lazy" />
+                        </button>
+                      </c:forEach>
+                    </div>
+                  </c:if>
                 </div>
               </c:if>
             </section>

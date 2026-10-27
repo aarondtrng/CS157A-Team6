@@ -7,10 +7,38 @@ main.container:has(.profile-card) {
   gap: 20px;
 }
 
-.profile-card {
+.profile-main {
   flex: 999 1 520px;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.profile-card {
   overflow: hidden;
+}
+
+.profile-posts {
+  overflow: hidden;
+}
+
+.profile-posts > h2 {
+  padding: 14px 20px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+
+.profile-posts-empty {
+  padding: 20px;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.profile-posts .post-row:last-child .post-card {
+  border-bottom: 0;
 }
 
 .profile-banner {

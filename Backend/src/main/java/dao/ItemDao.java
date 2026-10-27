@@ -327,6 +327,46 @@ public class ItemDao {
         }
     }
 
+    /**
+     * Returns the publicly visible items posted by one user, newest first (at most maxItems), for the
+     * profile page. Same visibility test as the catalog, plus one more condition on the poster. The row cap
+     * is set on the statement because LIMIT is not on the approved SQL list.
+     */
+    public List<ItemSummary> findPublicItemsByUser(int userId, int maxItems) {
+        String sql = "SELECT i.item_id, i.title, i.description, i.type, i.status, c.category_name,"
+                + " i.created_at, " + THUMBNAIL
+                + " FROM Item i JOIN Category c ON c.category_id = i.category_id"
+                + PUBLIC_ONLY
+                + " AND i.user_id = ?"
+                + " ORDER BY i.created_at DESC, i.item_id DESC";
+
+        try (Connection connection = DatabaseConfig.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, STATUS_REMOVED);
+            statement.setString(2, APPROVAL_APPROVED);
+            statement.setInt(3, userId);
+            statement.setMaxRows(maxItems);
+
+            List<ItemSummary> items = new ArrayList<>();
+            try (ResultSet rows = statement.executeQuery()) {
+                while (rows.next()) {
+                    items.add(new ItemSummary(
+                            rows.getInt("item_id"),
+                            rows.getString("title"),
+                            rows.getString("description"),
+                            rows.getString("type"),
+                            rows.getString("status"),
+                            rows.getString("category_name"),
+                            rows.getObject("created_at", LocalDateTime.class),
+                            rows.getString("thumbnail_url")));
+                }
+            }
+            return items;
+        } catch (SQLException | IllegalStateException e) {
+            throw new DataAccessException("ItemDao.findPublicItemsByUser failed", e);
+        }
+    }
+
     /** WHERE clause for the catalog: the public-only test plus the search and category filters in use. */
     private static String filterSql(CatalogQuery query) {
         StringBuilder sql = new StringBuilder(PUBLIC_ONLY);

@@ -605,8 +605,26 @@ input[type='checkbox'] {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: 8px 16px;
   padding: 0 16px 16px;
+}
+
+.filters-actions .btn {
+  min-height: 0;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--blue);
+  background: none;
+  border: 0;
+  border-radius: 0;
+}
+
+.filters-actions .btn:hover {
+  color: var(--blue-dark);
+  background: none;
+  text-decoration: underline;
 }
 
 .filters-actions a {
@@ -771,7 +789,8 @@ input[type='checkbox'] {
   color: var(--muted);
 }
 
-.post-card h2 {
+.post-card h2,
+.post-card h3 {
   font-size: 19px;
   font-weight: 600;
   letter-spacing: -0.01em;
@@ -852,7 +871,7 @@ input[type='checkbox'] {
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 0;
   padding: 16px;
   font-size: 15px;
   color: var(--muted);
@@ -863,26 +882,24 @@ input[type='checkbox'] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 44px;
+  min-width: 32px;
   min-height: 44px;
-  padding: 0 18px;
+  padding: 0 8px;
   font-size: 15px;
   text-decoration: none;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--pill);
-  color: var(--ink);
+  background: none;
+  border: 0;
+  color: var(--blue);
 }
 
 .pager a:hover {
-  background: var(--bg-soft);
+  color: var(--blue-dark);
+  text-decoration: underline;
 }
 
 .pager .pager-current {
-  color: #fff;
-  font-weight: 600;
-  background: var(--blue);
-  border-color: var(--blue);
+  color: var(--muted);
+  font-weight: 500;
 }
 
 /* ---------- Right rail ---------- */

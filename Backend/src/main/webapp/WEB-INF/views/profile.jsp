@@ -28,6 +28,7 @@
 
   <main class="container">
     <c:set var="ctx" value="${pageContext.request.contextPath}"/>
+    <div class="profile-main">
     <section class="profile-card panel" aria-labelledby="profile-name">
       <div class="profile-banner" aria-hidden="true"><span class="profile-ring"></span></div>
       <div class="profile-head">
@@ -43,6 +44,46 @@
       <%-- All on one line: the description keeps its line breaks (pre-line), so no stray whitespace inside. --%>
       <p class="profile-bio"><c:choose><c:when test="${empty profile.profileDescription}">No description provided.</c:when><c:otherwise><c:out value="${profile.profileDescription}"/></c:otherwise></c:choose></p>
     </section>
+
+    <section class="profile-posts panel" aria-labelledby="posts-title">
+      <h2 id="posts-title">POSTS</h2>
+      <c:choose>
+        <c:when test="${empty posts}">
+          <p class="profile-posts-empty"><c:choose><c:when test="${isOwner}">You haven&rsquo;t posted anything yet.</c:when><c:otherwise>No posts yet.</c:otherwise></c:choose></p>
+        </c:when>
+        <c:otherwise>
+          <ul class="post-list">
+            <c:forEach var="item" items="${posts}">
+              <c:url var="postUrl" value="/item"><c:param name="id" value="${item.itemId}"/></c:url>
+              <li class="post-row">
+                <article class="post-card">
+                  <div class="post-card-main">
+                    <div class="post-card-body">
+                      <h3><a class="card-link" href="${postUrl}"><c:out value="${item.title}"/></a></h3>
+                      <div class="post-card-tags">
+                        <span class="badge badge-${item.type == 'FOUND' ? 'found' : 'lost'}"><c:out value="${item.type}"/></span>
+                        <span class="tag"><c:out value="${item.categoryName}"/></span>
+                        <c:if test="${item.status == 'RETURNED'}"><span class="tag">Returned</span></c:if>
+                      </div>
+                      <p><c:out value="${item.briefDescription}"/></p>
+                      <div class="post-card-meta">Posted <c:out value="${item.createdDateText}"/></div>
+                    </div>
+                    <c:if test="${not empty item.thumbnailUrl}">
+                      <c:choose>
+                        <c:when test="${item.thumbnailUrl.startsWith('uploads/')}"><c:set var="thumbSrc" value="${ctx}/${item.thumbnailUrl}"/></c:when>
+                        <c:otherwise><c:set var="thumbSrc" value="${item.thumbnailUrl}"/></c:otherwise>
+                      </c:choose>
+                      <img class="post-card-thumb" src="<c:out value='${thumbSrc}'/>" alt="" loading="lazy" />
+                    </c:if>
+                  </div>
+                </article>
+              </li>
+            </c:forEach>
+          </ul>
+        </c:otherwise>
+      </c:choose>
+    </section>
+    </div>
 
     <aside class="contact-card panel" aria-label="Contact">
       <h2>CONTACT</h2>
