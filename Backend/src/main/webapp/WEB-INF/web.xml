@@ -10,4 +10,18 @@
     <param-name>frontendUrl</param-name>
     <param-value>http://localhost:5173/</param-value>
   </context-param>
+
+  <!-- Session cookie: hidden from scripts, not sent with cross-site POSTs, and the session ends after 30 idle
+       minutes. Tomcat adds Secure by itself when the page was loaded over HTTPS (plain http://localhost
+       still works for development). -->
+  <session-config>
+    <session-timeout>30</session-timeout>
+    <cookie-config>
+      <http-only>true</http-only>
+      <attribute>
+        <attribute-name>SameSite</attribute-name>
+        <attribute-value>Lax</attribute-value>
+      </attribute>
+    </cookie-config>
+  </session-config>
 </web-app>

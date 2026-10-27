@@ -6,9 +6,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.User;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-
 /**
  * Session-based login checks shared by filters and servlets.
  *
@@ -20,14 +17,12 @@ public final class AuthUtil {
     public static final String SESSION_USER_NAME = "userName";
     public static final String SESSION_USER_ROLE = "userRole";
     /**
-     * Name of a small cookie that holds only the user's display name, so the landing page (a separate
-     * site on another port, which cannot see our session) can show "Hi, Ada" instead of Log in / Sign up.
-     * Browsers share cookies across ports on the same host. It grants no access: every protected page
-     * still checks the real session.
+     * Names of two cookies an earlier version set so a separate landing page could show the user's name.
+     * The landing page is now served by this app, so they are no longer set; they are only cleared, to
+     * remove copies left in browsers from before.
      */
-    public static final String DISPLAY_COOKIE = "sf_user";
-    /** Companion cookie with the user's numeric id, so the landing page can link to their profile. */
-    public static final String USER_ID_COOKIE = "sf_uid";
+    private static final String DISPLAY_COOKIE = "sf_user";
+    private static final String USER_ID_COOKIE = "sf_uid";
     public static final String LOGIN_PATH = "/login";
     public static final String SIGNUP_PATH = "/signup";
     /** Where users land after login or sign up when no valid "next" was given. */
@@ -63,17 +58,15 @@ public final class AuthUtil {
         session.setAttribute(SESSION_USER_NAME, user.getName());
         session.setAttribute(SESSION_USER_ROLE, user.getRole());
         CsrfUtil.rotate(session);
-        setDisplayCookie(request, response, user.getName());
-        response.addCookie(displayCookie(request, USER_ID_COOKIE, Integer.toString(user.getUserId()), -1));
+        clearDisplayCookie(request, response);
     }
 
-    /** After the user changes their name: updates the session and the "Hi, Name" cookie to match. */
+    /** After the user changes their name: updates the session to match. */
     public static void refreshDisplayName(HttpServletRequest request, HttpServletResponse response, String name) {
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.setAttribute(SESSION_USER_NAME, name);
         }
-        setDisplayCookie(request, response, name);
     }
 
     /** Ends the session, if any. */
@@ -85,16 +78,7 @@ public final class AuthUtil {
         clearDisplayCookie(request, response);
     }
 
-    /**
-     * Sets the display-name cookie. It must be readable by the landing page's JavaScript, so it is not
-     * HttpOnly (the session cookie still is). It lasts until the browser closes and is removed at logout.
-     */
-    private static void setDisplayCookie(HttpServletRequest request, HttpServletResponse response, String name) {
-        String value = URLEncoder.encode(name, StandardCharsets.UTF_8).replace("+", "%20");
-        response.addCookie(displayCookie(request, DISPLAY_COOKIE, value, -1));
-    }
-
-    /** Removes the display-name cookie (also used to drop a stale one after the session has expired). */
+    /** Removes the old display-name cookies, if a browser still has them. */
     public static void clearDisplayCookie(HttpServletRequest request, HttpServletResponse response) {
         response.addCookie(displayCookie(request, DISPLAY_COOKIE, "", 0));
         response.addCookie(displayCookie(request, USER_ID_COOKIE, "", 0));
