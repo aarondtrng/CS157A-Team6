@@ -1,0 +1,11 @@
+<%-- Site footer shared by every page. Included after </main>; the including page must declare the "c" taglib. --%>
+<footer class="site-footer">
+  <div class="container site-footer-inner">
+    <span>&copy; 2026 SpartanFinds &middot; CS157A Team 6</span>
+    <nav aria-label="Footer">
+      <a href="${pageContext.request.contextPath}/items">Browse</a>
+      <a href="${pageContext.request.contextPath}/map">Campus map</a>
+      <a href="${pageContext.request.contextPath}/post/new">Post an item</a>
+    </nav>
+  </div>
+</footer>

@@ -53,4 +53,12 @@ public class UserProfile {
     public String getRole() {
         return role;
     }
+
+    /** First letter of the name, upper case, for the default avatar; "?" when the name is empty. */
+    public String getInitial() {
+        if (name == null || name.isBlank()) {
+            return "?";
+        }
+        return new String(Character.toChars(name.strip().codePointAt(0))).toUpperCase();
+    }
 }

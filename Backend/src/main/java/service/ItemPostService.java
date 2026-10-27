@@ -1,8 +1,12 @@
 package service;
 
 import dao.ItemDao;
+import dto.CatalogQuery;
+import dto.CatalogSort;
 import model.ItemDetail;
+import model.ItemSummary;
 
+import java.util.List;
 import java.util.Optional;
 
 /** Loads full item posts. */
@@ -29,5 +33,26 @@ public class ItemPostService {
     /** @throws UnsupportedOperationException until the ItemDao SQL is implemented */
     public Optional<ItemDetail> getPublicPost(int itemId) {
         return itemDao.findPublicItemById(itemId);
+    }
+
+    /**
+     * Up to limit other publicly visible posts in the same category as this one, newest first. Uses the
+     * catalog query (one extra row is asked for, so the post itself can be left out).
+     */
+    public List<ItemSummary> getRelatedItems(ItemDetail post, int limit) {
+        CatalogQuery query = new CatalogQuery("", post.getCategoryId(), CatalogSort.NEWEST, 1, limit + 1);
+        return itemDao.searchPublicItems(query).stream()
+                .filter(item -> item.getItemId() != post.getItemId())
+                .limit(limit)
+                .toList();
+    }
+
+    /** Up to limit of the newest other publicly visible posts, from any category. Used when a post has no category mates. */
+    public List<ItemSummary> getNewestOtherItems(ItemDetail post, int limit) {
+        CatalogQuery query = new CatalogQuery("", null, CatalogSort.NEWEST, 1, limit + 1);
+        return itemDao.searchPublicItems(query).stream()
+                .filter(item -> item.getItemId() != post.getItemId())
+                .limit(limit)
+                .toList();
     }
 }

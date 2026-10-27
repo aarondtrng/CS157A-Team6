@@ -1,21 +1,52 @@
-<%-- Campus map link, then log in / sign up links for guests or name and log out for logged-in users.
-     Included inside .topbar-inner; the including page must declare the "c" taglib. A page that is itself
-     the campus map sets <c:set var="hideMapLink" value="true"/> before the include to leave the link out. --%>
-<nav class="topbar-auth" aria-label="Account">
-  <c:if test="${not hideMapLink}">
-    <a class="topbar-link" href="${pageContext.request.contextPath}/map">Campus Map</a>
-  </c:if>
-  <c:choose>
-    <c:when test="${not empty sessionScope.userId}">
-      <span class="topbar-user"><c:out value="${sessionScope.userName}"/></span>
-      <form method="post" action="${pageContext.request.contextPath}/logout">
-        <input type="hidden" name="csrfToken" value="<c:out value='${sessionScope.csrfToken}'/>" />
-        <button type="submit" class="btn btn-outline btn-small">Log out</button>
-      </form>
-    </c:when>
-    <c:otherwise>
-      <a class="topbar-link" href="${pageContext.request.contextPath}/login">Log in</a>
-      <a class="btn btn-small" href="${pageContext.request.contextPath}/signup">Sign up</a>
-    </c:otherwise>
-  </c:choose>
+<%-- Search box, nav pills, then log in / sign up for guests or "Create post", profile avatar and log out for
+     logged-in users. Included inside .topbar-inner after the brand link; the including page must declare the
+     "c" taglib. A page that has its own search box (the landing page) sets
+     <c:set var="hideNavSearch" value="true"/> before the include to leave the header search out. The current page's pill is highlighted from the servlet path. --%>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<c:set var="navPath" value="${pageContext.request.servletPath}"/>
+<c:if test="${not hideNavSearch}">
+<form class="topbar-search" role="search" method="get" action="${pageContext.request.contextPath}/items">
+  <label for="top-q">Search items</label>
+  <div class="search-pill">
+    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4a5a6b" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6"></circle><path d="M20 20l-4.5-4.5"></path></svg>
+    <input id="top-q" name="q" type="search" maxlength="100" placeholder="Search lost &amp; found"
+           value="<c:out value='${query.searchText}'/>" />
+  </div>
+</form>
+</c:if>
+<nav class="topbar-auth" aria-label="Main">
+  <div class="topbar-nav">
+    <a class="nav-pill" href="${pageContext.request.contextPath}/items" ${navPath == '/items' or navPath == '/item' ? 'aria-current="page"' : ''}>Browse</a>
+    <a class="nav-pill" href="${pageContext.request.contextPath}/map" ${navPath == '/map' ? 'aria-current="page"' : ''}>Campus map</a>
+    <c:if test="${sessionScope.userRole == 'STUDENT'}">
+      <a class="nav-pill" href="${pageContext.request.contextPath}/requests" ${navPath == '/requests' ? 'aria-current="page"' : ''}>My requests</a>
+    </c:if>
+  </div>
+  <div class="topbar-actions">
+    <c:choose>
+      <c:when test="${not empty sessionScope.userId}">
+        <c:set var="nameParts" value="${fn:split(sessionScope.userName, ' ')}"/>
+        <c:set var="initials" value="${fn:toUpperCase(fn:substring(nameParts[0], 0, 1))}${fn:length(nameParts) > 1 ? fn:toUpperCase(fn:substring(nameParts[fn:length(nameParts) - 1], 0, 1)) : ''}"/>
+        <a class="nav-pill nav-pill-plus" href="${pageContext.request.contextPath}/post/new" ${navPath == '/post/new' ? 'aria-current="page"' : ''} aria-label="Create post" title="Create post">+</a>
+        <%-- Account menu: a native <details> (works without JavaScript); js/user-menu.js also closes it when you
+             click elsewhere or press Escape. Log out stays a POST form with its security token. --%>
+        <details class="user-menu">
+          <summary class="avatar-link" aria-label="Account menu"><c:out value="${initials}"/></summary>
+          <div class="user-menu-panel">
+            <p class="user-menu-name"><c:out value="${sessionScope.userName}"/></p>
+            <a class="user-menu-item" href="${pageContext.request.contextPath}/profile?id=${sessionScope.userId}">Profile</a>
+            <form method="post" action="${pageContext.request.contextPath}/logout">
+              <input type="hidden" name="csrfToken" value="<c:out value='${sessionScope.csrfToken}'/>" />
+              <button type="submit" class="user-menu-item">Log out</button>
+            </form>
+          </div>
+        </details>
+        <script src="${pageContext.request.contextPath}/js/user-menu.js?v=${assetVersion}" defer></script>
+      </c:when>
+      <c:otherwise>
+        <a class="btn btn-outline btn-small" href="${pageContext.request.contextPath}/login">Log in</a>
+        <a class="btn btn-small" href="${pageContext.request.contextPath}/signup">Sign up</a>
+      </c:otherwise>
+    </c:choose>
+  </div>
 </nav>

@@ -28,16 +28,41 @@
       return;
     }
 
-    var popup = document.createElement('div');
-    var type = document.createElement('strong');
-    type.textContent = entry.getAttribute('data-type') + ': ';
-    var title = document.createElement('a');
-    title.href = link.getAttribute('href');
-    title.textContent = link.textContent;
-    popup.appendChild(type);
-    popup.appendChild(title);
+    var type = entry.getAttribute('data-type');
+    var metaText = entry.querySelector('.map-item-meta');
+    var titleText = entry.querySelector('.map-item-link');
 
-    L.marker([lat, lng]).addTo(map).bindPopup(popup);
+    // The popup copies text from the list entry with DOM calls (no innerHTML).
+    var popup = document.createElement('div');
+    popup.className = 'map-popup';
+
+    // The post's first photo, if it has one. Only our own uploads (a path on this site) or https images are
+    // used, and the address is set on an <img> element, never written into markup.
+    var photoUrl = entry.getAttribute('data-photo');
+    if (photoUrl && (photoUrl.charAt(0) === '/' || photoUrl.indexOf('https://') === 0)) {
+      var photo = document.createElement('img');
+      photo.className = 'map-popup-photo';
+      photo.alt = '';
+      photo.src = photoUrl;
+      popup.appendChild(photo);
+    }
+    var badge = document.createElement('span');
+    badge.className = 'badge-inline badge-' + (type === 'FOUND' ? 'found' : 'lost');
+    badge.textContent = type;
+    var title = document.createElement('strong');
+    title.textContent = titleText ? titleText.textContent : link.textContent;
+    var meta = document.createElement('span');
+    meta.className = 'map-popup-meta';
+    meta.textContent = metaText ? metaText.textContent.replace(/\s+/g, ' ').trim() : '';
+    var open = document.createElement('a');
+    open.href = link.getAttribute('href');
+    open.textContent = 'View post \u2192';
+    popup.appendChild(badge);
+    popup.appendChild(title);
+    popup.appendChild(meta);
+    popup.appendChild(open);
+
+    L.marker([lat, lng], { icon: window.sfPinIcon(type) }).addTo(map).bindPopup(popup);
     points.push([lat, lng]);
   });
 

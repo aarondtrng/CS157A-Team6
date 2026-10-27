@@ -6,17 +6,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="${pageContext.request.contextPath}/images/sjsuLogo.svg" />
   <title>Sign Up | SpartanFinds</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" />
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/catalog.css?v=${assetVersion}" />
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/auth.css?v=${assetVersion}" />
 </head>
 <body>
   <header class="topbar">
     <div class="container topbar-inner">
-      <a class="brand" href="<c:out value='${initParam.frontendUrl}'/>">
+      <a class="brand" href="${pageContext.request.contextPath}/">
         <img class="brand-logo" src="${pageContext.request.contextPath}/images/sjsuLogo.svg" alt="SJSU Spartan logo" />
         SpartanFinds
       </a>
@@ -88,6 +89,7 @@
       <p class="auth-switch">Already have an account? <a href="${loginUrl}">Log in</a></p>
     </section>
   </main>
+  <%@ include file="/WEB-INF/views/fragments/footer.jspf" %>
   <script src="${pageContext.request.contextPath}/js/auth.js?v=${assetVersion}"></script>
 </body>
 </html>

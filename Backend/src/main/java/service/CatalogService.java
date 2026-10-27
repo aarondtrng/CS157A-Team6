@@ -5,6 +5,7 @@ import dto.CatalogPage;
 import dto.CatalogQuery;
 import dto.CatalogSort;
 import model.Category;
+import model.ItemSummary;
 
 import java.util.List;
 
@@ -35,6 +36,11 @@ public class CatalogService {
     public CatalogPage getCatalogPage(CatalogQuery query) {
         int total = itemDao.countPublicItems(query);
         return new CatalogPage(itemDao.searchPublicItems(query), total, query.getPage(), query.getPageSize());
+    }
+
+    /** The newest publicly visible items (at most count), for the landing page. Uses the catalog query. */
+    public List<ItemSummary> getRecentItems(int count) {
+        return itemDao.searchPublicItems(new CatalogQuery("", null, CatalogSort.NEWEST, 1, count));
     }
 
     /** @throws UnsupportedOperationException until the ItemDao SQL is implemented */

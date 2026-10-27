@@ -107,7 +107,7 @@ public class ItemDao {
      */
     public Optional<ItemDetail> findPublicItemById(int itemId) {
         String itemSql = "SELECT i.item_id, i.title, i.description, i.type, i.status, c.category_name,"
-                + " i.created_at, u.user_id, u.name, u.profile_image"
+                + " i.category_id, i.created_at, u.user_id, u.name, u.profile_image"
                 + " FROM Item i"
                 + " JOIN Category c ON c.category_id = i.category_id"
                 + " JOIN User u ON u.user_id = i.user_id"
@@ -123,6 +123,7 @@ public class ItemDao {
             String type;
             String status;
             String categoryName;
+            int categoryId;
             LocalDateTime createdAt;
             int posterUserId;
             String posterName;
@@ -142,6 +143,7 @@ public class ItemDao {
                     type = row.getString("type");
                     status = row.getString("status");
                     categoryName = row.getString("category_name");
+                    categoryId = row.getInt("category_id");
                     createdAt = row.getObject("created_at", LocalDateTime.class);
                     posterUserId = row.getInt("user_id");
                     posterName = row.getString("name");
@@ -174,7 +176,7 @@ public class ItemDao {
             }
 
             return Optional.of(new ItemDetail(itemIdValue, title, description, type, status, categoryName,
-                    createdAt, posterUserId, posterName, posterProfileImage, imageUrls, location));
+                    categoryId, createdAt, posterUserId, posterName, posterProfileImage, imageUrls, location));
         } catch (SQLException | IllegalStateException e) {
             throw new DataAccessException("ItemDao.findPublicItemById failed", e);
         }
@@ -291,7 +293,7 @@ public class ItemDao {
      */
     public List<MapItem> findMapItems() {
         String sql = "SELECT i.item_id, i.title, i.type, c.category_name,"
-                + " l.location_name, l.latitude, l.longitude"
+                + " l.location_name, l.latitude, l.longitude, " + THUMBNAIL
                 + " FROM Item i"
                 + " JOIN Category c ON c.category_id = i.category_id"
                 + " JOIN Location l ON l.item_id = i.item_id"
@@ -315,7 +317,8 @@ public class ItemDao {
                             new ItemLocation(
                                     rows.getString("location_name"),
                                     rows.getDouble("latitude"),
-                                    rows.getDouble("longitude"))));
+                                    rows.getDouble("longitude")),
+                            rows.getString("thumbnail_url")));
                 }
             }
             return items;

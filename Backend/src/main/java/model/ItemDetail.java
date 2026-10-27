@@ -11,6 +11,7 @@ public class ItemDetail {
     private final String type;
     private final String status;
     private final String categoryName;
+    private final int categoryId;
     private final LocalDateTime createdAt;
     private final int posterUserId;
     private final String posterName;
@@ -22,7 +23,7 @@ public class ItemDetail {
     private final ItemLocation location;
 
     public ItemDetail(int itemId, String title, String description, String type, String status,
-                      String categoryName, LocalDateTime createdAt, int posterUserId, String posterName,
+                      String categoryName, int categoryId, LocalDateTime createdAt, int posterUserId, String posterName,
                       String posterProfileImage, List<String> imageUrls, ItemLocation location) {
         this.itemId = itemId;
         this.title = title;
@@ -30,6 +31,7 @@ public class ItemDetail {
         this.type = type;
         this.status = status;
         this.categoryName = categoryName;
+        this.categoryId = categoryId;
         this.createdAt = createdAt;
         this.posterUserId = posterUserId;
         this.posterName = posterName;
@@ -61,6 +63,10 @@ public class ItemDetail {
 
     public String getCategoryName() {
         return categoryName;
+    }
+
+    public int getCategoryId() {
+        return categoryId;
     }
 
     public String getCreatedDateText() {

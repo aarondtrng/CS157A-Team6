@@ -1,0 +1,172 @@
+/* Profile and edit-profile pages. Colors and sizes come from the variables in catalog.css. */
+main.container:has(.profile-card) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  align-content: flex-start;
+  gap: 20px;
+}
+
+.profile-card {
+  flex: 999 1 520px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.profile-banner {
+  position: relative;
+  height: 120px;
+  overflow: hidden;
+  background: var(--blue);
+}
+
+.profile-ring {
+  position: absolute;
+  right: -40px;
+  top: -60px;
+  width: 240px;
+  height: 240px;
+  border: 28px solid var(--gold);
+  border-radius: 50%;
+  opacity: 0.9;
+}
+
+.profile-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 20px;
+  padding: 0 28px 20px;
+}
+
+/* "position: relative" puts the avatar above the banner, which is positioned and would otherwise paint over
+   the part of the avatar that overlaps it. */
+.profile-avatar {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 112px;
+  height: 112px;
+  margin-top: -48px;
+  font-size: 38px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--green-ink);
+  border: 5px solid var(--bg);
+  border-radius: 50%;
+}
+
+.profile-title {
+  flex: 1 1 240px;
+  min-width: 0;
+  padding-top: 16px;
+}
+
+.profile-title h1 {
+  font-size: 32px;
+  overflow-wrap: anywhere;
+}
+
+.profile-title p {
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.profile-bio {
+  max-width: 720px;
+  padding: 0 28px 24px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #2e3d4d;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.contact-card {
+  flex: 1 1 280px;
+  max-width: 340px;
+  overflow: hidden;
+}
+
+.contact-card h2 {
+  padding: 14px 18px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+
+.contact-card dl {
+  margin: 0;
+  padding: 4px 18px 8px;
+}
+
+.contact-card dl div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.contact-card dl div:last-child {
+  border-bottom: 0;
+}
+
+.contact-card dt {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.contact-card dd {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.contact-note {
+  padding: 14px 18px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* Edit profile reuses .form-section, .form-actions and .field-error from post.css. */
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.profile-form input,
+.profile-form textarea {
+  width: 100%;
+}
+
+.profile-form input[readonly] {
+  color: var(--text);
+  background: var(--bg-soft);
+}
+
+.profile-form textarea {
+  resize: vertical;
+}
+
+.optional {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+@media (max-width: 768px) {
+  .profile-head {
+    padding: 0 16px 16px;
+  }
+
+  .profile-bio {
+    padding: 0 16px 20px;
+  }
+}

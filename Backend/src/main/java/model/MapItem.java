@@ -10,13 +10,17 @@ public class MapItem {
     private final String type;
     private final String categoryName;
     private final ItemLocation location;
+    /** The post's first photo URL, or null when it has none (the popup then shows no photo). */
+    private final String thumbnailUrl;
 
-    public MapItem(int itemId, String title, String type, String categoryName, ItemLocation location) {
+    public MapItem(int itemId, String title, String type, String categoryName, ItemLocation location,
+                   String thumbnailUrl) {
         this.itemId = itemId;
         this.title = title;
         this.type = type;
         this.categoryName = categoryName;
         this.location = location;
+        this.thumbnailUrl = thumbnailUrl;
     }
 
     public int getItemId() {
@@ -38,5 +42,9 @@ public class MapItem {
 
     public ItemLocation getLocation() {
         return location;
+    }
+
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
     }
 }

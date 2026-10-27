@@ -1,24 +1,42 @@
-/* Palette and sizing match Frontend/src/index.css so the pages look consistent. */
+/* Shared styles for every backend page: palette, header, footer, buttons, form fields, cards, badges.
+   The look follows the "SpartanFinds Design" canvas (warm beige page, cream cards, SJSU blue and gold,
+   Geist type, pill buttons). Page-specific files (item.css, post.css, map.css, auth.css, profile.css,
+   requests.css) build on this. */
 :root {
-  --blue: #0067c8;
-  --blue-dark: #004c96;
-  --gold: #f5b31c;
-  --gold-soft: rgba(245, 179, 28, 0.14);
-  --gold-text: #a87400;
-  --bg: #ffffff;
-  --bg-soft: #f4f6f9;
-  --text: #3d4756;
-  --text-h: #10203a;
-  --border: #e2e7ee;
-  --shadow-sm: 0 1px 3px rgba(16, 32, 58, 0.08);
-  --shadow-md: 0 10px 15px -3px rgba(16, 32, 58, 0.1), 0 4px 6px -2px rgba(16, 32, 58, 0.05);
-  --radius: 16px;
-  --radius-sm: 10px;
-  --sans: 'Roboto', system-ui, 'Segoe UI', sans-serif;
+  --blue: #0055a2;
+  --blue-dark: #003e7a;
+  --blue-soft: #e3eef9;
+  --blue-ink: #003e7a;
+  --gold: #e5a823;
+  --gold-soft: #fdf1d8;
+  --gold-text: #7a5200;
+  --green-soft: #e6f4ea;
+  --green-ink: #1e5b32;
+  --red-ink: #9b2c2c;
+  --ink: #0b1b2b;
+  --bg: #faf8f3; /* cards and the header */
+  --bg-soft: #efeae1; /* the page */
+  --bg-sunken: #f6f2ea;
+  --bg-hero: #f3efe6;
+  --field: #fffdf9;
+  --text: #3d4c5c;
+  --text-h: #0b1b2b;
+  --muted: #4a5a6b;
+  --border: #d3c9b6;
+  --border-soft: #e4ddd0;
+  --border-strong: #d3c9b6;
+  --shadow-sm: none;
+  --shadow-md: 0 12px 32px -12px rgba(11, 27, 43, 0.18);
+  --radius: 12px;
+  --radius-lg: 12px;
+  --radius-sm: 12px;
+  --pill: 10px; /* softly rounded corners on buttons, tags, nav links and the search box (not a full pill) */
+  --sans: 'Geist', system-ui, 'Segoe UI', sans-serif;
+  --display: 'Geist', system-ui, 'Segoe UI', sans-serif;
 
   font: 16px/150% var(--sans);
   color: var(--text);
-  background: var(--bg);
+  background: var(--bg-soft);
 }
 
 * {
@@ -26,29 +44,53 @@
 }
 
 body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* the footer sits at the bottom even on short pages */
   margin: 0;
-  min-height: 100vh; /* the soft gray background fills the screen, not just the content */
+  color: var(--ink);
   background: var(--bg-soft);
 }
 
 h1,
-h2 {
-  color: var(--text-h);
-  line-height: 120%;
+h2,
+h3 {
   margin: 0;
+  color: var(--ink);
+  font-family: var(--display);
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+}
+
+h1 {
+  font-size: 36px;
+  font-weight: 700;
+}
+
+h2 {
+  font-weight: 700;
 }
 
 p {
   margin: 0;
 }
 
+a {
+  color: var(--blue);
+}
+
+a:hover {
+  color: var(--blue-dark);
+}
+
 .container {
   width: 100%;
-  max-width: 1120px;
+  max-width: 1280px;
   margin: 0 auto;
   padding: 0 24px;
 }
 
+/* ---------- Header ---------- */
 .topbar {
   background: var(--bg);
   border-bottom: 1px solid var(--border);
@@ -56,45 +98,27 @@ p {
 
 .topbar-inner {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  height: 64px;
-}
-
-.topbar-auth {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-left: auto;
-}
-
-.topbar-auth form {
-  margin: 0;
-}
-
-.topbar-user {
-  font-weight: 500;
-  color: var(--text-h);
-}
-
-.topbar-link {
-  color: var(--blue);
-  font-weight: 500;
-  text-decoration: none;
-}
-
-/* ".btn.btn-small": a plain ".btn-small" is declared before ".btn" and lost to its larger padding. */
-.btn.btn-small {
-  padding: 6px 14px;
+  gap: 8px 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 .brand {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  color: var(--blue);
+  min-height: 44px;
+  color: var(--ink);
   font-weight: 700;
   font-size: 20px;
+  letter-spacing: -0.02em;
   text-decoration: none;
+}
+
+.brand:hover {
+  color: var(--ink);
 }
 
 /* Same size as the logo on the landing page. */
@@ -103,193 +127,703 @@ p {
   width: auto;
 }
 
-/* "main.container" (not just "main"): ".container" sets "padding: 0 24px" and would otherwise win,
+.topbar-search {
+  flex: 1 1 260px;
+  max-width: 440px;
+  margin: 0;
+}
+
+.topbar-search label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.search-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  background: var(--field);
+  border: 1px solid var(--border);
+  border-radius: var(--pill);
+}
+
+.search-pill:focus-within {
+  outline: 3px solid var(--gold);
+  outline-offset: 1px;
+}
+
+.search-pill svg {
+  flex: none;
+}
+
+.topbar .search-pill input {
+  flex: 1;
+  min-width: 0;
+  height: 42px;
+  padding: 0;
+  font-size: 15px;
+  background: transparent;
+  border: 0;
+  outline: none;
+}
+
+.topbar-auth {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+  margin-left: auto;
+}
+
+.topbar-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.topbar-auth form {
+  margin: 0;
+}
+
+.topbar-link,
+.nav-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  border-radius: var(--pill);
+}
+
+.topbar-link:hover,
+.nav-pill:hover {
+  color: var(--ink);
+  background: var(--bg-soft);
+}
+
+/* The "+" create-post link is a square icon-sized target. */
+.nav-pill-plus {
+  justify-content: center;
+  min-width: 44px;
+  padding: 0;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.nav-pill[aria-current='page'] {
+  color: var(--blue);
+  font-weight: 600;
+  background: var(--blue-soft);
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.avatar-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  background: var(--gold);
+  border-radius: 50%;
+}
+
+summary.avatar-link {
+  list-style: none;
+  cursor: pointer;
+}
+
+summary.avatar-link::-webkit-details-marker {
+  display: none;
+}
+
+.user-menu {
+  position: relative;
+}
+
+.user-menu[open] > summary.avatar-link {
+  outline: 3px solid var(--blue-soft);
+}
+
+.user-menu-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 1000; /* above the page content and the map */
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+  padding: 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+}
+
+.user-menu-name {
+  padding: 8px 12px 10px;
+  margin-bottom: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.user-menu-item {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  text-align: left;
+  color: var(--text);
+  text-decoration: none;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.user-menu-item:hover {
+  color: var(--ink);
+  background: var(--bg-soft);
+}
+
+.avatar-link:hover {
+  color: var(--ink);
+  outline: 3px solid var(--blue-soft);
+}
+
+/* ---------- Page body ---------- */
+/* "main.container" (not just "main"): ".container" sets side padding and would otherwise win,
    which removed this top and bottom spacing. */
 main.container {
-  padding-top: 40px;
-  padding-bottom: 64px;
+  flex: 1;
+  padding-top: 32px;
+  padding-bottom: 80px;
 }
 
 .subtitle {
   margin-top: 8px;
   margin-bottom: 24px;
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--muted);
 }
 
-/* The "Post an item" button sits between the subtitle (which already leaves 24px above) and the filters. */
-.post-action {
-  margin: 0 0 24px;
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 14px;
+  text-decoration: none;
 }
 
-.filters {
+.back-link:hover {
+  color: var(--blue);
+  text-decoration: underline;
+}
+
+.page-head {
   display: flex;
-  flex-wrap: wrap;
   align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
   gap: 16px;
-  padding: 20px;
   margin-bottom: 24px;
+}
+
+.page-head .subtitle {
+  margin-bottom: 0;
+}
+
+/* A white-ish panel, the building block of every page. */
+.panel {
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
 }
 
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-width: 160px;
-}
-
-.field-search {
-  flex: 1 1 240px;
-}
-
-.field label {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-h);
-}
-
-input,
-select {
-  font: inherit;
-  color: var(--text-h);
-  padding: 10px 12px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-}
-
-/* Search box, dropdowns, and button in the filter bar share one height so their labels line up. */
-.filters input,
-.filters select,
-.filters .btn {
-  height: 46px;
-}
-
-.filters .btn {
-  padding-top: 0;
-  padding-bottom: 0;
-}
-
-input:focus-visible,
-select:focus-visible,
-.btn:focus-visible {
-  outline: 3px solid var(--gold);
-  outline-offset: 2px;
-}
-
+/* ---------- Buttons ---------- */
 .btn {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 20px;
   font: inherit;
-  font-weight: 500;
-  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: 600;
   color: #fff;
   background: var(--blue);
-  border: 2px solid var(--blue);
-  border-radius: var(--radius-sm);
+  border: 1px solid var(--blue);
+  border-radius: var(--pill);
   text-decoration: none;
+  text-align: center;
   cursor: pointer;
 }
 
 .btn:hover {
+  color: #fff;
   background: var(--blue-dark);
   border-color: var(--blue-dark);
 }
 
+.btn.btn-small {
+  min-height: 40px;
+  padding: 0 16px;
+  white-space: nowrap;
+}
+
+.btn.btn-lg {
+  min-height: 48px;
+  padding: 0 24px;
+  font-size: 16px;
+}
+
 .btn-outline {
-  color: var(--blue);
-  background: transparent;
+  color: var(--ink);
+  background: var(--bg);
+  border-color: var(--border);
 }
 
 .btn-outline:hover {
-  color: #fff;
+  color: var(--ink);
+  background: var(--bg-soft);
+  border-color: var(--border);
+}
+
+.btn-gold {
+  color: var(--ink);
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+.btn-gold:hover {
+  color: var(--ink);
+  background: #d29a1c;
+  border-color: #d29a1c;
+}
+
+.btn-danger {
+  color: var(--red-ink);
+  background: var(--bg);
+  border-color: #e2b7b7;
+}
+
+.btn-danger:hover {
+  color: var(--red-ink);
+  background: #fbeeee;
+  border-color: #e2b7b7;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* ---------- Form fields ---------- */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.field label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+input,
+select,
+textarea {
+  font: inherit;
+  font-size: 16px;
+  color: var(--ink);
+  padding: 0 14px;
+  background: var(--field);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+input:not([type='radio']):not([type='checkbox']):not([type='file']),
+select {
+  min-height: 48px;
+}
+
+textarea {
+  padding: 12px 14px;
+  line-height: 1.55;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+.btn:focus-visible,
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+
+input[type='radio'],
+input[type='checkbox'] {
+  accent-color: var(--blue);
 }
 
 .notice {
-  padding: 24px;
+  padding: 20px 24px;
   background: var(--gold-soft);
   border: 1px solid var(--gold);
   border-radius: var(--radius);
-  color: var(--text-h);
+  color: var(--ink);
 }
 
-.result-count {
-  margin-bottom: 16px;
+/* ---------- Badges ---------- */
+.badge,
+.badge-inline,
+.status-pill,
+.tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 10px;
+  font-size: 12px;
+  line-height: 1;
+  border: 1px solid transparent;
+  border-radius: var(--pill);
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+.badge,
+.badge-inline,
+.status-pill {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.badge-found {
+  color: var(--blue-ink);
+  background: var(--blue-soft);
+}
+
+.badge-lost {
+  color: var(--gold-text);
+  background: var(--gold-soft);
+}
+
+.tag {
+  font-weight: 600;
+  color: var(--text);
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--pill);
+}
+
+.tag-open {
+  color: var(--green-ink);
+  background: var(--green-soft);
+  border-color: transparent;
+}
+
+/* ---------- Catalog layout: filters | posts | about ---------- */
+.catalog-layout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
   gap: 24px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
 }
 
-.card {
-  height: 100%;
+.filters {
+  flex: 1 1 220px;
+  max-width: 240px;
   overflow: hidden;
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
 }
 
-.card-image {
-  position: relative;
-  aspect-ratio: 4 / 3;
-  background: var(--bg-soft);
+.filters fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 16px;
+  border: 0;
 }
 
-.card-image img {
+.filters legend {
+  float: left;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.badge {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  padding: 2px 10px;
+  margin-bottom: 8px;
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.04em;
-  border-radius: 999px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
 }
 
-/* On a card with no photo the badge sits in the text area instead of floating over an image. */
-.badge-static {
-  position: static;
-  align-self: flex-start;
+.filters .radio-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-size: 15px;
+  cursor: pointer;
 }
 
-.badge-found {
-  color: #fff;
-  background: var(--blue);
+.filters .radio-row input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
 }
 
-.badge-lost {
-  color: var(--text-h);
-  background: var(--gold);
+.filters-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 0 16px 16px;
 }
 
-.card-body {
+.filters-actions a {
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.posts {
+  flex: 999 1 520px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Sort bar, post rows and page buttons live in one bordered panel, separated by thin dividers. */
+.results {
+  overflow: hidden;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.sortbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 4px;
+  padding: 10px 16px;
+  background: var(--bg-hero);
+  border-bottom: 1px solid var(--border);
+}
+
+.empty-results {
+  padding: 32px 20px;
+  color: var(--muted);
+}
+
+/* Sort dropdown: a small caps label above a softly rounded select with a light chevron. */
+.sort-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+}
+
+.sort-form label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.sort-form select {
+  min-width: 140px;
+  min-height: 36px;
+  padding: 0 32px 0 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  appearance: none;
+  background-color: var(--field);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%234a5a6b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.sortbar .result-count {
+  margin-left: auto;
+  padding: 0 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* One post: a row, the way the design lists them. The title link stretches over the whole card. */
+.post-list {
+  margin: 0;
+  padding: 0;
+}
+
+.post-list,
+.post-row {
+  list-style: none;
+}
+
+.post-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 20px 8px;
+  border-bottom: 1px solid var(--border);
+  transition: background-color 0.15s;
+}
+
+.post-card:hover {
+  background: var(--bg-sunken);
+}
+
+.post-card-main {
+  display: flex;
+  gap: 16px;
+}
+
+/* Message / Share / Report under each post. They are shown but disabled for now. */
+.post-card-actions {
+  position: relative; /* above the title link that stretches over the whole card, for when they become links */
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin-left: -10px;
+}
+
+.act {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 10px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  border-radius: var(--pill);
+}
+
+.act:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.act-outline {
+  min-height: 40px;
+  padding: 0 14px;
+  font-size: 14px;
+  color: var(--ink);
+  border: 1px solid var(--border);
+}
+
+.post-card-body {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 16px;
 }
 
-.card-body h2 {
-  font-size: 18px;
+.post-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
 }
 
-/* Whole card is clickable: the title link stretches over the card. */
-.card {
-  position: relative;
+.post-card h2 {
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.post-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+}
+
+/* On catalog rows and the item page the tags are plain colored text lined up with the title (no pills),
+   separated by a small dot. */
+.post-card-tags .badge,
+.post-card-tags .tag,
+.post-tags .badge,
+.post-tags .tag {
+  min-height: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+}
+
+.post-card-tags > * + *::before,
+.post-tags > * + *::before {
+  content: '\00b7';
+  margin-right: 8px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.post-card p {
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--text);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.post-card-thumb {
+  flex: none;
+  width: 132px;
+  height: 100px;
+  object-fit: cover;
+  background: #e4ddd0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
 }
 
 .card-link {
@@ -313,16 +847,160 @@ select:focus-visible,
   border-radius: var(--radius);
 }
 
-.card-body small {
-  color: var(--gold-text);
+.pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  font-size: 15px;
+  color: var(--muted);
 }
 
-.pager {
+.pager a,
+.pager .pager-current {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 18px;
+  font-size: 15px;
+  text-decoration: none;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--pill);
+  color: var(--ink);
+}
+
+.pager a:hover {
+  background: var(--bg-soft);
+}
+
+.pager .pager-current {
+  color: #fff;
+  font-weight: 600;
+  background: var(--blue);
+  border-color: var(--blue);
+}
+
+/* ---------- Right rail ---------- */
+.rail {
+  flex: 1 1 280px;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rail section {
+  overflow: hidden;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.rail-banner {
+  height: 44px;
+  background: var(--blue);
+}
+
+.rail-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 16px 16px;
+}
+
+.rail-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  margin-top: 32px;
+  width: 48px;
+  height: 48px;
+  margin-top: -22px;
+  background: var(--gold);
+  border: 3px solid var(--bg);
+  border-radius: 12px;
+}
+
+.rail h2 {
+  font-size: 17px;
+}
+
+.rail p {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+.rail h2.rail-title {
+  padding: 14px 16px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+
+.rail ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rail ol li {
+  padding: 12px 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.rail ol li:last-child {
+  border-bottom: 0;
+}
+
+/* ---------- Footer ---------- */
+.site-footer {
+  border-top: 1px solid var(--border);
+}
+
+.site-footer-inner {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding-top: 24px;
+  padding-bottom: 24px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.site-footer nav {
+  display: flex;
+  gap: 24px;
+}
+
+.site-footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  color: var(--blue);
+  text-decoration: underline;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .filters,
+  .rail {
+    max-width: none;
+    flex-basis: 100%;
+  }
 }
 
 @media (max-width: 768px) {
@@ -331,33 +1009,34 @@ select:focus-visible,
   }
 
   main.container {
-    padding-top: 24px;
+    padding-top: 20px;
+    padding-bottom: 48px;
   }
 
-  .filters {
-    flex-direction: column;
-    align-items: stretch;
+  h1 {
+    font-size: 30px;
   }
 
-  /* In a column, the search field's "flex: 1 1 240px" would make it 240px tall. */
-  .field-search {
-    flex: 0 0 auto;
+  .topbar-search {
+    order: 3;
+    flex-basis: 100%;
+    max-width: none;
+  }
+
+  .post-card-main {
+    flex-direction: column-reverse;
+  }
+
+  .post-card-thumb {
+    width: 100%;
+    height: 180px;
   }
 }
 
-/* The top bar never wraps a link onto two lines. On narrow screens the logo row and the links row stack. */
-.topbar-link,
-.btn.btn-small {
-  white-space: nowrap;
-}
-
+/* The top bar never wraps a link onto two lines. On narrow screens the links get their own row. */
 @media (max-width: 560px) {
-  .topbar-inner {
-    flex-wrap: wrap;
-    height: auto;
-    min-height: 64px;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    gap: 8px 16px;
+  .topbar-auth {
+    flex: 1 1 100%;
+    margin-left: 0;
   }
 }

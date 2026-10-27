@@ -1,40 +1,48 @@
 import sjsuLogo from '../assets/sjsuLogo.svg'
-import { CATALOG_URL, LOGIN_URL, LOGOUT_URL, MAP_URL, SIGNUP_URL } from '../config.js'
-import { getLoggedInFirstName } from '../session.js'
+import { CATALOG_URL, LOGIN_URL, LOGOUT_URL, MAP_URL, REPORT_LOST_URL, SIGNUP_URL, profileUrl } from '../config.js'
+import { getLoggedInFirstName, getLoggedInUserId } from '../session.js'
 import styles from './NavBar.module.css'
 
 const navLinks = [
-  { label: 'Browse Items', href: CATALOG_URL },
-  { label: 'Campus Map', href: MAP_URL },
+  { label: 'Browse', href: CATALOG_URL },
+  { label: 'Campus map', href: MAP_URL },
 ]
 
 function NavBar() {
   const firstName = getLoggedInFirstName()
+  const userId = getLoggedInUserId()
 
   return (
     <header className={styles.navbar}>
-      <div className={`container ${styles.inner}`}>
+      <nav aria-label="Main" className={`container ${styles.inner}`}>
         <a href="#" className={styles.brand}>
           <img src={sjsuLogo} alt="SJSU Spartan logo" className={styles.logo} />
           SpartanFinds
         </a>
 
-        <nav aria-label="Main navigation">
-          <ul className={styles.links}>
-            {navLinks.map(({ label, href }) => (
-              <li key={label}>
-                <a href={href} className={styles.link}>
-                  {label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <ul className={styles.links}>
+          {navLinks.map(({ label, href }) => (
+            <li key={label}>
+              <a href={href} className={styles.link}>
+                {label}
+              </a>
+            </li>
+          ))}
+        </ul>
 
         <div className={styles.actions}>
           {firstName ? (
             <>
-              <span className={styles.userName}>Hi, {firstName}</span>
+              <a href={REPORT_LOST_URL} className={`btn ${styles.navBtn}`}>
+                + Create post
+              </a>
+              {userId ? (
+                <a href={profileUrl(userId)} className={styles.userName} title="View your profile">
+                  Hi, {firstName}
+                </a>
+              ) : (
+                <span className={styles.userName}>Hi, {firstName}</span>
+              )}
               <a href={LOGOUT_URL} className={`btn btn-outline ${styles.navBtn}`}>
                 Log out
               </a>
@@ -42,15 +50,15 @@ function NavBar() {
           ) : (
             <>
               <a href={LOGIN_URL} className={`btn btn-outline ${styles.navBtn}`}>
-                Login
+                Log in
               </a>
-              <a href={SIGNUP_URL} className={`btn btn-gold ${styles.navBtn}`}>
-                Sign Up
+              <a href={SIGNUP_URL} className={`btn ${styles.navBtn}`}>
+                Sign up
               </a>
             </>
           )}
         </div>
-      </div>
+      </nav>
     </header>
   )
 }

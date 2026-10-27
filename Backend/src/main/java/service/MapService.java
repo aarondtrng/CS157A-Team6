@@ -17,4 +17,5 @@ public class MapService {
     public List<MapItem> getMapItems() {
         return itemDao.findMapItems();
     }
+
 }

@@ -1,7 +1,32 @@
 .footer {
-  background: var(--blue-darker);
-  color: #b9c7d9;
-  padding-block: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 32px;
+  padding-bottom: 32px;
   font-size: 14px;
-  text-align: center;
+  color: var(--muted);
+}
+
+.links {
+  display: flex;
+  gap: 24px;
+}
+
+.links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.links a:hover {
+  color: var(--blue);
+  text-decoration: underline;
 }

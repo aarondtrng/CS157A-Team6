@@ -26,6 +26,8 @@ public final class AuthUtil {
      * still checks the real session.
      */
     public static final String DISPLAY_COOKIE = "sf_user";
+    /** Companion cookie with the user's numeric id, so the landing page can link to their profile. */
+    public static final String USER_ID_COOKIE = "sf_uid";
     public static final String LOGIN_PATH = "/login";
     public static final String SIGNUP_PATH = "/signup";
     /** Where users land after login or sign up when no valid "next" was given. */
@@ -62,6 +64,16 @@ public final class AuthUtil {
         session.setAttribute(SESSION_USER_ROLE, user.getRole());
         CsrfUtil.rotate(session);
         setDisplayCookie(request, response, user.getName());
+        response.addCookie(displayCookie(request, USER_ID_COOKIE, Integer.toString(user.getUserId()), -1));
+    }
+
+    /** After the user changes their name: updates the session and the "Hi, Name" cookie to match. */
+    public static void refreshDisplayName(HttpServletRequest request, HttpServletResponse response, String name) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.setAttribute(SESSION_USER_NAME, name);
+        }
+        setDisplayCookie(request, response, name);
     }
 
     /** Ends the session, if any. */
@@ -79,16 +91,17 @@ public final class AuthUtil {
      */
     private static void setDisplayCookie(HttpServletRequest request, HttpServletResponse response, String name) {
         String value = URLEncoder.encode(name, StandardCharsets.UTF_8).replace("+", "%20");
-        response.addCookie(displayCookie(request, value, -1));
+        response.addCookie(displayCookie(request, DISPLAY_COOKIE, value, -1));
     }
 
     /** Removes the display-name cookie (also used to drop a stale one after the session has expired). */
     public static void clearDisplayCookie(HttpServletRequest request, HttpServletResponse response) {
-        response.addCookie(displayCookie(request, "", 0));
+        response.addCookie(displayCookie(request, DISPLAY_COOKIE, "", 0));
+        response.addCookie(displayCookie(request, USER_ID_COOKIE, "", 0));
     }
 
-    private static Cookie displayCookie(HttpServletRequest request, String value, int maxAgeSeconds) {
-        Cookie cookie = new Cookie(DISPLAY_COOKIE, value);
+    private static Cookie displayCookie(HttpServletRequest request, String name, String value, int maxAgeSeconds) {
+        Cookie cookie = new Cookie(name, value);
         cookie.setPath("/");
         cookie.setMaxAge(maxAgeSeconds);
         cookie.setHttpOnly(false);

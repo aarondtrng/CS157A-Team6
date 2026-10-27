@@ -1,0 +1,512 @@
+/* Landing page. Colors and sizes come from the variables in catalog.css. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.btn-dark {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+.btn-dark:hover {
+  background: #1d3147;
+  border-color: #1d3147;
+}
+
+.btn-ghost {
+  color: #fff;
+  background: transparent;
+  border-color: #7fa6cf;
+}
+
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #7fa6cf;
+}
+
+/* ---------- Hero ---------- */
+.home-hero {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-hero);
+  border-bottom: 1px solid var(--border);
+}
+
+.home-map {
+  position: absolute;
+  inset: 0;
+  z-index: 0; /* gives the map its own stacking order, so Leaflet's layers stay behind the hero text */
+  background: var(--bg-hero);
+  pointer-events: none; /* decoration only: the map cannot be dragged and never blocks the hero's buttons */
+}
+
+.home-map .leaflet-control-attribution {
+  pointer-events: auto; /* the OpenStreetMap credit must stay a working link */
+}
+
+/* A light wash behind the headline and search box keeps the text readable while the map shows through. */
+.home-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: radial-gradient(ellipse 46% 62% at 50% 50%, rgba(243, 239, 230, 0.55) 55%, rgba(243, 239, 230, 0) 100%);
+  pointer-events: none;
+}
+
+/* On a narrow screen the text fills the hero, so the clearing behind it is wider. */
+@media (max-width: 899px) {
+  .home-scrim {
+    background: radial-gradient(ellipse 80% 70% at 50% 50%, rgba(243, 239, 230, 0.7) 60%, rgba(243, 239, 230, 0) 100%);
+  }
+}
+
+/* The map itself is faded (not a layer on top of it), so the pins keep their full color. */
+.home-map .leaflet-tile-pane {
+  opacity: 0.8;
+}
+
+/* Pins drop onto the map one after another (the delay is set per pin by js/home-hero-map.js). */
+.home-map .sf-pin svg {
+  animation: home-pin-drop 0.7s cubic-bezier(0.2, 0.9, 0.3, 1.35) both;
+  animation-delay: var(--delay, 0s);
+}
+
+@keyframes home-pin-drop {
+  0% { opacity: 0; transform: translateY(-36px) scale(0.7); }
+  70% { opacity: 1; }
+  100% { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-map .sf-pin svg {
+    animation: none;
+  }
+}
+
+.home-hero-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 112px 24px 104px;
+  text-align: center;
+}
+
+.home-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--blue);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--pill);
+}
+
+.home-eyebrow-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+
+.home-hero h1 {
+  font-size: 68px;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+
+.home-accent {
+  color: var(--blue);
+}
+
+.home-lede {
+  max-width: 600px;
+  font-size: 19px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.home-search {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+  max-width: 680px;
+  margin: 12px 0 0;
+  padding: 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 12px 32px -12px rgba(11, 27, 43, 0.18);
+}
+
+.home-search input {
+  flex: 1 1 220px;
+  min-width: 0;
+  min-height: 48px;
+  padding: 0 12px;
+  background: transparent;
+  border: 0;
+  outline: none;
+}
+
+.home-search .btn {
+  min-height: 48px;
+  padding: 0 24px;
+}
+
+.home-popular {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.home-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 14px;
+  color: var(--ink);
+  text-decoration: none;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--pill);
+}
+
+.home-chip:hover {
+  color: var(--ink);
+  background: var(--bg-soft);
+}
+
+/* ---------- Sections ---------- */
+.home-section {
+  padding-top: 80px;
+  padding-bottom: 32px;
+}
+
+.home-section-last {
+  padding-bottom: 96px;
+}
+
+.home-title {
+  font-size: 36px;
+}
+
+.home-sub {
+  margin-top: 8px;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.home-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.home-viewall {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* The cards are joined into one bordered block: a 1px gap over a border-colored background draws the dividers. */
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  list-style: none;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.home-grid li {
+  display: flex;
+}
+
+.home-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  color: var(--ink);
+  text-decoration: none;
+  background: var(--bg);
+}
+
+.home-card:hover {
+  color: var(--ink);
+  background: var(--bg-sunken);
+}
+
+.home-photo {
+  position: relative;
+  display: block;
+  height: 180px;
+  background: #eee9df;
+}
+
+.home-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.home-photo .badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+}
+
+.home-card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 16px 18px 20px;
+}
+
+.home-card-cat {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.home-card-title {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+
+.home-card-meta {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.home-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  margin: 40px 0 0;
+  padding: 0;
+  overflow: hidden;
+  list-style: none;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.home-steps li {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 32px;
+}
+
+.home-steps li + li {
+  border-left: 1px solid var(--border);
+}
+
+.home-step-n {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--blue);
+}
+
+.home-steps h3 {
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.home-steps p {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.home-mapcard {
+  display: flex;
+  flex-wrap: wrap;
+  overflow: hidden;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.home-mapcard-text {
+  flex: 1 1 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 16px;
+  padding: 56px 48px;
+}
+
+.home-mapcard-text .home-sub {
+  margin: 0;
+}
+
+.home-mapprev {
+  position: relative;
+  flex: 1 1 480px;
+  min-height: 400px;
+  background-color: #eaf0f6;
+  background-image:
+    linear-gradient(#d7e1ec 1px, transparent 1px), linear-gradient(90deg, #d7e1ec 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.home-block {
+  position: absolute;
+  background: #dce5ef;
+  border-radius: 6px;
+}
+
+.home-map-live {
+  position: absolute;
+  inset: 0;
+}
+
+/* The newest post, shown as a card over the map beside its pin. */
+.home-latest {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  z-index: 500; /* above the map tiles and controls */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  max-width: calc(100% - 32px);
+  width: 260px;
+  padding: 12px 14px;
+  color: var(--ink);
+  text-decoration: none;
+  background: var(--bg);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px -8px rgba(11, 27, 43, 0.3);
+}
+
+.home-latest:hover {
+  color: var(--ink);
+  background: var(--bg-sunken);
+}
+
+.home-latest strong {
+  font-size: 16px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.home-latest-meta {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.home-latest-link {
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue);
+}
+
+.sf-pin {
+  background: none;
+  border: 0;
+}
+
+.sf-pin svg {
+  display: block;
+  filter: drop-shadow(0 4px 4px rgba(11, 27, 43, 0.35));
+}
+
+.home-cta {
+  background: var(--blue);
+}
+
+.home-cta-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding-top: 72px;
+  padding-bottom: 72px;
+}
+
+.home-cta h2 {
+  font-size: 34px;
+  color: #fff;
+}
+
+.home-cta p {
+  margin-top: 8px;
+  font-size: 17px;
+  color: #d6e4f3;
+}
+
+.home-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .home-hero-content {
+    padding: 64px 16px 56px;
+  }
+
+  .home-hero h1 {
+    font-size: 42px;
+  }
+
+  .home-lede {
+    font-size: 17px;
+  }
+
+  .home-section {
+    padding-top: 56px;
+  }
+
+  .home-title {
+    font-size: 30px;
+  }
+
+  .home-steps li + li {
+    border-left: 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .home-mapcard-text {
+    padding: 32px 24px;
+  }
+}

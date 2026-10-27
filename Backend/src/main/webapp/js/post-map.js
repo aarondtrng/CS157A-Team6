@@ -39,11 +39,12 @@
     if (marker) {
       marker.setLatLng(latlng);
     } else {
-      marker = L.marker(latlng).addTo(map);
+      marker = L.marker(latlng, { icon: window.sfPinIcon('FOUND') }).addTo(map);
     }
     latInput.value = latlng.lat.toFixed(7);
     lngInput.value = latlng.lng.toFixed(7);
     chosenText.textContent = 'Spot chosen. Click the map again to move the pin.';
+    chosenText.parentElement.classList.add('is-chosen');
     clearButton.hidden = false;
   }
 
@@ -55,6 +56,7 @@
     latInput.value = '';
     lngInput.value = '';
     chosenText.textContent = 'No spot chosen yet.';
+    chosenText.parentElement.classList.remove('is-chosen');
     clearButton.hidden = true;
   }
 

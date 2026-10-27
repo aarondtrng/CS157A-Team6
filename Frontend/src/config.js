@@ -8,3 +8,4 @@ export const REPORT_LOST_URL = `${backendUrl}/post/new?type=LOST`
 export const LOGIN_URL = `${backendUrl}/login`
 export const SIGNUP_URL = `${backendUrl}/signup`
 export const LOGOUT_URL = `${backendUrl}/logout`
+export const profileUrl = (userId) => `${backendUrl}/profile?id=${userId}`

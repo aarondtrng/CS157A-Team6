@@ -1,20 +1,25 @@
-import FadeIn from './FadeIn.jsx'
-import { CATALOG_URL } from '../config.js'
+import { REPORT_LOST_URL } from '../config.js'
 import styles from './CallToAction.module.css'
+
+// "Found" posts open the form with the found option preselected; guests are sent to log in first.
+const REPORT_FOUND_URL = REPORT_LOST_URL.replace('type=LOST', 'type=FOUND')
 
 function CallToAction() {
   return (
-    <section className={styles.cta}>
-      <div className="container">
-        <FadeIn className={styles.inner}>
-          <h2>Lost something or found an item?</h2>
-          <p className={styles.subtext}>
-            Create a post in minutes and reach students across campus.
-          </p>
-          <a href={CATALOG_URL} className="btn btn-gold">
-            Get Started
+    <section className={styles.band}>
+      <div className={`container ${styles.inner}`}>
+        <div className={styles.text}>
+          <h2 className={styles.title}>Found something that isn&rsquo;t yours?</h2>
+          <p className={styles.body}>Posting takes a minute. Sign in with your SJSU email.</p>
+        </div>
+        <div className={styles.actions}>
+          <a href={REPORT_FOUND_URL} className="btn btn-gold">
+            Report a found item
           </a>
-        </FadeIn>
+          <a href={REPORT_LOST_URL} className="btn btn-ghost">
+            Report a lost item
+          </a>
+        </div>
       </div>
     </section>
   )
