@@ -73,7 +73,6 @@ public class AuthService {
      * Creates a student account from already-validated input.
      *
      * @return the new user_id, or Optional.empty() when the email is already registered
-     * @throws UnsupportedOperationException until the UserDao SQL is implemented
      */
     public Optional<Integer> signUp(String firstName, String lastName, String email, String clientHash)
             throws SQLException {
@@ -85,7 +84,6 @@ public class AuthService {
      *
      * @return the account when both match; Optional.empty() for an unknown email or wrong password
      *         (callers must show the same message for both)
-     * @throws UnsupportedOperationException until the UserDao SQL is implemented
      */
     public Optional<User> logIn(String email, String clientHash) throws SQLException {
         if (email.isEmpty() || !isClientHash(clientHash)) {

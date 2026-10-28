@@ -19,25 +19,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * JDBC access for the item catalog and item posts.
- *
- * SQL here uses only course-approved features (see CLAUDE.md): SELECT / FROM / WHERE, JOIN ... ON, LIKE,
- * correlated subqueries, NOT EXISTS, ORDER BY, and COUNT. Every value from a request is bound with a
- * PreparedStatement parameter; the only text added to a statement is fixed fragments chosen in this class.
- *
- * Not yet tested against a real MySQL database.
- */
+/** Database access for catalog items and posts. */
 public class ItemDao {
-    /**
-     * ASSUMED status values. The schema leaves allowed values undefined (CLAUDE.md "Known schema gaps"):
-     * an Item whose status is REMOVED is hidden, and a RedditItem is shown only once its approval_status
-     * is APPROVED. Change these two constants if the team picks different values.
-     */
+    /** Status values we picked ourselves. the schema doesn't define them yet. */
     static final String STATUS_REMOVED = "REMOVED";
     static final String APPROVAL_APPROVED = "APPROVED";
 
-    /** Public-visibility test shared by every query: not removed, and not an unapproved Reddit import. */
+    /** Filter for valid items */
     private static final String PUBLIC_ONLY =
             " WHERE i.status <> ?"
             + " AND NOT EXISTS (SELECT * FROM RedditItem r"
@@ -56,13 +44,7 @@ public class ItemDao {
             + " AND ii.display_order = (SELECT MIN(ii2.display_order) FROM ItemImage ii2"
             + " WHERE ii2.item_id = i.item_id)) AS thumbnail_url";
 
-    /**
-     * Returns one page of publicly visible items for the catalog, filtered by search text and category
-     * and sorted as requested. Empty list when nothing matches.
-     *
-     * Paging: the statement is not given a row limit (LIMIT is not on the approved SQL list). Instead the
-     * driver is told to stop after offset + pageSize rows and this method skips the first offset rows.
-     */
+    /** Gets one page of public items for the catalog, using the search, category and sort the user chose. */
     public List<ItemSummary> searchPublicItems(CatalogQuery query) {
         String sql = "SELECT i.item_id, i.title, i.description, i.type, i.status, c.category_name,"
                 + " i.created_at, " + THUMBNAIL
@@ -100,11 +82,7 @@ public class ItemDao {
         }
     }
 
-    /**
-     * Returns one publicly visible item with its category, poster (id, name, profile image only: never
-     * email, phone, or password hash), ordered images, and location if any. Optional.empty() when no such
-     * public item exists (the caller answers 404).
-     */
+    /** Loads a full public post (images, location, basic poster info), or empty if it doesn't exist. */
     public Optional<ItemDetail> findPublicItemById(int itemId) {
         String itemSql = "SELECT i.item_id, i.title, i.description, i.type, i.status, c.category_name,"
                 + " i.category_id, i.created_at, u.user_id, u.name, u.profile_image"
@@ -182,10 +160,7 @@ public class ItemDao {
         }
     }
 
-    /**
-     * Counts all publicly visible items matching the same search text and category filter as
-     * searchPublicItems (ignoring sort and paging), so the page can show total pages. 0 when none match.
-     */
+    /** Counts the matching public items so we know how many pages there are. */
     public int countPublicItems(CatalogQuery query) {
         String sql = "SELECT COUNT(*) FROM Item i" + filterSql(query);
 
@@ -217,14 +192,7 @@ public class ItemDao {
         }
     }
 
-    /**
-     * Saves a new post: one Item row, one Location row, and one ItemImage row per photo, all in a single
-     * transaction, so a failure part-way leaves nothing behind. The status and created_at columns use
-     * their table defaults (ACTIVE and the current time).
-     *
-     * @return the new item_id
-     * @throws DataAccessException if any insert fails (everything is rolled back)
-     */
+    /** Saves the item, its location and its photos together; if any part fails, none of it is saved. */
     public int createItem(NewPost post) {
         String itemSql = "INSERT INTO Item (user_id, category_id, title, description, type)"
                 + " VALUES (?, ?, ?, ?, ?)";
@@ -285,12 +253,7 @@ public class ItemDao {
         }
     }
 
-    /**
-     * Returns the newest publicly visible items that have a location, for the campus map (at most
-     * MAX_MAP_ITEMS). Items without a location are left out. Coordinates are returned exactly as
-     * stored. The row cap is set on the statement because LIMIT is not on the
-     * approved SQL list.
-     */
+    /** Gets the newest public items that have a location, for the campus map. */
     public List<MapItem> findMapItems() {
         String sql = "SELECT i.item_id, i.title, i.type, c.category_name,"
                 + " l.location_name, l.latitude, l.longitude, " + THUMBNAIL
@@ -327,11 +290,7 @@ public class ItemDao {
         }
     }
 
-    /**
-     * Returns the publicly visible items posted by one user, newest first (at most maxItems), for the
-     * profile page. Same visibility test as the catalog, plus one more condition on the poster. The row cap
-     * is set on the statement because LIMIT is not on the approved SQL list.
-     */
+    /** Gets one user's public posts, newest first, for their profile page. */
     public List<ItemSummary> findPublicItemsByUser(int userId, int maxItems) {
         String sql = "SELECT i.item_id, i.title, i.description, i.type, i.status, c.category_name,"
                 + " i.created_at, " + THUMBNAIL
@@ -379,10 +338,7 @@ public class ItemDao {
         return sql.toString();
     }
 
-    /**
-     * Binds the parameters of filterSql(query), in the same order. The ids and the search text are only
-     * ever bound as values, never added to the statement text.
-     */
+    /** Fills in the ? values for the filters, in the same order filterSql added them. */
     private static void bindFilters(PreparedStatement statement, CatalogQuery query) throws SQLException {
         int index = 1;
         statement.setString(index++, STATUS_REMOVED);
@@ -397,10 +353,7 @@ public class ItemDao {
         }
     }
 
-    /**
-     * Fixed ORDER BY text for each sort option (never built from user text). The item_id tiebreaker keeps
-     * the order stable, so an item cannot repeat or vanish between pages.
-     */
+    /** Picks the ORDER BY for the chosen sort; item_id breaks ties so paging stays consistent. */
     private static String orderBySql(CatalogQuery query) {
         switch (query.getSort()) {
             case OLDEST:
@@ -415,10 +368,7 @@ public class ItemDao {
         }
     }
 
-    /**
-     * Makes user search text match literally: LIKE treats % and _ as wildcards, and MySQL's default escape
-     * character is the backslash, so each of these three characters gets a backslash in front.
-     */
+    /** Escapes %, _ and \ so the search text is matched literally. */
     private static String escapeLike(String text) {
         return text.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
     }

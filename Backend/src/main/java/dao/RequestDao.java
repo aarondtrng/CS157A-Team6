@@ -13,24 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * JDBC access for ownership requests (table ItemRequest).
- *
- * SQL here uses only course-approved features (see CLAUDE.md): INSERT ... SELECT, UPDATE ... SET ... WHERE,
- * SELECT / FROM / WHERE, JOIN ... ON, IN, NOT EXISTS, subqueries, ORDER BY. Every value from a request is
- * bound with a PreparedStatement parameter; the only text added to a statement is a fixed number of "?"
- * placeholders chosen in this class.
- *
- * Ownership and state rules are part of each statement's WHERE clause, so an id someone guesses cannot
- * touch another student's request: the statement then changes 0 rows and the method returns false.
- *
- * Not yet tested against a real MySQL database.
- */
+/** Database access for ownership requests. */
 public class RequestDao {
-    /**
-     * ASSUMED item status values (the schema leaves them undefined): a post starts ACTIVE (the column
-     * default) and becomes RETURNED when its request is completed. Change here if the team picks others.
-     */
+    /** Item status values we picked ourselves; the schema doesn't define them yet. */
     public static final String ITEM_ACTIVE = "ACTIVE";
     static final String ITEM_RETURNED = "RETURNED";
 
@@ -39,14 +24,7 @@ public class RequestDao {
     /** Each request list shows at most this many of the newest requests, so the page stays bounded. */
     static final int MAX_ROWS = 100;
 
-    /**
-     * Saves a new PENDING request in one statement that also checks the rules, so two quick submits cannot
-     * both succeed. A row is inserted only when the item is a FOUND post that is still ACTIVE, is not the
-     * requester's own, is not an imported Reddit post (no student owns it), and the requester has no active
-     * (PENDING or ACCEPTED) request for it yet.
-     *
-     * @return true when the request was saved; false when any rule failed (nothing was written)
-     */
+    /** Adds a pending request, but only if the item can be requested and the student has no active request for it. */
     public boolean createRequest(int requesterId, int itemId, String description) {
         String sql = "INSERT INTO ItemRequest (requester_id, item_id, request_description, status)"
                 + " SELECT ?, i.item_id, ?, ?"
@@ -75,10 +53,7 @@ public class RequestDao {
         }
     }
 
-    /**
-     * The status (PENDING or ACCEPTED) of the student's active request for this item, or empty when the
-     * student has none. Used to show "your request" instead of the request button.
-     */
+    /** Returns the status of the student's active request for this item, if they have one. */
     public Optional<String> findActiveRequestStatus(int requesterId, int itemId) {
         String sql = "SELECT status FROM ItemRequest"
                 + " WHERE requester_id = ? AND item_id = ? AND status IN (?, ?)";
@@ -97,10 +72,7 @@ public class RequestDao {
         }
     }
 
-    /**
-     * The requests this student made, newest first (at most MAX_ROWS). The "other user" of each row is the
-     * creator of the requested post.
-     */
+    /** Gets the requests this student has made, newest first. */
     public List<RequestRow> findRequestsMadeBy(int requesterId) {
         String sql = "SELECT r.request_id, r.item_id, i.title, u.user_id, u.name,"
                 + " r.request_description, r.status, r.created_at"
@@ -112,10 +84,7 @@ public class RequestDao {
         return queryRows(sql, requesterId, "RequestDao.findRequestsMadeBy failed");
     }
 
-    /**
-     * The requests on posts created by this student, newest first (at most MAX_ROWS). The "other user" of
-     * each row is the requester; only the requester's id and name are read.
-     */
+    /** Gets the requests other students made on this student's posts, newest first. */
     public List<RequestRow> findRequestsOnPostsOf(int posterId) {
         String sql = "SELECT r.request_id, r.item_id, i.title, u.user_id, u.name,"
                 + " r.request_description, r.status, r.created_at"
@@ -127,13 +96,7 @@ public class RequestDao {
         return queryRows(sql, posterId, "RequestDao.findRequestsOnPostsOf failed");
     }
 
-    /**
-     * Moves a request to a new status on behalf of the creator of the requested post. Changes the row only
-     * when the post belongs to posterId and the request is currently in one of the allowed statuses.
-     *
-     * @return true when exactly one request was changed; false when it does not exist, is not on this
-     *         student's post, or is not in an allowed status
-     */
+    /** Lets the post's owner change a request's status; returns false if they aren't allowed to. */
     public boolean changeStatusAsPoster(int requestId, int posterId, String newStatus, String... allowedCurrent) {
         String sql = "UPDATE ItemRequest SET status = ?"
                 + " WHERE request_id = ? AND status IN (" + placeholders(allowedCurrent.length) + ")"
@@ -154,14 +117,7 @@ public class RequestDao {
         }
     }
 
-    /**
-     * Completes a return: marks an ACCEPTED request COMPLETED and its item RETURNED, in one transaction, so
-     * one cannot happen without the other. Only the creator of the post can do this, and only while the
-     * item is still ACTIVE.
-     *
-     * @return true when both changes were made; false (nothing changed) when the request is not ACCEPTED,
-     *         is not on this student's post, or the item is no longer ACTIVE
-     */
+    /** Marks the request completed and the item returned together, so one can't happen without the other. */
     public boolean completeRequest(int requestId, int posterId) {
         String requestSql = "UPDATE ItemRequest SET status = ?"
                 + " WHERE request_id = ? AND status = ?"
@@ -206,12 +162,7 @@ public class RequestDao {
         }
     }
 
-    /**
-     * Cancels a request on behalf of the student who made it. Only that student's own PENDING or ACCEPTED
-     * request can be cancelled.
-     *
-     * @return true when exactly one request was changed
-     */
+    /** Lets a student cancel their own pending or accepted request. */
     public boolean cancelRequest(int requestId, int requesterId) {
         String sql = "UPDATE ItemRequest SET status = ?"
                 + " WHERE request_id = ? AND requester_id = ? AND status IN (?, ?)";
@@ -233,7 +184,6 @@ public class RequestDao {
         try (Connection connection = DatabaseConfig.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, userId);
-            // LIMIT is not on the approved SQL list, so the driver is told to stop after MAX_ROWS rows.
             statement.setMaxRows(MAX_ROWS);
 
             List<RequestRow> rows = new ArrayList<>();

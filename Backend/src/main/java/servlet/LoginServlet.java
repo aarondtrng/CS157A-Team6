@@ -74,7 +74,6 @@ public class LoginServlet extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             request.setAttribute("error", "Incorrect email or password.");
         } catch (UnsupportedOperationException e) {
-            // DAO SQL has not been written yet: say so instead of pretending the login failed.
             response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
             request.setAttribute("notImplemented", true);
         } catch (SQLException | IllegalStateException e) {

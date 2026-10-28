@@ -32,7 +32,6 @@ public class CatalogService {
         return new CatalogQuery(searchText, categoryId, CatalogSort.fromParam(sort), pageNumber, PAGE_SIZE);
     }
 
-    /** @throws UnsupportedOperationException until the ItemDao SQL is implemented */
     public CatalogPage getCatalogPage(CatalogQuery query) {
         int total = itemDao.countPublicItems(query);
         return new CatalogPage(itemDao.searchPublicItems(query), total, query.getPage(), query.getPageSize());
@@ -43,7 +42,6 @@ public class CatalogService {
         return itemDao.searchPublicItems(new CatalogQuery("", null, CatalogSort.NEWEST, 1, count));
     }
 
-    /** @throws UnsupportedOperationException until the ItemDao SQL is implemented */
     public List<Category> getCategories() {
         return itemDao.findAllCategories();
     }

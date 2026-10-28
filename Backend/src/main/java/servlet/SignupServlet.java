@@ -87,7 +87,6 @@ public class SignupServlet extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_CONFLICT);
             request.setAttribute("errors", List.of("An account with this email already exists. Try logging in."));
         } catch (UnsupportedOperationException e) {
-            // DAO SQL has not been written yet: say so instead of pretending the account was created.
             response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
             request.setAttribute("notImplemented", true);
         } catch (SQLException | IllegalStateException e) {

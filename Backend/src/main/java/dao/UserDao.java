@@ -12,25 +12,14 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 import java.util.Optional;
 
-/**
- * JDBC access for accounts (login and sign up).
- *
- * SKELETON: the JDBC code is written, but the SQL strings below are blank. Until a string is filled in,
- * the method that uses it throws UnsupportedOperationException (the servlets show a "not implemented"
- * notice, same as the catalog). Every value is bound with PreparedStatement "?" placeholders.
- */
+/** Database access for user accounts and profiles. */
 public class UserDao {
 
     private static final String FIND_BY_EMAIL_SQL = "SELECT user_id, name, email, password_hash, role FROM User WHERE email = ?";
 
     private static final String INSERT_STUDENT_SQL = "INSERT INTO User (name, email, password_hash, role) VALUES (?, ?, ?, ?)";
 
-    /**
-     * Returns the account with this email.
-     *
-     * @return Optional.empty() when no account uses the email
-     * @throws UnsupportedOperationException until FIND_BY_EMAIL_SQL is written
-     */
+    /** Looks up an account by email, or empty if there isn't one. */
     public Optional<User> findByEmail(String email) throws SQLException {
         requireSql(FIND_BY_EMAIL_SQL, "findByEmail");
         try (Connection connection = DatabaseConfig.getConnection();
@@ -50,12 +39,7 @@ public class UserDao {
         }
     }
 
-    /**
-     * Creates a student account.
-     *
-     * @return the new user_id, or Optional.empty() when the email is already taken
-     * @throws UnsupportedOperationException until INSERT_STUDENT_SQL is written
-     */
+    /** Creates a student account and returns its id, or empty if the email is already taken. */
     public Optional<Integer> insertStudent(String name, String email, String passwordHash) throws SQLException {
         requireSql(INSERT_STUDENT_SQL, "insertStudent");
         try (Connection connection = DatabaseConfig.getConnection();

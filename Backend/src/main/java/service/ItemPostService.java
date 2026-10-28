@@ -30,7 +30,6 @@ public class ItemPostService {
         }
     }
 
-    /** @throws UnsupportedOperationException until the ItemDao SQL is implemented */
     public Optional<ItemDetail> getPublicPost(int itemId) {
         return itemDao.findPublicItemById(itemId);
     }

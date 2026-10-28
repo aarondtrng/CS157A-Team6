@@ -60,7 +60,6 @@ public class ItemPostServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         } catch (UnsupportedOperationException e) {
-            // DAO SQL has not been written yet: say so instead of showing a fake post.
             response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
             request.setAttribute("notImplemented", true);
         }
