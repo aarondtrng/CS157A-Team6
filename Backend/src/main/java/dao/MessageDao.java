@@ -15,28 +15,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * JDBC access for conversations and messages (tables Conversation, ConversationParticipant, Message).
- *
- * SQL here uses only course-approved features (see CLAUDE.md): SELECT / FROM / WHERE, JOIN ... ON,
- * correlated subqueries, EXISTS, ORDER BY, MAX, COUNT, INSERT (including INSERT ... SELECT), and UPDATE.
- * Every value is bound with a PreparedStatement parameter. Only 1:1 conversations are created.
- *
- * Not yet tested against a real MySQL database.
- */
+/** Database access for conversations and messages. */
 public class MessageDao {
-    /** The inbox shows at most this many conversations, and a thread at most this many recent messages. */
+    /** Caps so the inbox and a thread stay a reasonable size. */
     static final int MAX_CONVERSATIONS = 100;
     static final int MAX_MESSAGES = 200;
 
-    /** The id of the conversation's newest message; used three times below, so it is kept in one place. */
+    /** Id of the newest message in a conversation. */
     private static final String LATEST_ID =
             "(SELECT MAX(m2.message_id) FROM Message m2 WHERE m2.conversation_id = cp.conversation_id)";
 
-    /**
-     * The viewer's conversations, most recently active first, each with the other student, the latest
-     * message and the number of messages from the other student that the viewer has not read.
-     */
+    /** The user's conversations, newest first, with the last message and unread count. */
     public List<ConversationSummary> findConversations(int userId) {
         String sql = "SELECT cp.conversation_id, u.user_id, u.name,"
                 + " (SELECT m.text FROM Message m WHERE m.message_id = " + LATEST_ID + ") AS last_text,"
@@ -77,10 +66,7 @@ public class MessageDao {
         }
     }
 
-    /**
-     * The other student in the conversation, but only when the viewer is a participant. An empty result means
-     * "not found or not yours", and callers answer both the same way.
-     */
+    /** Gets the other person in a conversation. Empty if the user isn't in it. */
     public Optional<ConversationSummary> findConversationFor(int userId, int conversationId) {
         String sql = "SELECT me.conversation_id, u.user_id, u.name"
                 + " FROM ConversationParticipant me"
@@ -105,7 +91,7 @@ public class MessageDao {
         }
     }
 
-    /** The newest messages of a conversation, oldest first. The caller has already checked the viewer belongs to it. */
+    /** The latest messages in a conversation, oldest first. */
     public List<ChatMessage> findMessages(int conversationId) {
         String sql = "SELECT message_id, sender_id, text, sent_at, read_status FROM Message"
                 + " WHERE conversation_id = ? ORDER BY message_id DESC";
@@ -133,7 +119,7 @@ public class MessageDao {
         }
     }
 
-    /** Marks the other student's messages in this conversation as read, if the viewer is a participant. */
+    /** Marks the other person's messages as read. */
     public void markRead(int userId, int conversationId) {
         String sql = "UPDATE Message SET read_status = 1"
                 + " WHERE conversation_id = ? AND sender_id <> ? AND read_status = 0"
@@ -152,10 +138,7 @@ public class MessageDao {
         }
     }
 
-    /**
-     * Saves a message, but only when the sender is a participant of the conversation (the INSERT selects
-     * from ConversationParticipant, so a forged conversation id inserts nothing). Returns false in that case.
-     */
+    /** Saves a message. Returns false if the sender isn't in the conversation. */
     public boolean insertMessage(int senderId, int conversationId, String text) {
         String sql = "INSERT INTO Message (sender_id, conversation_id, text)"
                 + " SELECT ?, ?, ? FROM ConversationParticipant"
@@ -174,7 +157,7 @@ public class MessageDao {
         }
     }
 
-    /** The existing conversation between two students, if they have one. */
+    /** Finds the conversation between two users, if there is one. */
     public Optional<Integer> findDirectConversation(int userA, int userB) {
         String sql = "SELECT p1.conversation_id FROM ConversationParticipant p1"
                 + " JOIN ConversationParticipant p2 ON p2.conversation_id = p1.conversation_id"
@@ -194,7 +177,7 @@ public class MessageDao {
         }
     }
 
-    /** Creates a conversation and adds both students to it, in one transaction. Returns the new id. */
+    /** Creates a conversation with both users in it and returns its id. */
     public int createConversation(int userA, int userB) {
         String conversationSql = "INSERT INTO Conversation (created_at) VALUES (CURRENT_TIMESTAMP)";
         String participantSql = "INSERT INTO ConversationParticipant (user_id, conversation_id) VALUES (?, ?)";
