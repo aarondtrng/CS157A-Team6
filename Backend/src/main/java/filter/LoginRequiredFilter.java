@@ -22,7 +22,8 @@ import java.nio.charset.StandardCharsets;
  * needs an account (requests, messaging, reports), add its URL here. The servlet must also check the
  * user and role itself, because this filter only covers the URLs listed.
  */
-@WebFilter({"/post/new", "/profile/edit", "/request/new", "/requests", "/requests/action"})
+@WebFilter({"/post/new", "/profile/edit", "/request/new", "/requests", "/requests/action",
+        "/messages", "/messages/send", "/messages/start"})
 public class LoginRequiredFilter implements Filter {
 
     @Override

@@ -1,0 +1,349 @@
+/* Messages page: conversation list on the left, one conversation on the right. Colors and sizes come from
+   the variables in catalog.css. */
+.messages {
+  display: flex;
+  flex-wrap: wrap;
+  min-height: 640px;
+  overflow: hidden;
+}
+
+.convo-list {
+  flex: 1 1 300px;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+}
+
+.convo-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 20px;
+  background: var(--bg-hero);
+  border-bottom: 1px solid var(--border);
+}
+
+.convo-head h1 {
+  font-size: 20px;
+  letter-spacing: -0.02em;
+}
+
+.convo-head .act,
+.thread-head .act {
+  text-decoration: none;
+}
+
+.convo-list ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-y: auto;
+}
+
+.convo-list li {
+  border-bottom: 1px solid var(--border);
+}
+
+.convo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  color: var(--ink);
+  text-decoration: none;
+  transition: background-color 0.15s;
+}
+
+.convo:hover {
+  color: var(--ink);
+  background: var(--bg-sunken);
+}
+
+.convo-current,
+.convo-current:hover {
+  background: var(--blue-soft);
+}
+
+.av {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--blue);
+  border-radius: 50%;
+}
+
+.av-0 { background: #1e5b32; }
+.av-1 { background: #0055a2; }
+.av-2 { background: #5b3a8c; }
+.av-3 { background: #8c2f39; }
+.av-4 { background: #3d4c5c; }
+
+.convo-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.convo-top,
+.convo-bottom {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.convo-bottom {
+  align-items: center;
+}
+
+.convo-name {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.convo-when {
+  flex: none;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.convo-preview {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 14px;
+  color: var(--muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.convo-unread .convo-name {
+  font-weight: 700;
+}
+
+.convo-unread .convo-preview {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.convo-badge {
+  flex: none;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--blue);
+  border-radius: 10px;
+}
+
+.convo-empty {
+  padding: 20px;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.convo-note {
+  margin-top: auto;
+  padding: 14px 20px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+  background: var(--bg-hero);
+  border-top: 1px solid var(--border);
+}
+
+/* ---------- One conversation ---------- */
+.thread {
+  flex: 999 1 480px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.thread-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.thread-who {
+  flex: 1 1 200px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.thread-who a {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.thread-who a:hover {
+  color: var(--blue);
+  text-decoration: underline;
+}
+
+.thread-who span {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.bubbles {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 320px;
+  margin: 0;
+  padding: 24px 24px 16px;
+  list-style: none;
+  background: var(--bg-sunken);
+}
+
+.day-label {
+  align-self: center;
+  padding: 8px 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.bubble-row {
+  max-width: 70%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bubble-theirs {
+  align-self: flex-start;
+}
+
+.bubble-mine {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.bubble {
+  padding: 10px 14px;
+  font-size: 15px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.bubble-theirs .bubble {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px 12px 12px 4px;
+}
+
+.bubble-mine .bubble {
+  color: #fff;
+  background: var(--blue);
+  border-radius: 12px 12px 4px 12px;
+}
+
+.bubble-meta {
+  padding: 0 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+}
+
+.composer textarea {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  resize: vertical;
+}
+
+.thread .flash {
+  margin: 12px 16px 0;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+}
+
+.thread .flash-bad {
+  color: var(--red-ink);
+  background: #fbeeee;
+  border: 1px solid #e2b7b7;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+
+.thread-note {
+  padding: 0 20px 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.thread-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 40px 24px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.thread-empty h2 {
+  font-size: 18px;
+  color: var(--ink);
+}
+
+@media (max-width: 768px) {
+  .convo-list {
+    flex-basis: 100%;
+    max-width: none;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .bubble-row {
+    max-width: 88%;
+  }
+}

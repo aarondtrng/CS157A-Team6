@@ -19,6 +19,7 @@
     <a class="nav-pill" href="${pageContext.request.contextPath}/items" ${navPath == '/items' or navPath == '/item' ? 'aria-current="page"' : ''}>Browse</a>
     <a class="nav-pill" href="${pageContext.request.contextPath}/map" ${navPath == '/map' ? 'aria-current="page"' : ''}>Campus map</a>
     <c:if test="${sessionScope.userRole == 'STUDENT'}">
+      <a class="nav-pill" href="${pageContext.request.contextPath}/messages" ${navPath == '/messages' ? 'aria-current="page"' : ''}>Messages</a>
       <a class="nav-pill" href="${pageContext.request.contextPath}/requests" ${navPath == '/requests' ? 'aria-current="page"' : ''}>My requests</a>
     </c:if>
   </div>

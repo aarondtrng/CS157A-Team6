@@ -40,6 +40,14 @@
         <c:if test="${isOwner}">
           <a class="btn" href="${ctx}/profile/edit?id=${profile.userId}">Edit profile</a>
         </c:if>
+        <%-- Opens (or creates) the conversation with this student. Students only, and not with yourself. --%>
+        <c:if test="${canMessage}">
+          <form class="inline-form" method="post" action="${ctx}/messages/start">
+            <input type="hidden" name="csrfToken" value="<c:out value='${sessionScope.csrfToken}'/>" />
+            <input type="hidden" name="userId" value="${profile.userId}" />
+            <button type="submit" class="btn btn-outline">Message</button>
+          </form>
+        </c:if>
       </div>
       <%-- All on one line: the description keeps its line breaks (pre-line), so no stray whitespace inside. --%>
       <p class="profile-bio"><c:choose><c:when test="${empty profile.profileDescription}">No description provided.</c:when><c:otherwise><c:out value="${profile.profileDescription}"/></c:otherwise></c:choose></p>

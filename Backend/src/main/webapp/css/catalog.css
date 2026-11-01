@@ -764,6 +764,12 @@ input[type='checkbox'] {
   cursor: not-allowed;
 }
 
+/* Message button posted as a tiny form (profile and post pages). */
+.inline-form {
+  display: inline-flex;
+  margin: 0;
+}
+
 .act-outline {
   min-height: 40px;
   padding: 0 14px;

@@ -90,9 +90,20 @@
                     <c:url var="loginUrl" value="/login"><c:param name="next" value="/item?id=${post.itemId}"/></c:url>
                     <a class="btn btn-small" href="${loginUrl}" title="Log in with your SJSU email to request this item or report the post.">Log in to respond</a>
                   </c:if>
-                  <%-- Shown but not clickable yet; messaging is not built. --%>
-                  <button type="button" class="act act-outline" disabled aria-disabled="true"
-                          title="Message is coming soon"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"></path></svg>Message</button>
+                  <%-- A student can message someone else's poster; for everyone else the button is shown but disabled. --%>
+                  <c:choose>
+                    <c:when test="${isStudent and not isOwner}">
+                      <form class="inline-form" method="post" action="${ctx}/messages/start">
+                        <input type="hidden" name="csrfToken" value="<c:out value='${sessionScope.csrfToken}'/>" />
+                        <input type="hidden" name="userId" value="${post.posterUserId}" />
+                        <button type="submit" class="act act-outline"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"></path></svg>Message</button>
+                      </form>
+                    </c:when>
+                    <c:otherwise>
+                    <button type="button" class="act act-outline" disabled aria-disabled="true"
+                          title="Log in as a student to message"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"></path></svg>Message</button>
+                    </c:otherwise>
+                  </c:choose>
                 </div>
               </div>
             </section>

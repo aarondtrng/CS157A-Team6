@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.ItemSummary;
+import model.User;
 import model.UserProfile;
 import service.ItemPostService;
 import service.UserProfileService;
@@ -58,6 +59,10 @@ public class UserProfileServlet extends HttpServlet {
             request.setAttribute("profile", profile.get());
             request.setAttribute("loggedIn", currentUserId != null);
             request.setAttribute("isOwner", currentUserId != null && currentUserId == userId);
+            // Messaging is between two students: the viewer must be a student, and the profile someone else's.
+            request.setAttribute("canMessage", currentUserId != null && currentUserId != userId
+                    && User.ROLE_STUDENT.equals(AuthUtil.currentRole(request))
+                    && User.ROLE_STUDENT.equals(profile.get().getRole()));
             addPosts(request, userId);
             request.getRequestDispatcher(VIEW).forward(request, response);
 
