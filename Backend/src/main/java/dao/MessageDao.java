@@ -1,6 +1,7 @@
 package dao;
 
 import config.DatabaseConfig;
+import util.ImageStore;
 import model.ChatMessage;
 import model.ConversationSummary;
 
@@ -12,7 +13,9 @@ import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /** Database access for conversations and messages. */
@@ -113,9 +116,59 @@ public class MessageDao {
                 }
             }
             Collections.reverse(messages);
+            if (!messages.isEmpty()) {
+                addPhotos(connection, conversationId, messages);
+            }
             return messages;
         } catch (SQLException | IllegalStateException e) {
             throw new DataAccessException("MessageDao.findMessages failed", e);
+        }
+    }
+
+    /** Attaches each message's photos (file names only) to the loaded messages. */
+    private static void addPhotos(Connection connection, int conversationId, List<ChatMessage> messages)
+            throws SQLException {
+        String sql = "SELECT a.message_id, a.image_url FROM MessageAttachment a"
+                + " JOIN Message m ON m.message_id = a.message_id"
+                + " WHERE m.conversation_id = ? AND a.message_id >= ?"
+                + " ORDER BY a.attachment_id";
+
+        Map<Integer, ChatMessage> byId = new HashMap<>();
+        for (ChatMessage message : messages) {
+            byId.put(message.getMessageId(), message);
+        }
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, conversationId);
+            statement.setInt(2, messages.get(0).getMessageId());
+            try (ResultSet rows = statement.executeQuery()) {
+                while (rows.next()) {
+                    ChatMessage message = byId.get(rows.getInt("message_id"));
+                    String url = rows.getString("image_url");
+                    if (message != null && url != null && url.startsWith(ImageStore.MESSAGE_PREFIX)) {
+                        message.addImage(url.substring(ImageStore.MESSAGE_PREFIX.length()));
+                    }
+                }
+            }
+        }
+    }
+
+    /** True if the user is in the conversation that the photo was sent in. */
+    public boolean canViewPhoto(int userId, String imageUrl) {
+        String sql = "SELECT a.attachment_id FROM MessageAttachment a"
+                + " JOIN Message m ON m.message_id = a.message_id"
+                + " JOIN ConversationParticipant cp ON cp.conversation_id = m.conversation_id"
+                + " WHERE a.image_url = ? AND cp.user_id = ?";
+
+        try (Connection connection = DatabaseConfig.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, imageUrl);
+            statement.setInt(2, userId);
+            statement.setMaxRows(1);
+            try (ResultSet rows = statement.executeQuery()) {
+                return rows.next();
+            }
+        } catch (SQLException | IllegalStateException e) {
+            throw new DataAccessException("MessageDao.canViewPhoto failed", e);
         }
     }
 
@@ -138,20 +191,48 @@ public class MessageDao {
         }
     }
 
-    /** Saves a message. Returns false if the sender isn't in the conversation. */
-    public boolean insertMessage(int senderId, int conversationId, String text) {
-        String sql = "INSERT INTO Message (sender_id, conversation_id, text)"
+    /** Saves a message and its photos together. Returns false if the sender isn't in the conversation. */
+    public boolean insertMessage(int senderId, int conversationId, String text, List<String> imageUrls) {
+        String messageSql = "INSERT INTO Message (sender_id, conversation_id, text)"
                 + " SELECT ?, ?, ? FROM ConversationParticipant"
                 + " WHERE user_id = ? AND conversation_id = ?";
+        String photoSql = "INSERT INTO MessageAttachment (message_id, image_url) VALUES (?, ?)";
 
-        try (Connection connection = DatabaseConfig.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setInt(1, senderId);
-            statement.setInt(2, conversationId);
-            statement.setString(3, text);
-            statement.setInt(4, senderId);
-            statement.setInt(5, conversationId);
-            return statement.executeUpdate() == 1;
+        try (Connection connection = DatabaseConfig.getConnection()) {
+            connection.setAutoCommit(false);
+            try {
+                int messageId;
+                try (PreparedStatement statement =
+                             connection.prepareStatement(messageSql, Statement.RETURN_GENERATED_KEYS)) {
+                    statement.setInt(1, senderId);
+                    statement.setInt(2, conversationId);
+                    statement.setString(3, text);
+                    statement.setInt(4, senderId);
+                    statement.setInt(5, conversationId);
+                    if (statement.executeUpdate() != 1) {
+                        connection.rollback();
+                        return false;
+                    }
+                    try (ResultSet keys = statement.getGeneratedKeys()) {
+                        if (!keys.next()) {
+                            throw new SQLException("No message id was returned");
+                        }
+                        messageId = keys.getInt(1);
+                    }
+                }
+                try (PreparedStatement statement = connection.prepareStatement(photoSql)) {
+                    for (String imageUrl : imageUrls) {
+                        statement.setInt(1, messageId);
+                        statement.setString(2, imageUrl);
+                        statement.executeUpdate();
+                    }
+                }
+                connection.commit();
+                return true;
+            } catch (SQLException | RuntimeException e) {
+                connection.rollback();
+                throw e;
+            }
         } catch (SQLException | IllegalStateException e) {
             throw new DataAccessException("MessageDao.insertMessage failed", e);
         }

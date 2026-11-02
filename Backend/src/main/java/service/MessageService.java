@@ -6,9 +6,14 @@ import model.ChatMessage;
 import model.ConversationSummary;
 import model.User;
 import model.UserProfile;
+import util.ImageSniffer;
+import util.ImageStore;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +24,8 @@ import java.util.Optional;
  */
 public class MessageService {
     public static final int MAX_TEXT_LENGTH = 5000;
+    public static final int MAX_PHOTOS = 4;
+    public static final int MAX_PHOTO_BYTES = 5 * 1024 * 1024;
 
     /** Everything the messages page shows: the inbox, the open conversation (if any) and its messages. */
     public static class Page {
@@ -108,10 +115,24 @@ public class MessageService {
         return raw == null ? "" : raw.replace("\r\n", "\n").replace('\r', '\n').strip();
     }
 
-    /** Null when the text can be sent; otherwise a short code ("empty", "long", "chars") for the page. */
-    public String checkText(String text) {
+    /**
+     * Null when the message can be sent; otherwise a short code ("empty", "long", "chars", "photo-count",
+     * "photo-size", "photo-type") for the page. Text may be empty when at least one photo is attached.
+     */
+    public String checkMessage(String text, List<byte[]> photos) {
+        if (photos.size() > MAX_PHOTOS) {
+            return "photo-count";
+        }
+        for (byte[] photo : photos) {
+            if (photo.length > MAX_PHOTO_BYTES) {
+                return "photo-size";
+            }
+            if (ImageSniffer.extensionFor(photo) == null) {
+                return "photo-type";
+            }
+        }
         if (text.isEmpty()) {
-            return "empty";
+            return photos.isEmpty() ? "empty" : null;
         }
         if (text.length() > MAX_TEXT_LENGTH) {
             return "long";
@@ -125,9 +146,38 @@ public class MessageService {
         return null;
     }
 
-    /** Saves the message. False when the student is not in that conversation. */
-    public boolean send(int userId, int conversationId, String text) {
-        return messageDao.insertMessage(userId, conversationId, text);
+    /**
+     * Saves the message and its photos (already checked with checkMessage). False when the student is not in
+     * that conversation. If saving fails, any photo files already written are deleted again.
+     *
+     * @throws UncheckedIOException if a photo cannot be written to the upload folder
+     */
+    public boolean send(int userId, int conversationId, String text, List<byte[]> photos) {
+        if (messageDao.findConversationFor(userId, conversationId).isEmpty()) {
+            return false;
+        }
+        List<String> savedUrls = new ArrayList<>();
+        try {
+            for (byte[] photo : photos) {
+                savedUrls.add(ImageStore.saveMessagePhoto(photo, ImageSniffer.extensionFor(photo)));
+            }
+            boolean sent = messageDao.insertMessage(userId, conversationId, text, savedUrls);
+            if (!sent) {
+                savedUrls.forEach(ImageStore::deleteQuietly);
+            }
+            return sent;
+        } catch (IOException e) {
+            savedUrls.forEach(ImageStore::deleteQuietly);
+            throw new UncheckedIOException("Could not store a photo", e);
+        } catch (RuntimeException e) {
+            savedUrls.forEach(ImageStore::deleteQuietly);
+            throw e;
+        }
+    }
+
+    /** True if the student is in the conversation the stored message photo was sent in. */
+    public boolean canViewPhoto(int userId, String fileName) {
+        return messageDao.canViewPhoto(userId, ImageStore.MESSAGE_PREFIX + fileName);
     }
 
     /**

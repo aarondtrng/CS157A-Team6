@@ -67,6 +67,9 @@ public class ConversationSummary {
             return lastSentAt == null ? "No messages yet" : "";
         }
         String flat = lastText.replaceAll("\\s+", " ").strip();
+        if (flat.isEmpty()) {
+            flat = "Photo";
+        }
         return lastSenderId != null && lastSenderId != otherUserId ? "You: " + flat : flat;
     }
 

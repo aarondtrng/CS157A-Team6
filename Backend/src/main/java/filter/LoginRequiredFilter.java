@@ -23,7 +23,7 @@ import java.nio.charset.StandardCharsets;
  * user and role itself, because this filter only covers the URLs listed.
  */
 @WebFilter({"/post/new", "/profile/edit", "/request/new", "/requests", "/requests/action",
-        "/messages", "/messages/send", "/messages/start"})
+        "/messages", "/messages/send", "/messages/start", "/messages/image/*"})
 public class LoginRequiredFilter implements Filter {
 
     @Override

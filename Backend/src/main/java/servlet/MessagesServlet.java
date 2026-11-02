@@ -14,6 +14,7 @@ import util.AuthUtil;
 import util.CsrfUtil;
 
 import java.io.IOException;
+import java.util.List;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -71,7 +72,8 @@ public class MessagesServlet extends HttpServlet {
         request.setAttribute("csrfToken", CsrfUtil.token(request));
         // One-time message after a redirect; only these exact values are shown.
         String error = request.getParameter("error");
-        if ("empty".equals(error) || "long".equals(error) || "chars".equals(error) || "failed".equals(error)) {
+        if (error != null
+                && List.of("empty", "long", "chars", "failed", "photo-count", "photo-size", "photo-type").contains(error)) {
             request.setAttribute("sendError", error);
         }
         request.getRequestDispatcher(VIEW).forward(request, response);

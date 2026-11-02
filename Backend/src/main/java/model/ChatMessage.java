@@ -3,6 +3,8 @@ package model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /** One message in a conversation, as the page shows it. */
@@ -15,6 +17,8 @@ public class ChatMessage {
     private final String text;
     private final LocalDateTime sentAt;
     private final boolean read;
+    /** File names of the photos attached to this message, in the order they were sent. */
+    private final List<String> images = new ArrayList<>();
     /** Set by the service: true for the viewer's own messages. */
     private boolean mine;
     /** Set by the service on the first message of each day ("TODAY", "YESTERDAY", "OCT 24"); else null. */
@@ -48,6 +52,14 @@ public class ChatMessage {
 
     public boolean isRead() {
         return read;
+    }
+
+    public List<String> getImages() {
+        return images;
+    }
+
+    public void addImage(String fileName) {
+        images.add(fileName);
     }
 
     public boolean isMine() {
