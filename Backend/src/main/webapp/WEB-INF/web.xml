@@ -11,6 +11,12 @@
     <param-value>http://localhost:5173/</param-value>
   </context-param>
 
+  <!-- Keep permission errors inside the app instead of using Tomcat's default error response. -->
+  <error-page>
+    <error-code>403</error-code>
+    <location>/WEB-INF/views/forbidden.jsp</location>
+  </error-page>
+
   <!-- Session cookie: hidden from scripts, not sent with cross-site POSTs, and the session ends after 30 idle
        minutes. Tomcat adds Secure by itself when the page was loaded over HTTPS (plain http://localhost
        still works for development). -->

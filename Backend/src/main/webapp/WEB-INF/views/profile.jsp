@@ -37,6 +37,13 @@
           <h1 id="profile-name"><c:out value="${profile.name}"/></h1>
           <p>Student</p>
         </div>
+        <c:if test="${not isOwner}">
+          <c:url var="reportUrl" value="/report/new"><c:param name="type" value="profile"/><c:param name="id" value="${profile.userId}"/></c:url>
+          <c:if test="${empty sessionScope.userId}">
+            <c:url var="reportUrl" value="/login"><c:param name="next" value="/report/new?type=profile&id=${profile.userId}"/></c:url>
+          </c:if>
+          <a class="btn btn-outline" href="<c:out value='${reportUrl}'/>">Report profile</a>
+        </c:if>
         <c:if test="${isOwner}">
           <a class="btn" href="${ctx}/profile/edit?id=${profile.userId}">Edit profile</a>
         </c:if>

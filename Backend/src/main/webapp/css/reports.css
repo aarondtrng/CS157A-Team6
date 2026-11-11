@@ -1,0 +1,12 @@
+/* Report submission and administrator review. */
+.reports-main { max-width: 960px; padding-bottom: 48px; }
+.report-filter, .report-actions, .report-heading { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.report-filter { margin: 24px 0; }
+.report-filter select { padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: white; color: var(--ink); font: inherit; }
+.report-list { list-style: none; margin: 20px 0; padding: 0; display: grid; gap: 20px; }
+.report-card { padding: 24px; overflow-wrap: anywhere; }
+.report-heading { justify-content: space-between; }
+.report-heading h2 { margin: 0; font-size: 22px; }
+.report-card h3 { font-size: 16px; margin-bottom: 8px; }
+.report-reason { white-space: pre-wrap; }
+.report-actions { margin-top: 20px; }
