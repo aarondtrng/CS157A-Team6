@@ -120,11 +120,32 @@
                           <img class="post-card-thumb" src="<c:out value='${thumbSrc}'/>" alt="" loading="lazy" />
                         </c:if>
                         </div>
-                        <%-- Message, Share and Report are shown but not clickable yet (they come with messaging and reports). --%>
                         <div class="post-card-actions">
-                          <button type="button" class="act" disabled aria-disabled="true" title="Message is coming soon"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"></path></svg>Message</button>
-                          <button type="button" class="act" disabled aria-disabled="true" title="Share is coming soon"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M16 6l-4-4-4 4M12 2v13"></path></svg>Share</button>
-                          <button type="button" class="act" disabled aria-disabled="true" title="Report is coming soon"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 4h11l-2 4 2 4H5"></path></svg>Report</button>
+                          <c:if test="${empty sessionScope.userId or sessionScope.userId != item.posterUserId}">
+                            <c:choose>
+                              <c:when test="${sessionScope.userRole == 'STUDENT'}">
+                                <form class="inline-form" method="post" action="${ctx}/messages/start">
+                                  <input type="hidden" name="csrfToken" value="<c:out value='${csrfToken}'/>" />
+                                  <input type="hidden" name="userId" value="${item.posterUserId}" />
+                                  <button type="submit" class="act"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"></path></svg>Message</button>
+                                </form>
+                              </c:when>
+                              <c:when test="${empty sessionScope.userId}">
+                                <c:url var="messageLoginUrl" value="/login"><c:param name="next" value="/items"/></c:url>
+                                <a class="act" href="${messageLoginUrl}" title="Log in as a student to message"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"></path></svg>Message</a>
+                              </c:when>
+                            </c:choose>
+                          </c:if>
+                          <c:set var="shareUrl" value="${postUrl}"/>
+                          <c:set var="shareId" value="share-${item.itemId}"/>
+                          <%@ include file="/WEB-INF/views/fragments/share-control.jspf" %>
+                          <c:if test="${empty sessionScope.userId or sessionScope.userId != item.posterUserId}">
+                            <c:url var="reportUrl" value="/report/new"><c:param name="type" value="item"/><c:param name="id" value="${item.itemId}"/></c:url>
+                            <c:if test="${empty sessionScope.userId}">
+                              <c:url var="reportUrl" value="/login"><c:param name="next" value="/report/new?type=item&id=${item.itemId}"/></c:url>
+                            </c:if>
+                            <a class="act" href="<c:out value='${reportUrl}'/>"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 4h11l-2 4 2 4H5"></path></svg>Report</a>
+                          </c:if>
                         </div>
                       </article>
                     </li>
@@ -183,6 +204,7 @@
     </c:choose>
   </main>
   <%@ include file="/WEB-INF/views/fragments/footer.jspf" %>
+  <script src="${pageContext.request.contextPath}/js/share-link.js?v=${assetVersion}" defer></script>
   <script src="${pageContext.request.contextPath}/js/catalog-sort.js?v=${assetVersion}" defer></script>
 </body>
 </html>

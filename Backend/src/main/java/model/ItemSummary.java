@@ -7,6 +7,7 @@ public class ItemSummary {
     private static final int BRIEF_LENGTH = 140;
 
     private final int itemId;
+    private final int posterUserId;
     private final String title;
     private final String description;
     private final String type;
@@ -18,7 +19,13 @@ public class ItemSummary {
 
     public ItemSummary(int itemId, String title, String description, String type, String status,
                        String categoryName, LocalDateTime createdAt, String thumbnailUrl) {
+        this(itemId, title, description, type, status, categoryName, createdAt, thumbnailUrl, 0);
+    }
+
+    public ItemSummary(int itemId, String title, String description, String type, String status,
+                       String categoryName, LocalDateTime createdAt, String thumbnailUrl, int posterUserId) {
         this.itemId = itemId;
+        this.posterUserId = posterUserId;
         this.title = title;
         this.description = description;
         this.type = type;
@@ -30,6 +37,10 @@ public class ItemSummary {
 
     public int getItemId() {
         return itemId;
+    }
+
+    public int getPosterUserId() {
+        return posterUserId;
     }
 
     public String getTitle() {
