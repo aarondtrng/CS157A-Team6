@@ -102,6 +102,10 @@ Open these in a browser:
 - **Port 8080 already in use**: another Tomcat is running. Stop it with `brew services stop tomcat` or close the other terminal.
 - **Old code still showing**: delete `$CATALINA_HOME/webapps/spartanfinds/` and copy the WAR again.
 
+## Report system SQL
+
+Item posts and profiles link to a report form. Administrators have a Reports page to review, resolve, or dismiss reports. The five new SQL strings are intentionally blank in `Backend/src/main/java/dao/ReportDao.java`; insert your queries there using the parameter and result contracts in [the report query guide](Backend/db/REPORT_QUERIES.md). The guide maps each query to Chapter 6 slide concepts. Reports show an unavailable message until their queries are filled in.
+
 ## Running the frontend
 
 ```bash

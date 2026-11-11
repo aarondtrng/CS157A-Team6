@@ -22,6 +22,9 @@
       <a class="nav-pill" href="${pageContext.request.contextPath}/messages" ${navPath == '/messages' ? 'aria-current="page"' : ''}>Messages</a>
       <a class="nav-pill" href="${pageContext.request.contextPath}/requests" ${navPath == '/requests' ? 'aria-current="page"' : ''}>My requests</a>
     </c:if>
+    <c:if test="${sessionScope.userRole == 'ADMINISTRATOR'}">
+      <a class="nav-pill" href="${pageContext.request.contextPath}/admin/reports" ${fn:startsWith(navPath, '/admin/reports') ? 'aria-current="page"' : ''}>Reports</a>
+    </c:if>
   </div>
   <div class="topbar-actions">
     <c:choose>

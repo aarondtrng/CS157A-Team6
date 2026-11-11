@@ -46,7 +46,7 @@ public class ItemDao {
 
     /** Gets one page of public items for the catalog, using the search, category and sort the user chose. */
     public List<ItemSummary> searchPublicItems(CatalogQuery query) {
-        String sql = "SELECT i.item_id, i.title, i.description, i.type, i.status, c.category_name,"
+        String sql = "SELECT i.item_id, i.user_id, i.title, i.description, i.type, i.status, c.category_name,"
                 + " i.created_at, " + THUMBNAIL
                 + " FROM Item i JOIN Category c ON c.category_id = i.category_id"
                 + filterSql(query)
@@ -73,7 +73,7 @@ public class ItemDao {
                             rows.getString("status"),
                             rows.getString("category_name"),
                             rows.getObject("created_at", LocalDateTime.class),
-                            rows.getString("thumbnail_url")));
+                            rows.getString("thumbnail_url"), rows.getInt("user_id")));
                 }
             }
             return items;

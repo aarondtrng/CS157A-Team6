@@ -1,0 +1,11 @@
+<%-- Including page supplies shareUrl and a unique shareId; share-link.js makes the URL absolute. --%>
+<details class="share-control" data-share-url="<c:out value='${shareUrl}'/>">
+  <summary class="act"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M16 6l-4-4-4 4M12 2v13"></path></svg>Share</summary>
+  <div class="share-panel">
+    <label for="${shareId}">Post link</label>
+    <input id="${shareId}" type="text" readonly value="<c:out value='${shareUrl}'/>" />
+    <button type="button" class="act" data-copy-link hidden>Copy link</button>
+    <span class="share-status" role="status" aria-live="polite"></span>
+    <noscript><a href="<c:out value='${shareUrl}'/>">Open post to copy its address</a></noscript>
+  </div>
+</details>

@@ -19,6 +19,7 @@
           integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
   <script src="${pageContext.request.contextPath}/js/map-pin.js?v=${assetVersion}" defer></script>
   <script src="${pageContext.request.contextPath}/js/item-map.js?v=${assetVersion}" defer></script>
+  <script src="${pageContext.request.contextPath}/js/share-link.js?v=${assetVersion}" defer></script>
   <script src="${pageContext.request.contextPath}/js/item-gallery.js?v=${assetVersion}" defer></script>
 </head>
 <body>
@@ -185,10 +186,18 @@
               </c:choose>
             </section>
 
-            <%-- Share and Report are shown but not clickable yet (sharing and reports are not built). --%>
+            <%-- Reports require an account; guests are returned here through the login flow. --%>
             <div class="report-row">
-              <button type="button" class="act" disabled aria-disabled="true" title="Share is coming soon"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M16 6l-4-4-4 4M12 2v13"></path></svg>Share</button>
-              <button type="button" class="act" disabled aria-disabled="true" title="Report is coming soon"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 4h11l-2 4 2 4H5"></path></svg>Report</button>
+              <c:url var="shareUrl" value="/item"><c:param name="id" value="${post.itemId}"/></c:url>
+              <c:set var="shareId" value="share-${post.itemId}"/>
+              <%@ include file="/WEB-INF/views/fragments/share-control.jspf" %>
+              <c:if test="${not isOwner}">
+                <c:url var="reportUrl" value="/report/new"><c:param name="type" value="item"/><c:param name="id" value="${post.itemId}"/></c:url>
+                <c:if test="${empty sessionScope.userId}">
+                  <c:url var="reportUrl" value="/login"><c:param name="next" value="/report/new?type=item&id=${post.itemId}"/></c:url>
+                </c:if>
+                <a class="act" href="<c:out value='${reportUrl}'/>">Report post</a>
+              </c:if>
             </div>
           </div>
 

@@ -734,9 +734,10 @@ input[type='checkbox'] {
   gap: 16px;
 }
 
-/* Message / Share / Report under each post. They are shown but disabled for now. */
+/* Keep card actions above the title link that stretches over the whole card. */
 .post-card-actions {
-  position: relative; /* above the title link that stretches over the whole card, for when they become links */
+  align-items: flex-start;
+  position: relative;
   z-index: 1;
   display: flex;
   flex-wrap: wrap;
@@ -763,6 +764,34 @@ input[type='checkbox'] {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+.act { text-decoration: none; cursor: pointer; }
+.act:not(:disabled):hover { background: var(--bg-sunken); color: var(--ink); }
+.act:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.share-control { position: relative; }
+.share-control[open] { z-index: 2; }
+.share-control summary { list-style: none; }
+.share-control summary::-webkit-details-marker { display: none; }
+/* The popup stays out of the action row's layout, including when it is open. */
+.share-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: var(--share-offset, 0px);
+  z-index: 10;
+  box-sizing: border-box;
+  width: min(304px, calc(100vw - 32px));
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  box-shadow: 0 6px 20px #0002;
+}
+.share-panel label, .share-status { display: block; font-size: 13px; }
+.share-panel input { width: 100%; min-width: 0; box-sizing: border-box; margin-top: 8px; padding: 8px; font: inherit; }
+.share-panel [hidden] { display: none; }
+.post-card:has(.share-control[open]) { z-index: 2; }
+/* These panels clip their rounded corners normally, but must let the popup extend beyond them. */
+.results:has(.share-control[open]), .post-side:has(.share-control[open]) { overflow: visible; }
 
 /* Message button posted as a tiny form (profile and post pages). */
 .inline-form {

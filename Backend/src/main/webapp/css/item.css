@@ -50,6 +50,7 @@
 /* The report link belongs to the location card above it: same color, no dividing line. */
 .post-side > .report-row {
   display: flex;
+  align-items: flex-start;
   flex-wrap: wrap;
   gap: 4px;
   padding: 0 14px 10px;
