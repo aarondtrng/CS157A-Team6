@@ -10,6 +10,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /** Database access for user accounts and profiles. */
@@ -71,6 +73,13 @@ public class UserDao {
         "profile_description = ?, profile_image = ? " +
         "WHERE user_id = ?";
 
+    private static final String DELETE_PROFILE_SQL =
+        "DELETE FROM User WHERE user_id = ?";
+
+    private static final String FIND_PROFILES_BY_NAME_SQL =
+        "SELECT user_id, name, email, phone_number, profile_description, profile_image, role " +
+        "FROM User WHERE name LIKE ?";
+
     public Optional<UserProfile> findProfileById(int userId) throws SQLException {
     requireSql(FIND_PROFILE_BY_ID_SQL, "findProfileById");
 
@@ -96,7 +105,35 @@ public class UserDao {
     }
 }
 
-public boolean updateProfile(
+public List<UserProfile> findProfilesByName(String name) throws SQLException {
+    requireSql(FIND_PROFILES_BY_NAME_SQL, "findProfilesByName");
+
+    List<UserProfile> profiles = new ArrayList<>();
+
+    try (Connection connection = DatabaseConfig.getConnection();
+         PreparedStatement statement =
+                 connection.prepareStatement(FIND_PROFILES_BY_NAME_SQL)) {
+
+        statement.setString(1, "%" + name + "%");
+
+        try (ResultSet rs = statement.executeQuery()) {
+            while (rs.next()) {
+                profiles.add(new UserProfile(
+                        rs.getInt("user_id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("phone_number"),
+                        rs.getString("profile_description"),
+                        rs.getString("profile_image"),
+                        rs.getString("role")));
+            }
+        }
+    }
+
+    return profiles;
+}
+
+    public boolean updateProfile(
         int userId,
         String name,
         String phoneNumber,
@@ -118,6 +155,19 @@ public boolean updateProfile(
         return statement.executeUpdate() == 1;
     }
 }
+
+    public boolean deleteProfile(int userId) throws SQLException {
+    requireSql(DELETE_PROFILE_SQL, "deleteProfile");
+
+    try (Connection connection = DatabaseConfig.getConnection();
+         PreparedStatement statement =
+                 connection.prepareStatement(DELETE_PROFILE_SQL)) {
+
+        statement.setInt(1, userId);
+        return statement.executeUpdate() == 1;
+        }
+    }
+
     private static void requireSql(String sql, String method) {
         if (sql.isBlank()) {
             throw new UnsupportedOperationException("UserDao." + method + ": SQL not implemented yet");

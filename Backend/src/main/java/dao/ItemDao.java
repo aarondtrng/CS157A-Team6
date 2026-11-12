@@ -24,6 +24,11 @@ public class ItemDao {
     /** Status values we picked ourselves. the schema doesn't define them yet. */
     static final String STATUS_REMOVED = "REMOVED";
     static final String APPROVAL_APPROVED = "APPROVED";
+    private static final String REMOVE_ITEM_SQL =
+        "UPDATE Item SET status = ? WHERE item_id = ?";
+    private static final String UPDATE_ITEM_SQL =
+        "UPDATE Item SET title = ?, description = ?, type = ?, category_id = ? " +
+        "WHERE item_id = ?";
 
     /** Filter for valid items */
     private static final String PUBLIC_ONLY =
@@ -325,6 +330,44 @@ public class ItemDao {
             throw new DataAccessException("ItemDao.findPublicItemsByUser failed", e);
         }
     }
+
+    public boolean removeItem(int itemId) {
+    try (Connection connection = DatabaseConfig.getConnection();
+         PreparedStatement statement =
+                 connection.prepareStatement(REMOVE_ITEM_SQL)) {
+
+        statement.setString(1, STATUS_REMOVED);
+        statement.setInt(2, itemId);
+
+        return statement.executeUpdate() == 1;
+
+    } catch (SQLException | IllegalStateException e) {
+        throw new DataAccessException("ItemDao.removeItem failed", e);
+    }
+}
+    public boolean updateItem(
+        int itemId,
+        String title,
+        String description,
+        String type,
+        int categoryId) {
+
+    try (Connection connection = DatabaseConfig.getConnection();
+         PreparedStatement statement =
+                 connection.prepareStatement(UPDATE_ITEM_SQL)) {
+
+        statement.setString(1, title);
+        statement.setString(2, description);
+        statement.setString(3, type);
+        statement.setInt(4, categoryId);
+        statement.setInt(5, itemId);
+
+        return statement.executeUpdate() == 1;
+
+    } catch (SQLException | IllegalStateException e) {
+        throw new DataAccessException("ItemDao.updateItem failed", e);
+    }
+}
 
     /** WHERE clause for the catalog: the public-only test plus the search and category filters in use. */
     private static String filterSql(CatalogQuery query) {
