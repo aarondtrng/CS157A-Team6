@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.List;
 
 /** Loads profiles and validates profile edits. */
 public class UserProfileService {
@@ -21,6 +22,16 @@ public class UserProfileService {
 
     public Optional<UserProfile> getProfile(int userId) throws SQLException {
         return userDao.findProfileById(userId);
+    }
+
+    public List<UserProfile> searchProfilesByName(String name) throws SQLException {
+    String searchText = normalizeText(name);
+
+    if (searchText.isEmpty()) {
+        return List.of();
+    }
+
+    return userDao.findProfilesByName(searchText);
     }
 
     public boolean updateProfile(
