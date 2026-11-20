@@ -16,10 +16,10 @@ main.narrow {
   gap: 20px;
 }
 
+/* Block layout, not flex: Safari misplaces a floated legend inside a flex fieldset. Children are spaced
+   18px apart with margins instead of a flex gap. */
 .form-section {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
+  display: block;
   min-width: 0;
   margin: 0;
   padding: 24px 28px;
@@ -33,11 +33,23 @@ main.narrow {
 .form-section legend {
   float: left;
   width: 100%;
+  margin: 0 0 18px;
   padding: 0;
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.06em;
   color: var(--muted);
+}
+
+/* Everything after the title starts below it; the first item's gap comes from the legend's margin. */
+.form-section > :not(legend) {
+  clear: both;
+  margin-top: 18px;
+  margin-bottom: 0;
+}
+
+.form-section > legend + * {
+  margin-top: 0;
 }
 
 .post-form .field input[type='text'],
