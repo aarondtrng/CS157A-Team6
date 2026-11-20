@@ -20,7 +20,8 @@ import java.util.logging.Logger;
 
 /**
  * GET /signup shows the form; POST /signup creates a student account with an SJSU email and logs the new
- * student in. The "password" parameter is the browser-side hash from js/auth.js, not the typed password.
+ * student in, then sends them to the profile edit page. The "password" parameter is the browser-side hash
+ * from js/auth.js, not the typed password.
  */
 @WebServlet("/signup")
 public class SignupServlet extends HttpServlet {
@@ -80,8 +81,8 @@ public class SignupServlet extends HttpServlet {
             Optional<Integer> userId = authService.signUp(firstName, lastName, email, clientHash);
             if (userId.isPresent()) {
                 AuthUtil.logIn(request, response, new User(userId.get(), authService.fullName(firstName, lastName), email, null, User.ROLE_STUDENT));
-                // TODO: redirect to the profile edit page once it exists (design: sign up leads there).
-                response.sendRedirect(request.getContextPath() + next);
+                // Design: a new student is led straight to the profile edit page to fill in their profile.
+                response.sendRedirect(request.getContextPath() + "/profile/edit?id=" + userId.get());
                 return;
             }
             response.setStatus(HttpServletResponse.SC_CONFLICT);
