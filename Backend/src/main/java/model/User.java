@@ -8,6 +8,8 @@ public class User {
     // Upper case, matching the User.role column default ('STUDENT') in db/schema.sql.
     public static final String ROLE_STUDENT = "STUDENT";
     public static final String ROLE_ADMINISTRATOR = "ADMINISTRATOR";
+    /** Accounts no one logs in to, such as the owner of posts imported from Reddit. */
+    public static final String ROLE_SYSTEM = "SYSTEM";
 
     private final int userId;
     private final String name;

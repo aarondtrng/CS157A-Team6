@@ -48,8 +48,9 @@ public class AdminService {
         return userDao.deleteProfile(userId);
     }
 
+    /** Includes Reddit imports that are still pending, so they can be edited before approval. */
     public Optional<ItemDetail> getItem(int itemId) {
-        return itemDao.findPublicItemById(itemId);
+        return itemDao.findItemByIdForAdmin(itemId);
     }
 
     public List<Category> getCategories() {

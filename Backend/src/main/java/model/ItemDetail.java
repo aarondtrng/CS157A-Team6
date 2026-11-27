@@ -21,10 +21,13 @@ public class ItemDetail {
     private final List<String> imageUrls;
     /** At most one per item; null when no location was set. */
     private final ItemLocation location;
+    /** Link to the original r/SJSU thread for imported posts; null for posts made on SpartanFinds. */
+    private final String redditUrl;
 
     public ItemDetail(int itemId, String title, String description, String type, String status,
                       String categoryName, int categoryId, LocalDateTime createdAt, int posterUserId, String posterName,
-                      String posterProfileImage, List<String> imageUrls, ItemLocation location) {
+                      String posterProfileImage, List<String> imageUrls, ItemLocation location,
+                      String redditUrl) {
         this.itemId = itemId;
         this.title = title;
         this.description = description;
@@ -38,6 +41,7 @@ public class ItemDetail {
         this.posterProfileImage = posterProfileImage;
         this.imageUrls = List.copyOf(imageUrls);
         this.location = location;
+        this.redditUrl = redditUrl;
     }
 
     public int getItemId() {
@@ -104,5 +108,14 @@ public class ItemDetail {
 
     public ItemLocation getLocation() {
         return location;
+    }
+
+    public String getRedditUrl() {
+        return redditUrl;
+    }
+
+    /** True for posts imported from Reddit; their poster is the import account, not a student. */
+    public boolean isFromReddit() {
+        return redditUrl != null;
     }
 }

@@ -43,7 +43,7 @@ public class ItemDao {
     private static final String CATEGORY_FILTER = " AND i.category_id = ?";
 
     /** The first image (lowest display_order) of the item, or NULL when it has none. */
-    private static final String THUMBNAIL =
+    static final String THUMBNAIL =
             "(SELECT ii.image_url FROM ItemImage ii"
             + " WHERE ii.item_id = i.item_id"
             + " AND ii.display_order = (SELECT MIN(ii2.display_order) FROM ItemImage ii2"
@@ -89,12 +89,25 @@ public class ItemDao {
 
     /** Loads a full public post (images, location, basic poster info), or empty if it doesn't exist. */
     public Optional<ItemDetail> findPublicItemById(int itemId) {
+        return findItemById(itemId, true);
+    }
+
+    /**
+     * Like findPublicItemById, but also finds Reddit imports that are still waiting for approval (or were
+     * rejected), so an administrator can review and edit them. Removed items are still left out.
+     */
+    public Optional<ItemDetail> findItemByIdForAdmin(int itemId) {
+        return findItemById(itemId, false);
+    }
+
+    /** publicOnly adds the RedditItem approval test; both versions bind STATUS_REMOVED and the item id. */
+    private Optional<ItemDetail> findItemById(int itemId, boolean publicOnly) {
         String itemSql = "SELECT i.item_id, i.title, i.description, i.type, i.status, c.category_name,"
                 + " i.category_id, i.created_at, u.user_id, u.name, u.profile_image"
                 + " FROM Item i"
                 + " JOIN Category c ON c.category_id = i.category_id"
                 + " JOIN User u ON u.user_id = i.user_id"
-                + PUBLIC_ONLY
+                + (publicOnly ? PUBLIC_ONLY : " WHERE i.status <> ?")
                 + " AND i.item_id = ?";
         String imagesSql = "SELECT image_url FROM ItemImage WHERE item_id = ? ORDER BY display_order";
         String locationSql = "SELECT location_name, latitude, longitude FROM Location WHERE item_id = ?";
@@ -113,9 +126,12 @@ public class ItemDao {
             String posterProfileImage;
 
             try (PreparedStatement statement = connection.prepareStatement(itemSql)) {
-                statement.setString(1, STATUS_REMOVED);
-                statement.setString(2, APPROVAL_APPROVED);
-                statement.setInt(3, itemId);
+                int index = 1;
+                statement.setString(index++, STATUS_REMOVED);
+                if (publicOnly) {
+                    statement.setString(index++, APPROVAL_APPROVED);
+                }
+                statement.setInt(index, itemId);
                 try (ResultSet row = statement.executeQuery()) {
                     if (!row.next()) {
                         return Optional.empty();
@@ -158,10 +174,14 @@ public class ItemDao {
                 }
             }
 
+            // A separate lookup instead of an outer join: null when the post was made on SpartanFinds.
+            String redditUrl = RedditItemDao.findPostUrl(connection, itemId).orElse(null);
+
             return Optional.of(new ItemDetail(itemIdValue, title, description, type, status, categoryName,
-                    categoryId, createdAt, posterUserId, posterName, posterProfileImage, imageUrls, location));
+                    categoryId, createdAt, posterUserId, posterName, posterProfileImage, imageUrls, location,
+                    redditUrl));
         } catch (SQLException | IllegalStateException e) {
-            throw new DataAccessException("ItemDao.findPublicItemById failed", e);
+            throw new DataAccessException("ItemDao.findItemById failed", e);
         }
     }
 
