@@ -91,8 +91,10 @@
                     <c:url var="loginUrl" value="/login"><c:param name="next" value="/item?id=${post.itemId}"/></c:url>
                     <a class="btn btn-small" href="${loginUrl}" title="Log in with your SJSU email to request this item or report the post.">Log in to respond</a>
                   </c:if>
-                  <%-- A student can message someone else's poster; for everyone else the button is shown but disabled. --%>
+                  <%-- A student can message someone else's poster. Administrators cannot message, so they get no button;
+                       for everyone else (guests, the poster) it is shown but disabled. --%>
                   <c:choose>
+                    <c:when test="${sessionScope.userRole == 'ADMINISTRATOR'}"></c:when>
                     <c:when test="${isStudent and not isOwner}">
                       <form class="inline-form" method="post" action="${ctx}/messages/start">
                         <input type="hidden" name="csrfToken" value="<c:out value='${sessionScope.csrfToken}'/>" />
