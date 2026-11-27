@@ -318,6 +318,24 @@
   outline-offset: 2px;
 }
 
+/* Photo button once 4 photos are picked: looks turned off and does not open the file picker. */
+.attach.attach-full {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* The × next to "2 photos" that removes the picked photos. */
+.photo-clear {
+  flex: none;
+  align-self: stretch;
+  margin-left: -8px;
+  padding: 0 8px;
+}
+
+.photo-clear[hidden] {
+  display: none;
+}
+
 .composer textarea {
   flex: 1;
   min-width: 0;

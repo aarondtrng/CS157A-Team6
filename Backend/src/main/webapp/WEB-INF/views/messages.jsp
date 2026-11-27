@@ -131,6 +131,8 @@
                 <span id="msg-images-label">Photo</span>
               </label>
               <input class="visually-hidden" id="msg-images" type="file" name="images" accept="image/jpeg,image/png" multiple />
+              <%-- Shown by messages.js once photos are picked; removes them all. --%>
+              <button type="button" class="act photo-clear" id="msg-images-clear" hidden aria-label="Remove the picked photos" title="Remove the picked photos"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg></button>
               <button type="submit" class="btn">Send</button>
             </form>
             <div class="thread-foot">
