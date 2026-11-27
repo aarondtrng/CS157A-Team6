@@ -65,7 +65,7 @@
         <legend>CONTACT</legend>
         <div class="field">
           <label for="email">SJSU email</label>
-          <input id="email" type="email" readonly aria-describedby="email-hint"
+          <input id="email" type="email" readonly tabindex="-1" aria-describedby="email-hint"
                  value="<c:out value='${profile.email}'/>" />
           <small id="email-hint" class="hint">Your sign-in email can&rsquo;t be changed here.</small>
         </div>

@@ -174,9 +174,18 @@ main.container:has(.profile-card) {
   width: 100%;
 }
 
+/* Read-only fields (the SJSU email) shouldn't look editable: no blinking
+   caret, no text cursor, and no focus ring when clicked. */
 .profile-form input[readonly] {
   color: var(--text);
   background: var(--bg-soft);
+  caret-color: transparent;
+  cursor: default;
+}
+
+.profile-form input[readonly]:focus,
+.profile-form input[readonly]:focus-visible {
+  outline: none;
 }
 
 .profile-form textarea {
