@@ -50,6 +50,8 @@ public class ReportDao {
     // pending-only status update. Parameters: new status, report id, PENDING.
     private static final String UPDATE_STATUS_SQL = "UPDATE Report SET status = ? WHERE report_id = ? AND status = ?";
 
+    private static final String FIND_ITEM_ID_BY_REPORT_SQL = "SELECT item_id FROM Report WHERE report_id = ?";
+
     /** A separate failure lets the UI show an honest unavailable state before SQL is supplied. */
     public static class SqlNotConfiguredException extends DataAccessException {
         public SqlNotConfiguredException(String name) {
@@ -130,6 +132,34 @@ public class ReportDao {
             return result;
         } catch (SQLException | IllegalStateException e) {
             throw new DataAccessException("ReportDao.findReports failed", e);
+        }
+    }
+
+    
+    public Optional<Integer> findItemIdByReport(int reportId) {
+        String sql = required(
+            FIND_ITEM_ID_BY_REPORT_SQL,
+            "FIND_ITEM_ID_BY_REPORT_SQL");
+
+        try (Connection connection = DatabaseConfig.getConnection();
+            PreparedStatement statement =
+                connection.prepareStatement(sql)) {
+
+            statement.setInt(1, reportId);
+
+            try (ResultSet rows = statement.executeQuery()) {
+                if (!rows.next()) {
+                    return Optional.empty();
+                }  
+
+                Integer itemId =
+                    rows.getObject("item_id", Integer.class);
+
+                return Optional.ofNullable(itemId);
+            }
+        } catch (SQLException | IllegalStateException e) {
+            throw new DataAccessException(
+                "ReportDao.findItemIdByReport failed", e);
         }
     }
 
