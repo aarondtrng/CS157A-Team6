@@ -346,10 +346,29 @@
 }
 
 
-.thread-note {
+.thread-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
   padding: 0 20px 12px;
+}
+
+.thread-note,
+.char-count {
   font-size: 12px;
   color: var(--muted);
+}
+
+.char-count {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Close to the 5000-character limit. */
+.char-count.near-limit {
+  color: var(--red-ink);
+  font-weight: 600;
 }
 
 .thread-empty {

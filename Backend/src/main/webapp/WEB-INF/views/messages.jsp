@@ -125,7 +125,7 @@
               <input type="hidden" name="csrfToken" value="<c:out value='${csrfToken}'/>" />
               <input type="hidden" name="conversationId" value="${selected.conversationId}" />
               <label class="visually-hidden" for="msg-text">Message</label>
-              <textarea id="msg-text" name="text" rows="1" maxlength="5000" placeholder="Write a message&hellip;"></textarea>
+              <textarea id="msg-text" name="text" rows="1" maxlength="5000" placeholder="Write a message&hellip;" aria-describedby="msg-count"></textarea>
               <label class="attach act" for="msg-images" title="Add photos (JPEG or PNG, up to 4)">
                 <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"></path></svg>
                 <span id="msg-images-label">Photo</span>
@@ -133,7 +133,10 @@
               <input class="visually-hidden" id="msg-images" type="file" name="images" accept="image/jpeg,image/png" multiple />
               <button type="submit" class="btn">Send</button>
             </form>
-            <p class="thread-note">New messages appear when you refresh the page.</p>
+            <div class="thread-foot">
+              <p class="thread-note">New messages appear when you refresh the page.</p>
+              <p class="char-count" id="msg-count" hidden>0 / 5000</p>
+            </div>
           </c:otherwise>
         </c:choose>
       </section>
