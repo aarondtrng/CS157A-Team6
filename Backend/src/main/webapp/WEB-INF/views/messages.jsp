@@ -125,6 +125,8 @@
                 </c:choose>
               </div>
             </c:if>
+            <%-- Thumbnails of the photos about to be sent; filled in by messages.js. --%>
+            <ul class="photo-previews" id="msg-previews" aria-label="Photos to send" hidden></ul>
             <form class="composer" id="composer" method="post" action="${ctx}/messages/send?c=${selected.conversationId}" enctype="multipart/form-data">
               <input type="hidden" name="csrfToken" value="<c:out value='${csrfToken}'/>" />
               <input type="hidden" name="conversationId" value="${selected.conversationId}" />

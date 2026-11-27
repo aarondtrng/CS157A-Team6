@@ -11,10 +11,72 @@
   var text = document.getElementById('msg-text');
   var counter = document.getElementById('msg-count');
   var clearPhotos = document.getElementById('msg-images-clear');
+  var previews = document.getElementById('msg-previews');
 
   // Photos picked so far. A browser file box forgets its earlier choice every time you pick again, so this
   // list keeps every photo across picks and is put back into the file box (see the change handler below).
   var picked = [];
+  var previewUrls = [];
+
+  // Puts a list of photos into the file box, so the form sends exactly those.
+  function setFiles(files) {
+    var transfer = new DataTransfer();
+    files.forEach(function (file) {
+      transfer.items.add(file);
+    });
+    input.files = transfer.files;
+    picked = files;
+  }
+
+  // Shows a small thumbnail of each picked photo above the message box, each with an × to take it out.
+  function renderPreviews() {
+    if (!previews) {
+      return;
+    }
+    previewUrls.forEach(function (url) {
+      URL.revokeObjectURL(url);
+    });
+    previewUrls = [];
+    previews.textContent = '';
+
+    var files = Array.prototype.slice.call(input.files);
+    var canRemove = typeof DataTransfer !== 'undefined';
+    files.forEach(function (file, index) {
+      var url = URL.createObjectURL(file);
+      previewUrls.push(url);
+
+      var item = document.createElement('li');
+      item.className = 'photo-preview';
+
+      var img = document.createElement('img');
+      img.src = url;
+      img.alt = 'Photo to send: ' + file.name;
+      img.title = file.name;
+      item.appendChild(img);
+
+      if (canRemove) {
+        var remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'photo-preview-remove';
+        remove.setAttribute('aria-label', 'Remove ' + file.name);
+        remove.title = 'Remove';
+        remove.innerHTML = '<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" '
+            + 'stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg>';
+        remove.addEventListener('click', function () {
+          var rest = Array.prototype.slice.call(input.files);
+          rest.splice(index, 1);
+          setFiles(rest);
+          updatePhotoLabel();
+          // Keep keyboard focus nearby: the next thumbnail's ×, or the Photo button when none are left.
+          var next = previews.querySelectorAll('.photo-preview-remove')[Math.min(index, rest.length - 1)];
+          (next || input).focus();
+        });
+        item.appendChild(remove);
+      }
+      previews.appendChild(item);
+    });
+    previews.hidden = files.length === 0;
+  }
 
   function updatePhotoLabel() {
     if (!input || !label) {
@@ -36,6 +98,7 @@
     var full = count >= MAX_PHOTOS;
     label.parentNode.classList.toggle('attach-full', full);
     label.parentNode.setAttribute('aria-disabled', full ? 'true' : 'false');
+    renderPreviews();
   }
 
   if (input) {
@@ -160,7 +223,8 @@
       }
       if (flash) {
         addDismiss(flash);
-        form.parentNode.insertBefore(flash, form);
+        // Above the photo thumbnails when there are any, so the thumbnails stay right on top of the message box.
+        form.parentNode.insertBefore(flash, previews || form);
       }
     };
 
@@ -233,12 +297,7 @@
         });
 
         if (canEditFiles) {
-          var transfer = new DataTransfer();
-          kept.forEach(function (file) {
-            transfer.items.add(file);
-          });
-          input.files = transfer.files;
-          picked = kept;
+          setFiles(kept);
         } else if (problems.length > 0) {
           // Very old browser: the list cannot be edited, so clear it; sending is blocked anyway.
           input.value = '';

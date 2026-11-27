@@ -358,6 +358,68 @@
   outline-offset: 2px;
 }
 
+/* Thumbnails of the picked photos, just above the message box. */
+.photo-previews {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+  padding: 12px 16px 0;
+  list-style: none;
+  border-top: 1px solid var(--border);
+}
+
+.photo-previews[hidden] {
+  display: none;
+}
+
+/* The message box loses its own top line while thumbnails sit above it, so the two read as one area. */
+.photo-previews:not([hidden]) + .composer {
+  border-top: 0;
+}
+
+.photo-preview {
+  position: relative;
+  width: 64px;
+  height: 64px;
+}
+
+.photo-preview img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.photo-preview-remove {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  color: #fff;
+  background: rgba(20, 28, 38, 0.85);
+  border: 2px solid var(--bg);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.photo-preview-remove:hover {
+  background: var(--red-ink);
+}
+
+.photo-preview-remove:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 1px;
+}
+
 /* Photo button once 4 photos are picked: looks turned off and does not open the file picker. */
 .attach.attach-full {
   opacity: 0.6;
