@@ -134,7 +134,7 @@
               <button type="submit" class="btn">Send</button>
             </form>
             <div class="thread-foot">
-              <p class="thread-note">New messages appear when you refresh the page.</p>
+              <p class="thread-note">New messages appear automatically.</p>
               <p class="char-count" id="msg-count" hidden>0 / 5000</p>
             </div>
           </c:otherwise>
