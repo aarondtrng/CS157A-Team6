@@ -44,7 +44,7 @@
     }
   }
 
-  // Shows a warning under the file box, replacing any earlier one.
+  // Shows a warning under the buttons, replacing any earlier one.
   function showFlash(message) {
     clearFlash();
     var flash = document.createElement('div');
@@ -52,7 +52,8 @@
     flash.setAttribute('role', 'alert');
     flash.textContent = message;
     addDismiss(flash);
-    input.parentNode.appendChild(flash);
+    // Above the "JPEG or PNG, up to 5 MB" note, which stays at the very bottom.
+    input.parentNode.insertBefore(flash, document.getElementById('image-hint'));
   }
 
   // The text beside the "choose" button: the picked file's name, or "No file chosen".

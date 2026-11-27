@@ -265,6 +265,7 @@ label.file-button {
   font-weight: 600;
   color: #fff;
   background: var(--blue);
+  border: 1px solid var(--blue); /* same 1px border as the Remove button, so both are the same height */
   border-radius: 999px;
   cursor: pointer;
   transition: background-color 0.15s;
@@ -272,6 +273,7 @@ label.file-button {
 
 label.file-button:hover {
   background: var(--blue-ink, #0b3d6e);
+  border-color: var(--blue-ink, #0b3d6e);
 }
 
 #profileImage:focus-visible + .file-row .file-button {
@@ -297,10 +299,8 @@ label.remove-toggle {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  align-self: flex-start;
-  margin-top: 12px;
-  padding: 8px 14px;
-  font-size: 14px;
+  padding: 10px 18px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--text);
   background: var(--bg);
@@ -349,7 +349,7 @@ label.remove-toggle {
 /* Red warning under the picture chooser (too big, wrong type), with an × to dismiss it (avatar-picker.js). */
 .avatar-flash {
   position: relative;
-  margin-top: 10px;
+  margin: 0;
   padding: 10px 48px 10px 14px;
   font-size: 14px;
   color: var(--red-ink);
