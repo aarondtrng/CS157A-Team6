@@ -11,6 +11,7 @@
     return;
   }
   var remove = document.getElementById('removeImage');
+  var fileName = document.getElementById('file-name');
   var original = preview.innerHTML;
   var objectUrl = null;
 
@@ -54,6 +55,16 @@
     input.parentNode.appendChild(flash);
   }
 
+  // The text beside the "choose" button: the picked file's name, or "No file chosen".
+  function showFileName() {
+    if (!fileName) {
+      return;
+    }
+    var file = input.files && input.files[0];
+    fileName.textContent = file ? file.name : 'No file chosen';
+    fileName.classList.toggle('has-file', !!file);
+  }
+
   function resetPreview() {
     if (objectUrl) {
       URL.revokeObjectURL(objectUrl);
@@ -69,6 +80,11 @@
   }
 
   input.addEventListener('change', function () {
+    handleChange();
+    showFileName();
+  });
+
+  function handleChange() {
     resetPreview();
     var file = input.files && input.files[0];
     if (!file) {
@@ -96,7 +112,7 @@
       image.alt = 'Preview of your new profile picture';
       preview.replaceChildren(image);
     }
-  });
+  }
 
   // Removal selected: the preview shows the initial the profile will fall back to; undo brings the picture back.
   if (remove) {
@@ -105,6 +121,7 @@
         if (input.value) {
           input.value = '';
           resetPreview();
+          showFileName();
         }
         clearFlash();
         preview.textContent = preview.getAttribute('data-initial') || '';

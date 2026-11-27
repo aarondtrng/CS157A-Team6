@@ -247,9 +247,50 @@ img.profile-avatar {
   min-width: 0;
 }
 
-.avatar-edit-controls input[type='file'] {
-  max-width: 100%;
+/* Picture chooser: the hidden file box's label, styled as a button, with the chosen file's name beside it. */
+.file-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+label.file-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--blue);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+label.file-button:hover {
+  background: var(--blue-ink, #0b3d6e);
+}
+
+#profileImage:focus-visible + .file-row .file-button {
+  outline: 3px solid var(--blue-soft);
+  outline-offset: 2px;
+}
+
+.file-name {
+  min-width: 0;
   font-size: 14px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-name.has-file {
+  font-weight: 500;
+  color: var(--ink);
 }
 
 label.remove-toggle {

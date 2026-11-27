@@ -59,9 +59,19 @@
             </c:choose>
           </span>
           <div class="field avatar-edit-controls">
-            <label for="profileImage">Upload a new picture <span class="optional">(optional)</span></label>
-            <input id="profileImage" name="profileImage" type="file" accept="image/jpeg,image/png"
-                   aria-describedby="image-hint" />
+            <%-- The real file box is hidden (still focusable and announced); its label is the visible button. --%>
+            <input class="visually-hidden" id="profileImage" name="profileImage" type="file" accept="image/jpeg,image/png"
+                   aria-describedby="image-hint file-name" />
+            <div class="file-row">
+              <label class="file-button" for="profileImage">
+                <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"></path><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"></path></svg>
+                <c:choose>
+                  <c:when test="${not empty profile.profileImage}">Upload new picture</c:when>
+                  <c:otherwise>Choose a picture</c:otherwise>
+                </c:choose>
+              </label>
+              <span class="file-name" id="file-name">No file chosen</span>
+            </div>
             <small id="image-hint" class="hint">JPEG or PNG, up to 5 MB. Shown on your profile and your posts.</small>
             <c:if test="${not empty profile.profileImage}">
               <%-- A real checkbox, hidden, inside a label styled as a button: clicking anywhere on it toggles the
