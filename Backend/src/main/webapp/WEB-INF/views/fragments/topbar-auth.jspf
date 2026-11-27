@@ -31,7 +31,10 @@
       <c:when test="${not empty sessionScope.userId}">
         <c:set var="nameParts" value="${fn:split(sessionScope.userName, ' ')}"/>
         <c:set var="initials" value="${fn:toUpperCase(fn:substring(nameParts[0], 0, 1))}${fn:length(nameParts) > 1 ? fn:toUpperCase(fn:substring(nameParts[fn:length(nameParts) - 1], 0, 1)) : ''}"/>
-        <a class="nav-pill nav-pill-plus" href="${pageContext.request.contextPath}/post/new" ${navPath == '/post/new' ? 'aria-current="page"' : ''} aria-label="Create post" title="Create post">+</a>
+        <%-- Only students can create posts (PostItemServlet answers 403 for anyone else), so admins get no "+". --%>
+        <c:if test="${sessionScope.userRole == 'STUDENT'}">
+          <a class="nav-pill nav-pill-plus" href="${pageContext.request.contextPath}/post/new" ${navPath == '/post/new' ? 'aria-current="page"' : ''} aria-label="Create post" title="Create post">+</a>
+        </c:if>
         <%-- Account menu: a native <details> (works without JavaScript); js/user-menu.js also closes it when you
              click elsewhere or press Escape. Log out stays a POST form with its security token. --%>
         <details class="user-menu">
