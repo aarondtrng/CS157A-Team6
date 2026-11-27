@@ -70,6 +70,20 @@ public class MessageSendServlet extends HttpServlet {
             tooBig = true; // A file or the whole request exceeded the size limits.
         }
 
+        if (tooBig) {
+            // The upload was cut off, so the form fields (CSRF token, conversationId) cannot be read. Nothing is
+            // saved here; just send the student back to the conversation with the real reason. The form also puts
+            // the conversation id in its URL (?c=) for exactly this case.
+            Integer fromUrl = conversationIdFromQuery(request.getQueryString());
+            if (fromUrl == null) {
+                response.sendError(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE);
+                return;
+            }
+            response.sendRedirect(request.getContextPath() + "/messages?c=" + fromUrl
+                    + "&error=photo-size" + COMPOSER_ANCHOR);
+            return;
+        }
+
         if (!CsrfUtil.isValid(request)) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
@@ -96,5 +110,21 @@ public class MessageSendServlet extends HttpServlet {
             LOG.log(Level.SEVERE, "Message could not be sent", e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    /**
+     * Reads c=<id> straight from the raw query string. Used when the multipart body was rejected, because the
+     * container's own parameter parsing may have given up along with it.
+     */
+    private Integer conversationIdFromQuery(String query) {
+        if (query == null) {
+            return null;
+        }
+        for (String pair : query.split("&")) {
+            if (pair.startsWith("c=")) {
+                return messageService.parseId(pair.substring(2));
+            }
+        }
+        return null;
     }
 }

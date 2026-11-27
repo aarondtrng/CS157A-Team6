@@ -121,7 +121,7 @@
                 </c:choose>
               </div>
             </c:if>
-            <form class="composer" id="composer" method="post" action="${ctx}/messages/send" enctype="multipart/form-data">
+            <form class="composer" id="composer" method="post" action="${ctx}/messages/send?c=${selected.conversationId}" enctype="multipart/form-data">
               <input type="hidden" name="csrfToken" value="<c:out value='${csrfToken}'/>" />
               <input type="hidden" name="conversationId" value="${selected.conversationId}" />
               <label class="visually-hidden" for="msg-text">Message</label>

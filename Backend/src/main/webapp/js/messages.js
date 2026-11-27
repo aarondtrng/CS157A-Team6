@@ -84,6 +84,26 @@
   if (form) {
     var button = form.querySelector('button[type="submit"]');
 
+    // Gives an error box an × button that removes it.
+    var addDismiss = function (flash) {
+      if (flash.querySelector('.flash-close')) {
+        return;
+      }
+      var close = document.createElement('button');
+      close.type = 'button';
+      close.className = 'flash-close';
+      close.setAttribute('aria-label', 'Dismiss this message');
+      close.innerHTML = '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" '
+          + 'stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg>';
+      close.addEventListener('click', function () {
+        flash.remove();
+        if (text) {
+          text.focus({ preventScroll: true });
+        }
+      });
+      flash.appendChild(close);
+    };
+
     // Puts an error just above the composer, replacing any earlier one; null just clears it.
     var showFlash = function (flash) {
       var old = document.querySelector('.thread .flash');
@@ -91,9 +111,21 @@
         old.remove();
       }
       if (flash) {
+        addDismiss(flash);
         form.parentNode.insertBefore(flash, form);
       }
     };
+
+    // An error the server put on the page (after a send without this script, or the size fallback) can be
+    // dismissed too. Drop ?error= from the address so a reload does not bring the message back.
+    var pageFlash = document.querySelector('.thread .flash');
+    if (pageFlash) {
+      addDismiss(pageFlash);
+    }
+    if (window.history && history.replaceState && /[?&]error=/.test(location.search)) {
+      var cleanSearch = location.search.replace(/([?&])error=[^&]*&?/, '$1').replace(/[?&]$/, '');
+      history.replaceState(null, '', location.pathname + cleanSearch + location.hash);
+    }
 
     var plainFlash = function (message) {
       var div = document.createElement('div');
@@ -103,9 +135,77 @@
       return div;
     };
 
+    // Same limits as MessageService. Checked here first so a photo that is too big never gets uploaded; the
+    // server checks everything again.
+    var MAX_PHOTOS = 4;
+    var MAX_PHOTO_BYTES = 5 * 1024 * 1024;
+    var PHOTO_TYPES = ['image/jpeg', 'image/png'];
+
+    var photoProblem = function () {
+      if (!input) {
+        return null;
+      }
+      var files = Array.prototype.slice.call(input.files);
+      if (files.length > MAX_PHOTOS) {
+        return 'You can send at most ' + MAX_PHOTOS + ' photos at a time. You picked ' + files.length + '.';
+      }
+      for (var i = 0; i < files.length; i++) {
+        var file = files[i];
+        if (file.size > MAX_PHOTO_BYTES) {
+          var mb = (file.size / (1024 * 1024)).toFixed(1);
+          return '"' + file.name + '" is ' + mb + ' MB. Each photo must be 5 MB or smaller.';
+        }
+        if (file.type && PHOTO_TYPES.indexOf(file.type) === -1) {
+          return '"' + file.name + '" is not a JPEG or PNG image.';
+        }
+      }
+      return null;
+    };
+
+    // As soon as photos are picked, drop any that would not go through (and any past the 4th), so the photo
+    // count and what gets sent only include usable photos, and say why the others were left out.
+    if (input) {
+      input.addEventListener('change', function () {
+        var problems = [];
+        var kept = [];
+        Array.prototype.forEach.call(input.files, function (file) {
+          if (file.size > MAX_PHOTO_BYTES) {
+            var mb = (file.size / (1024 * 1024)).toFixed(1);
+            problems.push('"' + file.name + '" is ' + mb + ' MB. Each photo must be 5 MB or smaller.');
+          } else if (file.type && PHOTO_TYPES.indexOf(file.type) === -1) {
+            problems.push('"' + file.name + '" is not a JPEG or PNG image.');
+          } else if (kept.length >= MAX_PHOTOS) {
+            problems.push('"' + file.name + '" was left out: you can send at most ' + MAX_PHOTOS + ' photos at a time.');
+          } else {
+            kept.push(file);
+          }
+        });
+
+        if (problems.length > 0) {
+          if (typeof DataTransfer !== 'undefined') {
+            var transfer = new DataTransfer();
+            kept.forEach(function (file) {
+              transfer.items.add(file);
+            });
+            input.files = transfer.files;
+          } else {
+            // Very old browser: the list cannot be edited, so clear it; sending is blocked anyway.
+            input.value = '';
+          }
+        }
+        updatePhotoLabel();
+        showFlash(problems.length ? plainFlash(problems.join(' ')) : null);
+      });
+    }
+
     form.addEventListener('submit', function (event) {
       event.preventDefault();
       if (sending) {
+        return;
+      }
+      var problem = photoProblem();
+      if (problem) {
+        showFlash(plainFlash(problem));
         return;
       }
       sending = true;
@@ -117,15 +217,18 @@
       // The server answers with a redirect back to the conversation; fetch follows it and gets that page.
       fetch(form.action, { method: 'POST', body: new FormData(form), credentials: 'same-origin' })
         .then(function (response) {
+          if (response.status === 413) {
+            throw new Error('Photos must be 5 MB or smaller each.');
+          }
           if (!response.ok) {
-            throw new Error('HTTP ' + response.status);
+            throw new Error('');
           }
           return response.text();
         })
         .then(function (html) {
           var doc = parsePage(html);
           if (!doc || !doc.querySelector('.bubbles')) {
-            throw new Error('Unexpected page');
+            throw new Error('');
           }
           var flash = doc.querySelector('.thread .flash');
           if (request > lastApplied) {
@@ -140,8 +243,10 @@
             updateCount();
           }
         })
-        .catch(function () {
-          showFlash(plainFlash('The message could not be sent. Refresh the page and try again.'));
+        .catch(function (error) {
+          // Reasons thrown above are shown as is. A TypeError is fetch failing (no connection), shown generally.
+          var reason = error && !(error instanceof TypeError) ? error.message : '';
+          showFlash(plainFlash(reason || 'The message could not be sent. Refresh the page and try again.'));
         })
         .then(function () {
           sending = false;
