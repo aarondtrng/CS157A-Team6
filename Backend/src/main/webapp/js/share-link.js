@@ -17,17 +17,31 @@ shareControls.forEach((control) => {
     panel.style.setProperty('--share-offset', `${offset}px`);
   };
   control.addEventListener('toggle', () => {
-    if (!control.open) return;
+    if (!control.open) {
+      resetButton();
+      status.textContent = '';
+      return;
+    }
     shareControls.forEach((other) => { if (other !== control) other.open = false; });
     positionPanel();
   });
   window.addEventListener('resize', positionPanel);
+  const buttonLabel = button.textContent;
+  let resetTimer;
+  const resetButton = () => {
+    clearTimeout(resetTimer);
+    button.textContent = buttonLabel;
+  };
   button.addEventListener('click', async () => {
     try {
       if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
       await navigator.clipboard.writeText(input.value);
-      status.textContent = 'Link copied.';
+      status.textContent = '';
+      resetButton();
+      button.textContent = 'Link copied';
+      resetTimer = setTimeout(resetButton, 2000);
     } catch {
+      resetButton();
       input.focus();
       input.select();
       status.textContent = 'Select and copy the link above.';

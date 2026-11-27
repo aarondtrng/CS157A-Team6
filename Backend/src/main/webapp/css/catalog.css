@@ -788,6 +788,7 @@ input[type='checkbox'] {
 }
 .share-panel label, .share-status { display: block; font-size: 13px; }
 .share-panel input { width: 100%; min-width: 0; box-sizing: border-box; margin-top: 8px; padding: 8px; font: inherit; }
+.share-panel .share-copy { width: 100%; margin-top: 8px; }
 .share-panel [hidden] { display: none; }
 .post-card:has(.share-control[open]) { z-index: 2; }
 /* These panels clip their rounded corners normally, but must let the popup extend beyond them. */

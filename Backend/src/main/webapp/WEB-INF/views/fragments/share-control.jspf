@@ -4,7 +4,7 @@
   <div class="share-panel">
     <label for="${shareId}">Post link</label>
     <input id="${shareId}" type="text" readonly value="<c:out value='${shareUrl}'/>" />
-    <button type="button" class="act" data-copy-link hidden>Copy link</button>
+    <button type="button" class="btn btn-small share-copy" data-copy-link hidden>Copy link</button>
     <span class="share-status" role="status" aria-live="polite"></span>
     <noscript><a href="<c:out value='${shareUrl}'/>">Open post to copy its address</a></noscript>
   </div>
