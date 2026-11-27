@@ -87,7 +87,7 @@
           <div class="notice" role="status">Recent posts could not be loaded right now. You can still <a href="${ctx}/items">browse all items</a>.</div>
         </c:when>
         <c:when test="${empty recentItems}">
-          <div class="notice" role="status">No posts yet. Be the first to <a href="${ctx}/post/new">create one</a>.</div>
+          <div class="notice" role="status">No posts yet.<c:if test="${sessionScope.userRole != 'ADMINISTRATOR'}"> Be the first to <a href="${ctx}/post/new">create one</a>.</c:if></div>
         </c:when>
         <c:otherwise>
           <ul class="home-grid">
@@ -170,6 +170,8 @@
       </div>
     </section>
 
+    <%-- Posting is for students only (administrators get a 403), so administrators do not see this call to action. --%>
+    <c:if test="${sessionScope.userRole != 'ADMINISTRATOR'}">
     <section class="home-cta">
       <div class="container home-cta-inner">
         <div>
@@ -182,6 +184,7 @@
         </div>
       </div>
     </section>
+    </c:if>
   </main>
   <%@ include file="/WEB-INF/views/fragments/footer.jspf" %>
 </body>
