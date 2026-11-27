@@ -87,6 +87,7 @@
     clearFlash();
     if (remove) {
       remove.checked = false;
+      preview.classList.remove('is-removing');
     }
     if (window.URL && URL.createObjectURL) {
       objectUrl = URL.createObjectURL(file);
@@ -97,10 +98,19 @@
     }
   });
 
+  // Removal selected: the preview shows the initial the profile will fall back to; undo brings the picture back.
   if (remove) {
     remove.addEventListener('change', function () {
-      if (remove.checked && input.value) {
-        input.value = '';
+      if (remove.checked) {
+        if (input.value) {
+          input.value = '';
+          resetPreview();
+        }
+        clearFlash();
+        preview.textContent = preview.getAttribute('data-initial') || '';
+        preview.classList.add('is-removing');
+      } else {
+        preview.classList.remove('is-removing');
         resetPreview();
       }
     });

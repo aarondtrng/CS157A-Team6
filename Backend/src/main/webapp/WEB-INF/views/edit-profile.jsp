@@ -64,9 +64,13 @@
                    aria-describedby="image-hint" />
             <small id="image-hint" class="hint">JPEG or PNG, up to 5 MB. Shown on your profile and your posts.</small>
             <c:if test="${not empty profile.profileImage}">
-              <label class="checkbox-row">
-                <input type="checkbox" id="removeImage" name="removeImage" value="1" />
-                Remove my current picture
+              <%-- A real checkbox, hidden, inside a label styled as a button: clicking anywhere on it toggles the
+                   removal (and clicking again undoes it), with or without JavaScript. --%>
+              <label class="remove-toggle">
+                <input class="visually-hidden" type="checkbox" id="removeImage" name="removeImage" value="1" />
+                <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"></path></svg>
+                <span class="remove-toggle-off">Remove current picture</span>
+                <span class="remove-toggle-on">Picture will be removed &middot; Undo</span>
               </label>
             </c:if>
             <c:if test="${not empty errors.profileImage}"><div class="flash flash-bad avatar-flash" role="alert"><c:out value="${errors.profileImage}"/></div></c:if>

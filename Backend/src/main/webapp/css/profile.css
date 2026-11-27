@@ -252,13 +252,57 @@ img.profile-avatar {
   font-size: 14px;
 }
 
-.checkbox-row {
-  display: flex;
+label.remove-toggle {
+  display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin-top: 10px;
-  font-weight: 500;
+  align-self: flex-start;
+  margin-top: 12px;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
   cursor: pointer;
+  user-select: none;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.remove-toggle:hover {
+  border-color: var(--red-ink);
+  color: var(--red-ink);
+}
+
+.remove-toggle:has(input:focus-visible) {
+  outline: 3px solid var(--blue-soft);
+  outline-offset: 2px;
+}
+
+/* Selected: red, so it is clear the picture will be removed when the form is saved. */
+.remove-toggle:has(input:checked) {
+  color: #fff;
+  background: var(--red-ink);
+  border-color: var(--red-ink);
+}
+
+.remove-toggle:has(input:checked):hover {
+  background: #7f2222;
+}
+
+.remove-toggle-on,
+.remove-toggle:has(input:checked) .remove-toggle-off {
+  display: none;
+}
+
+.remove-toggle:has(input:checked) .remove-toggle-on {
+  display: inline;
+}
+
+/* While removal is selected, the preview shows the initial the profile will fall back to. */
+.avatar-edit-preview.is-removing {
+  opacity: 0.85;
 }
 
 /* Red warning under the picture chooser (too big, wrong type), with an × to dismiss it (avatar-picker.js). */
@@ -298,4 +342,13 @@ img.profile-avatar {
 .avatar-flash .flash-close:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 1px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
