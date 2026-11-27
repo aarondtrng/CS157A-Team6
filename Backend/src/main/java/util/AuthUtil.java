@@ -16,6 +16,8 @@ public final class AuthUtil {
     public static final String SESSION_USER_ID = "userId";
     public static final String SESSION_USER_NAME = "userName";
     public static final String SESSION_USER_ROLE = "userRole";
+    /** The logged-in user's profile_image value, for the avatar in the top bar; absent when they have none. */
+    public static final String SESSION_USER_IMAGE = "userImage";
     /**
      * Names of two cookies an earlier version set so a separate landing page could show the user's name.
      * The landing page is now served by this app, so they are no longer set; they are only cleared, to
@@ -57,6 +59,7 @@ public final class AuthUtil {
         session.setAttribute(SESSION_USER_ID, user.getUserId());
         session.setAttribute(SESSION_USER_NAME, user.getName());
         session.setAttribute(SESSION_USER_ROLE, user.getRole());
+        refreshSessionImage(session, user.getProfileImage());
         CsrfUtil.rotate(session);
         clearDisplayCookie(request, response);
     }
@@ -66,6 +69,22 @@ public final class AuthUtil {
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.setAttribute(SESSION_USER_NAME, name);
+        }
+    }
+
+    /** After the user changes or removes their profile picture: updates the session to match. */
+    public static void refreshProfileImage(HttpServletRequest request, String profileImage) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            refreshSessionImage(session, profileImage);
+        }
+    }
+
+    private static void refreshSessionImage(HttpSession session, String profileImage) {
+        if (profileImage == null || profileImage.isBlank()) {
+            session.removeAttribute(SESSION_USER_IMAGE);
+        } else {
+            session.setAttribute(SESSION_USER_IMAGE, profileImage);
         }
     }
 

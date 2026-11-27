@@ -41,9 +41,38 @@
       </div>
     </c:if>
 
-    <form class="profile-form" method="post"
+    <form class="profile-form" method="post" enctype="multipart/form-data"
           action="${pageContext.request.contextPath}/profile/edit?id=${profile.userId}">
       <input type="hidden" name="csrfToken" value="<c:out value='${csrfToken}'/>" />
+
+      <fieldset class="form-section">
+        <legend>PROFILE PICTURE</legend>
+        <c:choose>
+          <c:when test="${profile.profileImage.startsWith('uploads/')}"><c:set var="avatarSrc" value="${pageContext.request.contextPath}/${profile.profileImage}"/></c:when>
+          <c:otherwise><c:set var="avatarSrc" value="${profile.profileImage}"/></c:otherwise>
+        </c:choose>
+        <div class="avatar-edit">
+          <span class="avatar-edit-preview" id="avatar-preview" data-initial="<c:out value='${profile.initial}'/>">
+            <c:choose>
+              <c:when test="${not empty avatarSrc}"><img src="<c:out value='${avatarSrc}'/>" alt="Your current profile picture" /></c:when>
+              <c:otherwise><c:out value="${profile.initial}"/></c:otherwise>
+            </c:choose>
+          </span>
+          <div class="field avatar-edit-controls">
+            <label for="profileImage">Upload a new picture <span class="optional">(optional)</span></label>
+            <input id="profileImage" name="profileImage" type="file" accept="image/jpeg,image/png"
+                   aria-describedby="image-hint" />
+            <small id="image-hint" class="hint">JPEG or PNG, up to 5 MB. Shown on your profile and your posts.</small>
+            <c:if test="${not empty profile.profileImage}">
+              <label class="checkbox-row">
+                <input type="checkbox" id="removeImage" name="removeImage" value="1" />
+                Remove my current picture
+              </label>
+            </c:if>
+            <c:if test="${not empty errors.profileImage}"><div class="flash flash-bad avatar-flash" role="alert"><c:out value="${errors.profileImage}"/></div></c:if>
+          </div>
+        </div>
+      </fieldset>
 
       <fieldset class="form-section">
         <legend>ABOUT YOU</legend>
@@ -86,6 +115,7 @@
     </form>
   </main>
   <script src="${pageContext.request.contextPath}/js/phone-input.js?v=${assetVersion}" defer></script>
+  <script src="${pageContext.request.contextPath}/js/avatar-picker.js?v=${assetVersion}" defer></script>
   <%@ include file="/WEB-INF/views/fragments/footer.jspf" %>
 </body>
 </html>

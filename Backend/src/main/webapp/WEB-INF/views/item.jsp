@@ -56,6 +56,9 @@
               <h2 id="poster-heading" class="visually-hidden">Posted by</h2>
               <div class="poster">
                 <c:choose>
+                  <c:when test="${post.posterProfileImage.startsWith('uploads/')}">
+                    <img class="avatar" src="<c:out value='${ctx}/${post.posterProfileImage}'/>" alt="" />
+                  </c:when>
                   <c:when test="${not empty post.posterProfileImage}">
                     <img class="avatar" src="<c:out value='${post.posterProfileImage}'/>" alt="" />
                   </c:when>

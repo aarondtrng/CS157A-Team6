@@ -38,7 +38,7 @@
         <%-- Account menu: a native <details> (works without JavaScript); js/user-menu.js also closes it when you
              click elsewhere or press Escape. Log out stays a POST form with its security token. --%>
         <details class="user-menu">
-          <summary class="avatar-link" aria-label="Account menu"><c:out value="${initials}"/></summary>
+          <summary class="avatar-link" aria-label="Account menu"><c:choose><c:when test="${fn:startsWith(sessionScope.userImage, 'uploads/')}"><img class="avatar-link-img" src="<c:out value='${pageContext.request.contextPath}/${sessionScope.userImage}'/>" alt="" /></c:when><c:when test="${not empty sessionScope.userImage}"><img class="avatar-link-img" src="<c:out value='${sessionScope.userImage}'/>" alt="" /></c:when><c:otherwise><c:out value="${initials}"/></c:otherwise></c:choose></summary>
           <div class="user-menu-panel">
             <p class="user-menu-name"><c:out value="${sessionScope.userName}"/></p>
             <a class="user-menu-item" href="${pageContext.request.contextPath}/profile?id=${sessionScope.userId}">Profile</a>
