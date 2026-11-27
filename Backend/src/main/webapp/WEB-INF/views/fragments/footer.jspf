@@ -5,7 +5,10 @@
     <nav aria-label="Footer">
       <a href="${pageContext.request.contextPath}/items">Browse</a>
       <a href="${pageContext.request.contextPath}/map">Campus map</a>
-      <a href="${pageContext.request.contextPath}/post/new">Post an item</a>
+      <%-- Only students can create posts (PostItemServlet answers 403 for administrators); guests are sent to log in. --%>
+      <c:if test="${sessionScope.userRole != 'ADMINISTRATOR'}">
+        <a href="${pageContext.request.contextPath}/post/new">Post an item</a>
+      </c:if>
     </nav>
   </div>
 </footer>
