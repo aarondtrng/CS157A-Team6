@@ -33,8 +33,6 @@ import java.util.logging.Logger;
         maxRequestSize = (long) MessageService.MAX_PHOTO_BYTES * (MessageService.MAX_PHOTOS + 1))
 public class MessageSendServlet extends HttpServlet {
     private static final Logger LOG = Logger.getLogger(MessageSendServlet.class.getName());
-    /** Lands the reloaded page on the message box instead of the top of the page. */
-    private static final String COMPOSER_ANCHOR = "#composer";
 
     private final MessageService messageService = new MessageService(new MessageDao(), new UserDao());
 
@@ -80,7 +78,7 @@ public class MessageSendServlet extends HttpServlet {
                 return;
             }
             response.sendRedirect(request.getContextPath() + "/messages?c=" + fromUrl
-                    + "&error=photo-size" + COMPOSER_ANCHOR);
+                    + "&error=photo-size");
             return;
         }
 
@@ -99,13 +97,13 @@ public class MessageSendServlet extends HttpServlet {
         String problem = tooBig ? "photo-size" : messageService.checkMessage(text, photos);
         String target = request.getContextPath() + "/messages?c=" + conversationId;
         if (problem != null) {
-            response.sendRedirect(target + "&error=" + problem + COMPOSER_ANCHOR);
+            response.sendRedirect(target + "&error=" + problem);
             return;
         }
 
         try {
             boolean sent = messageService.send(userId, conversationId, text, photos);
-            response.sendRedirect((sent ? target : target + "&error=failed") + COMPOSER_ANCHOR);
+            response.sendRedirect(sent ? target : target + "&error=failed");
         } catch (DataAccessException | UncheckedIOException e) {
             LOG.log(Level.SEVERE, "Message could not be sent", e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

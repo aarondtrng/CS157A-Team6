@@ -88,6 +88,9 @@
               <button type="button" class="act" disabled aria-disabled="true" title="Report is coming soon"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 4h11l-2 4 2 4H5"></path></svg>Report</button>
             </div>
 
+            <%-- The chat scrolls on its own and is anchored at the bottom (see .chat-scroll in messages.css), so it
+                 opens at the newest message and stays there while photos and fonts load. --%>
+            <div class="chat-scroll">
             <ol class="bubbles" aria-label="Messages">
               <c:if test="${empty thread}">
                 <li class="day-label">NO MESSAGES YET</li>
@@ -107,6 +110,7 @@
                 </li>
               </c:forEach>
             </ol>
+            </div>
 
             <c:if test="${not empty sendError}">
               <div class="flash flash-bad" role="alert">
@@ -139,6 +143,17 @@
               <p class="thread-note">New messages appear automatically.</p>
               <p class="char-count" id="msg-count" hidden>0 / 5000</p>
             </div>
+            <%-- Do not put back an old scroll position on refresh, and drop a leftover #anchor from the address. --%>
+            <script>
+              (function () {
+                if ('scrollRestoration' in history) {
+                  history.scrollRestoration = 'manual';
+                }
+                if (location.hash) {
+                  history.replaceState(null, '', location.pathname + location.search);
+                }
+              })();
+            </script>
           </c:otherwise>
         </c:choose>
       </section>

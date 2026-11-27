@@ -3,8 +3,32 @@
 .messages {
   display: flex;
   flex-wrap: wrap;
-  min-height: 640px;
   overflow: hidden;
+}
+
+/* Wide screens: the panel fits the window below the top bar, and the conversation list and the chat each
+   scroll on their own instead of the whole page scrolling. */
+@media (min-width: 769px) {
+  .messages {
+    flex-wrap: nowrap;
+    height: calc(100vh - 140px);
+    height: calc(100dvh - 140px);
+    min-height: 480px;
+  }
+
+  .convo-list,
+  .thread {
+    min-height: 0;
+  }
+
+  .convo-list ul {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .chat-scroll {
+    min-height: 0;
+  }
 }
 
 .convo-list {
@@ -40,6 +64,8 @@
   padding: 0;
   list-style: none;
   overflow-y: auto;
+  /* Reaching the end of the list does not start scrolling the page. */
+  overscroll-behavior: contain;
 }
 
 .convo-list li {
@@ -213,12 +239,26 @@
   color: var(--muted);
 }
 
-.bubbles {
+/* The chat's scrolling box. column-reverse makes the browser measure its scroll from the bottom, so it opens
+   at the newest message on the very first draw and stays there when photos or fonts load above. No script is
+   needed for that, so there is no jump. messages.js keeps the place of someone reading older messages. */
+.chat-scroll {
   flex: 1;
+  display: flex;
+  flex-direction: column-reverse;
+  min-height: 320px;
+  overflow-y: auto;
+  overflow-anchor: none;
+  overscroll-behavior: contain;
+  background: var(--bg-sunken);
+}
+
+.bubbles {
+  /* Fills the box when the chat is short, so messages still start at the top. */
+  flex: 1 0 auto;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  min-height: 320px;
   margin: 0;
   padding: 24px 24px 16px;
   list-style: none;
@@ -441,6 +481,18 @@
     max-width: none;
     border-right: 0;
     border-bottom: 1px solid var(--border);
+  }
+
+  /* Stacked: the list and the chat still scroll separately, each in a box of its own. */
+  .convo-list ul {
+    max-height: 240px;
+  }
+
+  .chat-scroll {
+    flex: none;
+    height: 60vh;
+    height: 60dvh;
+    min-height: 320px;
   }
 
   .bubble-row {

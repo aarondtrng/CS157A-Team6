@@ -65,6 +65,18 @@
     counter.hidden = false;
   }
 
+  // The chat scrolls inside .chat-scroll, which is anchored at the bottom (flex-direction: column-reverse in
+  // messages.css). Its scroll position counts from the bottom: 0 is the newest message and scrolling up goes
+  // negative. CSS alone opens it at the bottom and keeps it there while photos load.
+  function chatScroll() {
+    return document.querySelector('.chat-scroll');
+  }
+
+  // How far the chat is scrolled up from the newest message, in pixels.
+  function distanceFromBottom(box) {
+    return Math.abs(box.scrollTop);
+  }
+
   if (!window.fetch || !window.FormData || !window.DOMParser) {
     return;
   }
@@ -82,28 +94,35 @@
     return doc.querySelector('.convo-list') ? doc : null;
   }
 
-  // Replaces the element matching selector with the fresh copy, only when its contents actually changed.
+  // Puts the fresh contents into the element matching selector, only when they actually changed. The element
+  // itself stays, so its own scroll position is kept. Returns true when something changed.
   function swap(doc, selector) {
     var fresh = doc.querySelector(selector);
     var current = document.querySelector(selector);
     if (fresh && current && fresh.innerHTML !== current.innerHTML) {
-      current.replaceWith(document.importNode(fresh, true));
+      current.innerHTML = fresh.innerHTML;
+      return true;
     }
+    return false;
   }
 
-  // Swaps in the conversation and the inbox. If the message box is on screen it stays in the same spot while
-  // the list above it grows; if the student scrolled up to read older messages, nothing moves.
-  function applyPage(doc) {
-    var anchor = form || document.querySelector('.thread');
-    var top = anchor ? anchor.getBoundingClientRect().top : null;
-    var anchorVisible = top !== null && top < window.innerHeight;
+  // Swaps in the conversation and the inbox. If the chat was showing the newest message (or toNewest is set,
+  // after the student sends one) it shows the new one; if they scrolled up to read older messages, those stay
+  // exactly where they are on screen.
+  function applyPage(doc, toNewest) {
+    var box = chatScroll();
+    var before = box ? distanceFromBottom(box) : 0;
+    var heightBefore = box ? box.scrollHeight : 0;
 
-    swap(doc, '.bubbles');
-    swap(doc, '.convo-list ul');
-
-    if (anchorVisible) {
-      window.scrollBy(0, anchor.getBoundingClientRect().top - top);
+    if (swap(doc, '.bubbles') && box) {
+      if (toNewest || before < 40) {
+        box.scrollTop = 0;
+      } else {
+        // New messages were added below; move up by as much as they added so the view does not shift.
+        box.scrollTop = -(before + (box.scrollHeight - heightBefore));
+      }
     }
+    swap(doc, '.convo-list ul');
   }
 
   // ---- Sending without a reload ----
@@ -275,7 +294,7 @@
           var flash = doc.querySelector('.thread .flash');
           if (request > lastApplied) {
             lastApplied = request;
-            applyPage(doc);
+            applyPage(doc, !flash); // Show the message just sent.
           }
           showFlash(flash ? document.importNode(flash, true) : null);
           if (!flash) {
