@@ -88,6 +88,9 @@
               <button type="button" class="act" disabled aria-disabled="true" title="Report is coming soon"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 4h11l-2 4 2 4H5"></path></svg>Report</button>
             </div>
 
+            <%-- The chat scrolls on its own and is anchored at the bottom (see .chat-scroll in messages.css), so it
+                 opens at the newest message and stays there while photos and fonts load. --%>
+            <div class="chat-scroll">
             <ol class="bubbles" aria-label="Messages">
               <c:if test="${empty thread}">
                 <li class="day-label">NO MESSAGES YET</li>
@@ -107,6 +110,7 @@
                 </li>
               </c:forEach>
             </ol>
+            </div>
 
             <c:if test="${not empty sendError}">
               <div class="flash flash-bad" role="alert">
@@ -121,19 +125,37 @@
                 </c:choose>
               </div>
             </c:if>
-            <form class="composer" method="post" action="${ctx}/messages/send" enctype="multipart/form-data">
+            <%-- Thumbnails of the photos about to be sent; filled in by messages.js. --%>
+            <ul class="photo-previews" id="msg-previews" aria-label="Photos to send" hidden></ul>
+            <form class="composer" id="composer" method="post" action="${ctx}/messages/send?c=${selected.conversationId}" enctype="multipart/form-data">
               <input type="hidden" name="csrfToken" value="<c:out value='${csrfToken}'/>" />
               <input type="hidden" name="conversationId" value="${selected.conversationId}" />
               <label class="visually-hidden" for="msg-text">Message</label>
-              <textarea id="msg-text" name="text" rows="1" maxlength="5000" placeholder="Write a message&hellip;"></textarea>
+              <textarea id="msg-text" name="text" rows="1" maxlength="5000" placeholder="Write a message&hellip;" aria-describedby="msg-count"></textarea>
               <label class="attach act" for="msg-images" title="Add photos (JPEG or PNG, up to 4)">
                 <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"></path></svg>
                 <span id="msg-images-label">Photo</span>
               </label>
               <input class="visually-hidden" id="msg-images" type="file" name="images" accept="image/jpeg,image/png" multiple />
+              <%-- Shown by messages.js once photos are picked; removes them all. --%>
+              <button type="button" class="act photo-clear" id="msg-images-clear" hidden aria-label="Remove the picked photos" title="Remove the picked photos"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg></button>
               <button type="submit" class="btn">Send</button>
             </form>
-            <p class="thread-note">New messages appear when you refresh the page.</p>
+            <div class="thread-foot">
+              <p class="thread-note">New messages appear automatically.</p>
+              <p class="char-count" id="msg-count" hidden>0 / 5000</p>
+            </div>
+            <%-- Do not put back an old scroll position on refresh, and drop a leftover #anchor from the address. --%>
+            <script>
+              (function () {
+                if ('scrollRestoration' in history) {
+                  history.scrollRestoration = 'manual';
+                }
+                if (location.hash) {
+                  history.replaceState(null, '', location.pathname + location.search);
+                }
+              })();
+            </script>
           </c:otherwise>
         </c:choose>
       </section>

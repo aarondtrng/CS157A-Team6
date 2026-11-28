@@ -3,8 +3,32 @@
 .messages {
   display: flex;
   flex-wrap: wrap;
-  min-height: 640px;
   overflow: hidden;
+}
+
+/* Wide screens: the panel fits the window below the top bar, and the conversation list and the chat each
+   scroll on their own instead of the whole page scrolling. */
+@media (min-width: 769px) {
+  .messages {
+    flex-wrap: nowrap;
+    height: calc(100vh - 140px);
+    height: calc(100dvh - 140px);
+    min-height: 480px;
+  }
+
+  .convo-list,
+  .thread {
+    min-height: 0;
+  }
+
+  .convo-list ul {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .chat-scroll {
+    min-height: 0;
+  }
 }
 
 .convo-list {
@@ -40,6 +64,8 @@
   padding: 0;
   list-style: none;
   overflow-y: auto;
+  /* Reaching the end of the list does not start scrolling the page. */
+  overscroll-behavior: contain;
 }
 
 .convo-list li {
@@ -213,12 +239,26 @@
   color: var(--muted);
 }
 
-.bubbles {
+/* The chat's scrolling box. column-reverse makes the browser measure its scroll from the bottom, so it opens
+   at the newest message on the very first draw and stays there when photos or fonts load above. No script is
+   needed for that, so there is no jump. messages.js keeps the place of someone reading older messages. */
+.chat-scroll {
   flex: 1;
+  display: flex;
+  flex-direction: column-reverse;
+  min-height: 320px;
+  overflow-y: auto;
+  overflow-anchor: none;
+  overscroll-behavior: contain;
+  background: var(--bg-sunken);
+}
+
+.bubbles {
+  /* Fills the box when the chat is short, so messages still start at the top. */
+  flex: 1 0 auto;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  min-height: 320px;
   margin: 0;
   padding: 24px 24px 16px;
   list-style: none;
@@ -318,6 +358,86 @@
   outline-offset: 2px;
 }
 
+/* Thumbnails of the picked photos, just above the message box. */
+.photo-previews {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+  padding: 12px 16px 0;
+  list-style: none;
+  border-top: 1px solid var(--border);
+}
+
+.photo-previews[hidden] {
+  display: none;
+}
+
+/* The message box loses its own top line while thumbnails sit above it, so the two read as one area. */
+.photo-previews:not([hidden]) + .composer {
+  border-top: 0;
+}
+
+.photo-preview {
+  position: relative;
+  width: 64px;
+  height: 64px;
+}
+
+.photo-preview img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.photo-preview-remove {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  color: #fff;
+  background: rgba(20, 28, 38, 0.85);
+  border: 2px solid var(--bg);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.photo-preview-remove:hover {
+  background: var(--red-ink);
+}
+
+.photo-preview-remove:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 1px;
+}
+
+/* Photo button once 4 photos are picked: looks turned off and does not open the file picker. */
+.attach.attach-full {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* The × next to "2 photos" that removes the picked photos. */
+.photo-clear {
+  flex: none;
+  align-self: stretch;
+  margin-left: -8px;
+  padding: 0 8px;
+}
+
+.photo-clear[hidden] {
+  display: none;
+}
+
 .composer textarea {
   flex: 1;
   min-width: 0;
@@ -326,9 +446,38 @@
 }
 
 .thread .flash {
+  position: relative;
   margin: 12px 16px 0;
-  padding: 12px 16px;
+  padding: 12px 48px 12px 16px;
   border-radius: var(--radius-sm);
+}
+
+/* The × that dismisses an error (added by messages.js). */
+.flash-close {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.flash-close:hover {
+  background: rgba(155, 44, 44, 0.1);
+}
+
+.flash-close:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 1px;
 }
 
 .thread .flash-bad {
@@ -346,10 +495,29 @@
 }
 
 
-.thread-note {
+.thread-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
   padding: 0 20px 12px;
+}
+
+.thread-note,
+.char-count {
   font-size: 12px;
   color: var(--muted);
+}
+
+.char-count {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Close to the 5000-character limit. */
+.char-count.near-limit {
+  color: var(--red-ink);
+  font-weight: 600;
 }
 
 .thread-empty {
@@ -375,6 +543,18 @@
     max-width: none;
     border-right: 0;
     border-bottom: 1px solid var(--border);
+  }
+
+  /* Stacked: the list and the chat still scroll separately, each in a box of its own. */
+  .convo-list ul {
+    max-height: 240px;
+  }
+
+  .chat-scroll {
+    flex: none;
+    height: 60vh;
+    height: 60dvh;
+    min-height: 320px;
   }
 
   .bubble-row {
