@@ -65,11 +65,19 @@
                 </c:choose>
                 <div class="poster-text">
                   <a class="poster-name" href="${ctx}/profile?id=${post.posterUserId}"><c:out value="${post.posterName}"/></a>
-                  <span class="poster-role">Posted this item</span>
+                  <span class="poster-role">${post.fromReddit ? 'Imported from r/SJSU' : 'Posted this item'}</span>
                 </div>
                 <%-- Request action (found posts, students) or log in prompt (guests), beside Message. The creator manages
                      requests; everyone else can ask for the item unless it was already returned. --%>
                 <div class="poster-actions">
+                  <c:choose>
+                  <%-- Imported posts belong to the Reddit import account, which cannot answer requests or
+                       messages, so the poster is contacted on Reddit instead. --%>
+                  <c:when test="${post.fromReddit}">
+                    <a class="btn btn-small" href="<c:out value='${post.redditUrl}'/>" target="_blank" rel="noopener noreferrer"
+                       title="This post was imported from r/SJSU. Contact the original poster there.">View on Reddit</a>
+                  </c:when>
+                  <c:otherwise>
                   <c:if test="${post.type == 'FOUND' and isStudent}">
                     <c:choose>
                       <c:when test="${isOwner}">
@@ -106,6 +114,8 @@
                     <button type="button" class="act act-outline" disabled aria-disabled="true"
                           title="Log in as a student to message"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"></path></svg>Message</button>
                     </c:otherwise>
+                  </c:choose>
+                  </c:otherwise>
                   </c:choose>
                 </div>
               </div>

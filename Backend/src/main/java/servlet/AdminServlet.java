@@ -9,22 +9,33 @@ import jakarta.servlet.http.HttpServletResponse;
 import model.User;
 import model.UserProfile;
 import service.AdminService;
+import service.RedditScrapeService;
 import service.UserProfileService;
 import util.AuthUtil;
 import util.CsrfUtil;
+
+import dao.DataAccessException;
+import dao.RedditItemDao;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @WebServlet("/admin/users")
 public class AdminServlet extends HttpServlet {
+    private static final Logger LOG = Logger.getLogger(AdminServlet.class.getName());
+
     private final UserProfileService profileService =
             new UserProfileService(new UserDao());
 
     private final AdminService adminService =
             new AdminService(new dao.ItemDao());
+
+    private final RedditScrapeService redditService =
+            new RedditScrapeService(new RedditItemDao(), new dao.ItemDao(), new UserDao());
 
     @Override
     protected void doGet(
@@ -77,6 +88,7 @@ public class AdminServlet extends HttpServlet {
             }
             
             request.setAttribute("csrfToken", CsrfUtil.token(request));
+            setRedditQueue(request);
 
             request.getRequestDispatcher(
                     "/WEB-INF/views/admin-users.jsp").forward(request, response);
@@ -87,6 +99,41 @@ public class AdminServlet extends HttpServlet {
             response.sendError(
                     HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    /**
+     * The "Pending Reddit posts" section: the review queue, the counts per approval status, and the result
+     * of the last Fetch (passed back in the redirect from RedditAdminServlet).
+     */
+    private void setRedditQueue(HttpServletRequest request) {
+        try {
+            request.setAttribute("redditPending", redditService.getPending());
+            request.setAttribute("redditCounts", redditService.getCounts());
+        } catch (DataAccessException e) {
+            LOG.log(Level.WARNING, "Could not load the Reddit review queue", e);
+            request.setAttribute("redditPending", List.of());
+            request.setAttribute("redditCounts", java.util.Map.of());
+            request.setAttribute("redditError",
+                    RedditScrapeService.ERROR_MESSAGES.get("database"));
+        }
+
+        String errorKey = request.getParameter("redditError");
+        if (errorKey != null && RedditScrapeService.ERROR_MESSAGES.containsKey(errorKey)) {
+            request.setAttribute("redditError", RedditScrapeService.ERROR_MESSAGES.get(errorKey));
+        }
+        Integer added = parseCount(request.getParameter("added"));
+        if (added != null) {
+            request.setAttribute("redditAdded", added);
+            request.setAttribute("redditDupes", parseCount(request.getParameter("dupes")));
+            request.setAttribute("redditFailed", parseCount(request.getParameter("failed")));
+        }
+    }
+
+    private static Integer parseCount(String value) {
+        if (value == null || !value.matches("\\d{1,4}")) {
+            return null;
+        }
+        return Integer.parseInt(value);
     }
 
 @Override

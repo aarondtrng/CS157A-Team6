@@ -39,6 +39,13 @@
       <scope>runtime</scope>
     </dependency>
 
+    <!-- Parses the JSON that Reddit returns for the r/SJSU import (service/RedditPostMapper). -->
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>20240303</version>
+    </dependency>
+
     <!-- Tomcat does not ship JSTL, so it is bundled in the WAR. -->
     <dependency>
       <groupId>jakarta.servlet.jsp.jstl</groupId>

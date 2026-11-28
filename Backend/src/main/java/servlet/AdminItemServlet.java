@@ -48,6 +48,8 @@ public class AdminItemServlet extends HttpServlet {
             request.setAttribute("item", item.get());
             request.setAttribute("categories", categories);
             request.setAttribute("csrfToken", CsrfUtil.token(request));
+            request.setAttribute("returnTo",
+                    "reddit".equals(request.getParameter("from")) ? "reddit" : "");
 
             request.getRequestDispatcher(
                     "/WEB-INF/views/admin-item-edit.jsp").forward(request, response);
@@ -89,9 +91,14 @@ public class AdminItemServlet extends HttpServlet {
                     type,
                     categoryId);
 
-            response.sendRedirect(
-                    request.getContextPath()
-                            + "/admin/users?id=" + userId);
+            // Edits made from the Reddit review queue go back to the queue; others to the poster's page.
+            if ("reddit".equals(request.getParameter("returnTo"))) {
+                response.sendRedirect(request.getContextPath() + "/admin/users#reddit");
+            } else {
+                response.sendRedirect(
+                        request.getContextPath()
+                                + "/admin/users?id=" + userId);
+            }
 
         } catch (NumberFormatException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);

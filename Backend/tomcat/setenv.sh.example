@@ -20,3 +20,7 @@ export SPARTANFINDS_DB_PASSWORD="your_app_user_password"
 # Optional: folder for uploaded item photos. Default: "spartanfinds-uploads" in the home folder of the
 # user running Tomcat. Keep it outside the repo and outside the WAR so redeploys never delete photos.
 # export SPARTANFINDS_UPLOAD_DIR="/path/to/spartanfinds-uploads"
+
+# Optional: FetchLayer API key for the admin "Fetch from Reddit" button (Reddit blocks requests without
+# credentials). Each fetch uses 1 credit. Without it, the import tries Reddit directly and usually gets 403.
+# export SPARTANFINDS_FETCHLAYER_KEY="ss-your-key"

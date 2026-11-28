@@ -56,6 +56,10 @@ public class RequestService {
      * on the request page.
      */
     public String blockedReason(int userId, ItemDetail item) {
+        if (item.isFromReddit()) {
+            // The import account cannot accept requests; the person who posted it is only on Reddit.
+            return "This post was imported from r/SJSU. Contact the original poster on Reddit.";
+        }
         if (!"FOUND".equals(item.getType())) {
             return "Ownership requests are only for items that were found.";
         }

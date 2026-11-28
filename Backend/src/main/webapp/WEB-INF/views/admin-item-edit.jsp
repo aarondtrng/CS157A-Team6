@@ -44,6 +44,14 @@
                name="userId"
                value="${item.posterUserId}">
 
+        <c:if test="${returnTo == 'reddit'}">
+            <input type="hidden" name="returnTo" value="reddit">
+            <p>
+                Imported from Reddit.
+                <a href="<c:out value='${item.redditUrl}'/>" target="_blank" rel="noopener noreferrer">View the original post</a>
+            </p>
+        </c:if>
+
         <label for="title">Title</label>
         <input
             type="text"
