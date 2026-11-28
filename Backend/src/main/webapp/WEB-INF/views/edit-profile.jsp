@@ -41,9 +41,53 @@
       </div>
     </c:if>
 
-    <form class="profile-form" method="post"
+    <form class="profile-form" method="post" enctype="multipart/form-data"
           action="${pageContext.request.contextPath}/profile/edit?id=${profile.userId}">
       <input type="hidden" name="csrfToken" value="<c:out value='${csrfToken}'/>" />
+
+      <fieldset class="form-section">
+        <legend>PROFILE PICTURE</legend>
+        <c:choose>
+          <c:when test="${profile.profileImage.startsWith('uploads/')}"><c:set var="avatarSrc" value="${pageContext.request.contextPath}/${profile.profileImage}"/></c:when>
+          <c:otherwise><c:set var="avatarSrc" value="${profile.profileImage}"/></c:otherwise>
+        </c:choose>
+        <div class="avatar-edit">
+          <span class="avatar-edit-preview" id="avatar-preview" data-initial="<c:out value='${profile.initial}'/>">
+            <c:choose>
+              <c:when test="${not empty avatarSrc}"><img src="<c:out value='${avatarSrc}'/>" alt="Your current profile picture" /></c:when>
+              <c:otherwise><c:out value="${profile.initial}"/></c:otherwise>
+            </c:choose>
+          </span>
+          <div class="field avatar-edit-controls">
+            <%-- The real file box is hidden (still focusable and announced); its label is the visible button. --%>
+            <input class="visually-hidden" id="profileImage" name="profileImage" type="file" accept="image/jpeg,image/png"
+                   aria-describedby="image-hint file-name" />
+            <%-- Upload first, then Remove (only when there is a picture to remove), side by side. --%>
+            <div class="file-row">
+              <label class="file-button" for="profileImage">
+                <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"></path><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"></path></svg>
+                <c:choose>
+                  <c:when test="${not empty profile.profileImage}">Upload new picture</c:when>
+                  <c:otherwise>Choose a picture</c:otherwise>
+                </c:choose>
+              </label>
+              <c:if test="${not empty profile.profileImage}">
+                <%-- A real checkbox, hidden, inside a label styled as a button: clicking anywhere on it toggles the
+                     removal (and clicking again undoes it), with or without JavaScript. --%>
+                <label class="remove-toggle">
+                  <input class="visually-hidden" type="checkbox" id="removeImage" name="removeImage" value="1" />
+                  <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"></path></svg>
+                  <span class="remove-toggle-off">Remove current picture</span>
+                  <span class="remove-toggle-on">Picture will be removed &middot; Undo</span>
+                </label>
+              </c:if>
+            </div>
+            <span class="file-name" id="file-name">No file chosen</span>
+            <c:if test="${not empty errors.profileImage}"><div class="flash flash-bad avatar-flash" role="alert"><c:out value="${errors.profileImage}"/></div></c:if>
+            <small id="image-hint" class="hint">JPEG or PNG, up to 5 MB. Shown on your profile and your posts.</small>
+          </div>
+        </div>
+      </fieldset>
 
       <fieldset class="form-section">
         <legend>ABOUT YOU</legend>
@@ -86,6 +130,7 @@
     </form>
   </main>
   <script src="${pageContext.request.contextPath}/js/phone-input.js?v=${assetVersion}" defer></script>
+  <script src="${pageContext.request.contextPath}/js/avatar-picker.js?v=${assetVersion}" defer></script>
   <%@ include file="/WEB-INF/views/fragments/footer.jspf" %>
 </body>
 </html>

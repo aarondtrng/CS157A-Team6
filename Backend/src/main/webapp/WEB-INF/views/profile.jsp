@@ -32,7 +32,17 @@
     <section class="profile-card panel" aria-labelledby="profile-name">
       <div class="profile-banner" aria-hidden="true"><span class="profile-ring"></span></div>
       <div class="profile-head">
-        <span class="profile-avatar" aria-hidden="true"><c:out value="${profile.initial}"/></span>
+        <c:choose>
+          <c:when test="${profile.profileImage.startsWith('uploads/')}">
+            <img class="profile-avatar" src="<c:out value='${ctx}/${profile.profileImage}'/>" alt="" />
+          </c:when>
+          <c:when test="${not empty profile.profileImage}">
+            <img class="profile-avatar" src="<c:out value='${profile.profileImage}'/>" alt="" />
+          </c:when>
+          <c:otherwise>
+            <span class="profile-avatar" aria-hidden="true"><c:out value="${profile.initial}"/></span>
+          </c:otherwise>
+        </c:choose>
         <div class="profile-title">
           <h1 id="profile-name"><c:out value="${profile.name}"/></h1>
           <p>Student</p>

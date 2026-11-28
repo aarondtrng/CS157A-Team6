@@ -17,7 +17,7 @@ import model.UserProfile;
 /** Database access for user accounts and profiles. */
 public class UserDao {
 
-    private static final String FIND_BY_EMAIL_SQL = "SELECT user_id, name, email, password_hash, role FROM User WHERE email = ?";
+    private static final String FIND_BY_EMAIL_SQL = "SELECT user_id, name, email, password_hash, role, profile_image FROM User WHERE email = ?";
 
     private static final String INSERT_STUDENT_SQL = "INSERT INTO User (name, email, password_hash, role) VALUES (?, ?, ?, ?)";
 
@@ -36,7 +36,8 @@ public class UserDao {
                         rs.getString("name"),
                         rs.getString("email"),
                         rs.getString("password_hash"),
-                        rs.getString("role")));
+                        rs.getString("role"),
+                        rs.getString("profile_image")));
             }
         }
     }

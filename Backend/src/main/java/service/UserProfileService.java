@@ -2,6 +2,7 @@ package service;
 
 import dao.UserDao;
 import model.UserProfile;
+import util.ImageSniffer;
 
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
@@ -13,6 +14,8 @@ import java.util.List;
 public class UserProfileService {
     static final int MAX_NAME_LENGTH = 100;
     static final int MAX_DESCRIPTION_LENGTH = 1000;
+    /** Largest profile picture accepted, the same limit as post photos. */
+    public static final int MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 
     private final UserDao userDao;
 
@@ -100,6 +103,17 @@ public class UserProfileService {
                     "Description must be at most " + MAX_DESCRIPTION_LENGTH + " characters.");
         }
         return errors;
+    }
+
+    /** Null when the uploaded profile picture is acceptable; otherwise the message to show. */
+    public String checkImage(byte[] image) {
+        if (image.length > MAX_IMAGE_BYTES) {
+            return "Profile picture must be 5 MB or smaller.";
+        }
+        if (ImageSniffer.extensionFor(image) == null) {
+            return "Profile picture must be a JPEG or PNG image.";
+        }
+        return null;
     }
 
     private static boolean hasControlCharacter(String text) {

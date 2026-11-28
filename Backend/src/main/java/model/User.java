@@ -16,13 +16,24 @@ public class User {
     private final String email;
     private final String passwordHash;
     private final String role;
+    private final String profileImage;
 
     public User(int userId, String name, String email, String passwordHash, String role) {
+        this(userId, name, email, passwordHash, role, null);
+    }
+
+    public User(int userId, String name, String email, String passwordHash, String role, String profileImage) {
         this.userId = userId;
         this.name = name;
         this.email = email;
         this.passwordHash = passwordHash;
         this.role = role;
+        this.profileImage = profileImage;
+    }
+
+    /** The stored profile_image value ("uploads/<name>" or a URL), or null when the user has none. */
+    public String getProfileImage() {
+        return profileImage;
     }
 
     public int getUserId() {
