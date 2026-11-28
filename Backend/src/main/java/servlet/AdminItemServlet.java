@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import model.Category;
 import model.ItemDetail;
 import service.AdminService;
+import service.ReportService;
 import util.AuthUtil;
 import util.CsrfUtil;
 import model.User;
@@ -48,6 +49,11 @@ public class AdminItemServlet extends HttpServlet {
             request.setAttribute("item", item.get());
             request.setAttribute("categories", categories);
             request.setAttribute("csrfToken", CsrfUtil.token(request));
+            if ("reports".equals(request.getParameter("from"))) {
+                request.setAttribute("returnTo", "reports");
+                request.setAttribute("reportStatus",
+                        ReportService.filter(request.getParameter("status")));
+            }
 
             request.getRequestDispatcher(
                     "/WEB-INF/views/admin-item-edit.jsp").forward(request, response);
@@ -89,9 +95,15 @@ public class AdminItemServlet extends HttpServlet {
                     type,
                     categoryId);
 
-            response.sendRedirect(
-                    request.getContextPath()
-                            + "/admin/users?id=" + userId);
+            if ("reports".equals(request.getParameter("from"))) {
+                // Opened from the report queue: go back to it, keeping the admin's filter.
+                response.sendRedirect(request.getContextPath() + "/admin/reports?status="
+                        + ReportService.filter(request.getParameter("status")));
+            } else {
+                response.sendRedirect(
+                        request.getContextPath()
+                                + "/admin/users?id=" + userId);
+            }
 
         } catch (NumberFormatException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);

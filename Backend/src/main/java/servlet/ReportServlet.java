@@ -77,12 +77,20 @@ public class ReportServlet extends HttpServlet {
         }
         Integer reportId = ReportService.parseId(request.getParameter("reportId"));
         String action = request.getParameter("action");
-        if (reportId == null || !("resolve".equals(action) || "dismiss".equals(action))) {
+
+        if (reportId == null || !("resolve".equals(action) || "remove".equals(action) || "dismiss".equals(action))) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
+
         try {
-            boolean changed = service.moderate(AuthUtil.currentRole(request), reportId, action);
+            boolean changed;
+
+            if ("remove".equals(action)) {
+                changed = service.removeItem(AuthUtil.currentRole(request), reportId);
+            } else {
+                changed = service.moderate(AuthUtil.currentRole(request), reportId, action);
+            }
             request.getSession().setAttribute("reportQueueMessage", changed
                     ? "Report updated." : "This report was already reviewed or could not be found.");
             response.sendRedirect(request.getContextPath() + "/admin/reports?status="

@@ -44,6 +44,11 @@
                name="userId"
                value="${item.posterUserId}">
 
+        <c:if test="${not empty returnTo}">
+            <input type="hidden" name="from" value="reports">
+            <input type="hidden" name="status" value="<c:out value='${reportStatus}'/>">
+        </c:if>
+
         <label for="title">Title</label>
         <input
             type="text"

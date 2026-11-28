@@ -48,8 +48,13 @@
                   <input type="hidden" name="csrfToken" value="<c:out value='${csrfToken}'/>" />
                   <input type="hidden" name="reportId" value="${report.reportId}" />
                   <input type="hidden" name="status" value="<c:out value='${statusFilter}'/>" />
-                  <button type="submit" class="btn" name="action" value="resolve">Resolve</button>
-                  <button type="submit" class="btn btn-outline" name="action" value="dismiss">Dismiss</button>
+                  <c:if test="${not empty report.itemId}">
+                    <a class="btn btn-outline"
+                      href="${pageContext.request.contextPath}/admin/items/edit?itemId=${report.itemId}&from=reports&status=${statusFilter}">
+                        Edit Item
+                    </a>
+                  <button type="submit" class="btn" name="action" value="remove">Remove Item</button></c:if>
+                  <button type="submit" class="btn btn-outline" name="action" value="dismiss"> Dismiss</button>
                 </form>
               </c:if>
             </li>

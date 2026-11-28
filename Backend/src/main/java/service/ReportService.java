@@ -1,6 +1,7 @@
 package service;
 
 import dao.ReportDao;
+import dao.ItemDao;
 import model.ReportRow;
 import model.ReportTarget;
 import model.User;
@@ -14,8 +15,12 @@ public class ReportService {
     public static final int MAX_REASON_LENGTH = 5000;
     private static final Set<String> FILTERS = Set.of("ALL", "PENDING", "RESOLVED", "DISMISSED");
     private final ReportDao dao;
+    private final ItemDao itemDao;
 
-    public ReportService(ReportDao dao) { this.dao = dao; }
+    public ReportService(ReportDao dao) {
+        this.dao = dao;
+        this.itemDao = new ItemDao();
+    }
 
     public static Integer parseId(String raw) {
         if (raw == null) { return null; }
@@ -63,6 +68,28 @@ public class ReportService {
         if ("resolve".equals(action)) { return dao.updateStatus(reportId, "RESOLVED"); }
         if ("dismiss".equals(action)) { return dao.updateStatus(reportId, "DISMISSED"); }
         return false;
+    }
+
+    public boolean removeItem(String role, int reportId) {
+        requireAdministrator(role);
+
+        if (reportId <= 0) {
+            return false;
+        }
+
+        Optional<Integer> itemId =
+            dao.findItemIdByReport(reportId);
+
+        if (itemId.isEmpty()) {
+            return false;
+        }
+
+        if (!itemDao.removeItem(itemId.get())) {
+            return false;
+        }
+
+        // Removing the post settles every pending report about it, not just this one.
+        return dao.updateStatusByItem(itemId.get(), "RESOLVED") > 0;
     }
 
     private static void requireAdministrator(String role) {
