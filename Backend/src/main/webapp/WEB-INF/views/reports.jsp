@@ -50,7 +50,7 @@
                   <input type="hidden" name="status" value="<c:out value='${statusFilter}'/>" />
                   <c:if test="${not empty report.itemId}">
                     <a class="btn btn-outline"
-                      href="${pageContext.request.contextPath}/admin/items/edit?itemId=${report.itemId}">
+                      href="${pageContext.request.contextPath}/admin/items/edit?itemId=${report.itemId}&from=reports&status=${statusFilter}">
                         Edit Item
                     </a>
                   <button type="submit" class="btn" name="action" value="remove">Remove Item</button></c:if>
