@@ -88,7 +88,8 @@ public class ReportService {
             return false;
         }
 
-        return dao.updateStatus(reportId, "RESOLVED");
+        // Removing the post settles every pending report about it, not just this one.
+        return dao.updateStatusByItem(itemId.get(), "RESOLVED") > 0;
     }
 
     private static void requireAdministrator(String role) {

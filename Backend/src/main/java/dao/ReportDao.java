@@ -50,6 +50,9 @@ public class ReportDao {
     // pending-only status update. Parameters: new status, report id, PENDING.
     private static final String UPDATE_STATUS_SQL = "UPDATE Report SET status = ? WHERE report_id = ? AND status = ?";
 
+    // close every open report on one item. Parameters: new status, item id, PENDING.
+    private static final String UPDATE_STATUS_BY_ITEM_SQL = "UPDATE Report SET status = ? WHERE item_id = ? AND status = ?";
+
     private static final String FIND_ITEM_ID_BY_REPORT_SQL = "SELECT item_id FROM Report WHERE report_id = ?";
 
     /** A separate failure lets the UI show an honest unavailable state before SQL is supplied. */
@@ -173,6 +176,20 @@ public class ReportDao {
             return statement.executeUpdate() == 1;
         } catch (SQLException | IllegalStateException e) {
             throw new DataAccessException("ReportDao.updateStatus failed", e);
+        }
+    }
+
+    /** Marks every pending report on the item with the given status; returns how many changed. */
+    public int updateStatusByItem(int itemId, String status) {
+        String sql = required(UPDATE_STATUS_BY_ITEM_SQL, "UPDATE_STATUS_BY_ITEM_SQL");
+        try (Connection connection = DatabaseConfig.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, status);
+            statement.setInt(2, itemId);
+            statement.setString(3, "PENDING");
+            return statement.executeUpdate();
+        } catch (SQLException | IllegalStateException e) {
+            throw new DataAccessException("ReportDao.updateStatusByItem failed", e);
         }
     }
 }
